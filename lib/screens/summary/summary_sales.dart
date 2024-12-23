@@ -9,21 +9,22 @@ import 'package:logger/logger.dart';
 import 'package:supercharged/supercharged.dart';
 import '../../bloc/summary_state.dart';
 import '../../widgets/dropdown_filter_button.dart';
-import 'summary_table_section.dart';
+// import 'summary_sale_table.dart';
+// import 'summary_table_section.dart';
 
-class OverallSummaryPage extends StatefulWidget {
+class SummarysalesPage extends StatefulWidget {
   final Map<String, dynamic> payments;
 
-  OverallSummaryPage({
+  SummarysalesPage({
     required this.payments,
   });
   //   final dynamic getData;
   // OverallSummaryPage({required this.getData});
   @override
-  _OverallSummaryPageState createState() => _OverallSummaryPageState();
+  _SummarysalesPageState createState() => _SummarysalesPageState();
 }
 
-class _OverallSummaryPageState extends State<OverallSummaryPage> {
+class _SummarysalesPageState extends State<SummarysalesPage> {
   DateTime? fromDate;
   DateTime? toDate;
 
@@ -53,7 +54,7 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
                   children: [
                     // ส่วนหัวข้อของหน้า
                     const Text(
-                      'Reports > Overall Summary',
+                      'Reports > Summary Sales',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -62,18 +63,22 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        // Dropdown for Filters Report / Date
                         DropdownFilterButton(
                           onDateSelected: (value) {
-                            logger.e(value);
-                            logger.e(value.runtimeType);
+                            // logger.e(value);
+                            // logger.e(value.runtimeType);
                             getDate = value;
                             setState(() {});
                           },
                         ),
 
+                        // Dropdown for More Filters
                         DropdownButton<String>(
                           value: "More Filters", // Default value
-                          onChanged: (String? newValue) {},
+                          onChanged: (String? newValue) {
+                            // Handle dropdown change here
+                          },
                           items: <String>['More Filters', 'All Order Types', 'All Sources', 'All Sections']
                               .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
@@ -89,9 +94,12 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
                           }).toList(),
                         ),
 
+                        // Dropdown for Share
                         DropdownButton<String>(
                           value: "Share", // Default value
-                          onChanged: (String? newValue) {},
+                          onChanged: (String? newValue) {
+                            // Handle dropdown change here
+                          },
                           items: <String>['Share', 'Option 1', 'Option 2'].map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
@@ -109,7 +117,9 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
                         // Dropdown for Export
                         DropdownButton<String>(
                           value: "Export", // Default value
-                          onChanged: (String? newValue) {},
+                          onChanged: (String? newValue) {
+                            // Handle dropdown change here
+                          },
                           items: <String>['Export', 'Option 1', 'Option 2'].map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
@@ -125,7 +135,7 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
                         ),
                       ],
                     ),
-                    SummaryTableSection(getDate: getDate),
+                    // SalesScreen(),
                   ],
                 ),
               ),

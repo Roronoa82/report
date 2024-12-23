@@ -1,8 +1,8 @@
-import 'dart:convert';
+// ignore_for_file: prefer_const_constructors
 
+import 'package:develop_resturant/screens/summary/summary_sales.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
-
+import 'package:supercharged/supercharged.dart';
 import 'header.dart';
 import 'screens/overall/overall_summary.dart';
 
@@ -12,12 +12,9 @@ class ReportPage extends StatefulWidget {
 }
 
 class _ReportPageState extends State<ReportPage> {
-  //String? selectedMenu;
-  String selectedMenu = 'Overall Summary'; // กำหนดค่าเริ่มต้นเป็น "Overall Summary"
+  String selectedMenu = 'Overall Summary';
 
   Map<String, dynamic> payments = {};
-  DateTime fromDate = DateTime.now();
-  DateTime toDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +25,7 @@ class _ReportPageState extends State<ReportPage> {
       ),
       body: Container(
         child: Padding(
-          padding: const EdgeInsets.only(left: 100, right: 100, top: 10),
+          padding: EdgeInsets.only(left: 300, right: 300, top: 10),
           child: Row(
             children: [
               // Sidebar
@@ -71,16 +68,24 @@ class _ReportPageState extends State<ReportPage> {
                         ListTile(
                           title: const Text("Overall Summary"),
                           onTap: () {
-                            // setState(() {
-                            //   selectedMenu = 'Overall Summary'; // เปลี่ยนค่าเมื่อคลิก
-                            // });
+                            setState(() {
+                              selectedMenu = 'Overall Summary'; // เปลี่ยนค่าเมื่อคลิก
+                            });
                           },
-                          tileColor: selectedMenu == 'Overall Summary' ? Colors.blue[100] : Colors.white, // เปลี่ยนสีพื้นหลังเมื่อเลือก
+                          tileColor: selectedMenu == 'Overall Summary' ? '#000000'.toColor() : Colors.white, // เปลี่ยนสีพื้นหลังเมื่อเลือก
                           selectedTileColor: Colors.blue[100], // สีพื้นหลังเมื่อเลือก
                           selected: selectedMenu == 'Overall Summary',
                         ),
-                        const ListTile(
+                        ListTile(
                           title: Text("Summary Sales"),
+                          onTap: () {
+                            setState(() {
+                              selectedMenu = 'Summary Sales'; // เปลี่ยนค่าเมื่อคลิก
+                            });
+                          },
+                          tileColor: selectedMenu == 'Summary Sales' ? '#000000'.toColor() : Colors.white,
+                          selectedTileColor: '#000000'.toColor(),
+                          selected: selectedMenu == 'Summary Sales',
                         ),
                         const ListTile(
                           title: Text("Credit Card Types"),
@@ -89,7 +94,14 @@ class _ReportPageState extends State<ReportPage> {
                           title: Text("Discounts"),
                         ),
                         const ListTile(
-                          title: Text("Labor"),
+                          title: Text(
+                            "Labor",
+                            style: TextStyle(
+                              fontFamily: "Inter",
+                              fontSize: 16,
+                              // color:'#000000'.toColor(),
+                            ),
+                          ),
                         ),
                         const ListTile(
                           title: Text("Employee Auditing"),
@@ -123,14 +135,13 @@ class _ReportPageState extends State<ReportPage> {
               // Main Content Area
               Expanded(
                 child: Container(
-                  color: Colors.white,
+                  color: "#EEEEEE".toColor(),
                   padding: const EdgeInsets.all(16),
-                  child: OverallSummaryPage(
-                    selectedDate: '',
-                    payments: {},
-                    fromDate: fromDate,
-                    toDate: toDate,
-                  ), // แสดง OverallSummaryPage ทันที
+                  child: selectedMenu == 'Overall Summary'
+                      ? OverallSummaryPage(payments: {}) // แสดง OverallSummaryPage
+                      : SummarysalesPage(
+                          payments: {},
+                        ), // แสดง SummarySalesPage
                 ),
               ),
             ],

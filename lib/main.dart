@@ -1,12 +1,9 @@
 import 'package:develop_resturant/bloc/summary_bloc.dart';
-import 'package:develop_resturant/widgets/filter_report.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'bloc/summary.dart';
+import 'bloc/date_filter_bloc.dart';
 import 'reports.dart';
 import 'package:provider/provider.dart';
 
-import 'screens/overall/overall_summary.dart';
 // void main() async {
 //   WidgetsFlutterBinding.ensureInitialized();
 //   await copyFileToAppDirectory();
@@ -18,6 +15,12 @@ void main() {
     MultiProvider(
       providers: [
         Provider<SummaryBloc>(create: (_) => SummaryBloc()),
+        Provider<DateFilterBloc>(
+            create: (_) => DateFilterBloc(
+                  DateTime.now(),
+                  DateTime.now(),
+                )),
+        // Provider<SummaryBloc>(create: (_) => SummaryBloc()),
       ],
       child: MyApp(),
     ),

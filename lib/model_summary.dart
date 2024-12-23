@@ -1,7 +1,4 @@
 import 'dart:convert';
-
-import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
 final logger = Logger();
@@ -12,7 +9,7 @@ class Summary {
   final int month;
   final int day;
   final DateTime date;
-  final List<Map<String, dynamic>> data; // เปลี่ยนจาก List<List<Map<String, dynamic>>> เป็น List<Map<String, dynamic>>
+  final List<Map<String, dynamic>> data;
   final List<Map<String, dynamic>> filterByRevenue;
   final List<Map<String, dynamic>> filterByDiscount;
   final List<Map<String, dynamic>> filterByEmployees;
@@ -34,7 +31,6 @@ class Summary {
   });
 
   factory Summary.fromJson(Map<String, dynamic> json) {
-    // logger.t("Parsing Summary from JSON: $json");
     return Summary(
       rpOverAllSummaryID: json['RpOverAllSummaryID'],
       year: json['Year'],
@@ -69,7 +65,6 @@ class Summary {
   // Helper method to parse JSON string into List<Map<String, dynamic>>
   static List<Map<String, dynamic>> _parseJson(String jsonString) {
     try {
-      //  logger.e("Parsing JSON: $jsonString");
       final decoded = json.decode(jsonString);
 
       if (decoded is List) {
@@ -92,24 +87,6 @@ class Summary {
   static String _jsonToString(List<Map<String, dynamic>> list) {
     return json.encode(list);
   }
-
-//  List<FlSpot> getLineChartData(Summary summary) {
-//   return summary.data.map((entry) {
-//     final day = entry['day'] as int; // ดึงค่า 'day'
-//     final value = (entry['value'] as num).toDouble(); // ดึงค่า 'value' และแปลงเป็น double
-//     return FlSpot(day.toDouble(), value);
-//   }).toList();
-// }
-// List<BarChartGroupData> getBarChartData(Summary summary) {
-//   return summary.data.asMap().entries.map((entry) {
-//     final index = entry.key; // index สำหรับ x-axis
-//     final value = (entry.value['value'] as num).toDouble(); // ดึงค่า 'value'
-//     return BarChartGroupData(
-//       x: index,
-//       barRods: [BarChartRodData(toY: value, color: Colors.green)],
-//     );
-//   }).toList();
-// }
 
   @override
   String toString() {

@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:equatable/equatable.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +16,7 @@ class SummaryInitial extends SummaryState {}
 class SummaryLoading extends SummaryState {}
 
 class SummaryLoaded extends SummaryState {
+  // final List<Map<String, dynamic>> rawSummaries; // Raw JSON
   final List<Map<String, dynamic>> summaries;
   final List<Summary> allSummaries; // เก็บข้อมูลทั้งหมด
   final List<Summary> filteredSummaries; // เก็บข้อมูลที่กรองแล้ว
@@ -26,6 +29,19 @@ class SummaryLoaded extends SummaryState {
 
   @override
   List<Object?> get props => [summaries, allSummaries, filteredSummaries];
+// }
+
+// class SummarySaleLoaded extends SummaryState {
+//   final List<Map<String, dynamic>> rawSummarySales; // Raw JSON
+//   final List<SummarySale> allSummarySales; // List ของ SummarySale
+
+//   SummarySaleLoaded({
+//     required this.rawSummarySales,
+//     required this.allSummarySales,
+//   });
+
+//   @override
+//   List<Object?> get props => [rawSummarySales, allSummarySales];
 }
 
 class SummaryError extends SummaryState {
@@ -81,16 +97,6 @@ class FilterErrorState extends FilterState {
 }
 
 class DataLoaded extends SummaryState {
-  // final List<Map<String, dynamic>> summaries;
-  // final List<Summary> allSummaries; // เก็บข้อมูลทั้งหมด
-  // final List<Summary> filteredSummaries; // เก็บข้อมูลที่กรองแล้ว
-
-  // // final List<List<Map<String, dynamic>>> filteredData;
-
-  // DataLoaded(this.summaries, {required this.allSummaries, required this.filteredSummaries});
-
-  // SummaryLoaded(this.summaries);
-
   @override
   List<Object?> get props => [];
 }
@@ -117,4 +123,49 @@ List<BarChartGroupData> getBarChartData(List<dynamic> summaries) {
     ));
   }
   return bars;
+}
+
+class PaymentState {
+  final double totalSales;
+  final double totalTips;
+  final double totalPayments;
+
+  PaymentState({
+    this.totalSales = 0.0,
+    this.totalTips = 0.0,
+    this.totalPayments = 0.0,
+  });
+}
+
+abstract class SummarySalesState extends Equatable {
+  @override
+  List<Object?> get props => [];
+}
+
+class SummarySalesInitial extends SummarySalesState {}
+
+class SummarySalesLoading extends SummarySalesState {}
+
+class SummarySalesLoaded extends SummarySalesState {
+  final List<Map<String, dynamic>> summaries;
+  final List<Summary> allSummaries; // เก็บข้อมูลทั้งหมด
+  final List<Summary> filteredSummaries; // เก็บข้อมูลที่กรองแล้ว
+
+  // final List<List<Map<String, dynamic>>> filteredData;
+
+  SummarySalesLoaded(this.summaries, {required this.allSummaries, required this.filteredSummaries});
+
+  // SummaryLoaded(this.summaries);
+
+  @override
+  List<Object?> get props => [summaries, allSummaries, filteredSummaries];
+}
+
+class SummarySalesError extends SummarySalesState {
+  final String message;
+
+  SummarySalesError(this.message);
+
+  @override
+  List<Object?> get props => [message];
 }

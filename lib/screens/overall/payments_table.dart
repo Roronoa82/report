@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'dart:convert';
 
@@ -6,160 +6,128 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
 import '../../bloc/summary_bloc.dart';
-import '../../bloc/summary_event.dart';
 import '../../bloc/summary_state.dart';
 
 final logger = Logger();
 
-class PaymentsTable extends StatelessWidget {
-  final String selectedDate;
-  final String selectedTime;
+class PaymentsTable extends StatefulWidget {
+  final dynamic selectDate;
+  const PaymentsTable({
+    Key? key,
+    this.selectDate,
+  }) : super(key: key);
 
-  PaymentsTable({required this.selectedDate, required this.selectedTime});
+  @override
+  _PaymentsTableState createState() => _PaymentsTableState();
+}
+
+class _PaymentsTableState extends State<PaymentsTable> {
+  @override
+  void initState() {
+    if (widget.selectDate != null) {
+      // logger.w(widget.selectDate);
+      // logger.w('selectDate keys: ${widget.selectDate.keys}');
+      // logger.wtf('++++++++++');
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocProvider(
-        create: (context) => SummaryBloc()..add(LoadSummary()),
-        child: BlocBuilder<SummaryBloc, SummaryState>(
-          builder: (context, state) {
-            if (state is SummaryLoading) {
-              return Center(child: CircularProgressIndicator());
-            } else if (state is SummaryLoaded) {
-              logger.t(state.summaries);
-              return ListView.builder(
-                itemCount: state.summaries.length,
-                itemBuilder: (context, index) {
-                  final summary = state.summaries[index];
-                  final data = summary['Data'];
-                  String filterByEmployees = summary['FilterByEmployees'];
+      body: BlocBuilder<SummaryBloc, SummaryState>(
+        builder: (context, state) {
+          if (state is SummaryLoading) {
+            return Center(child: CircularProgressIndicator());
+          } else if (state is SummaryLoaded) {
+            final filteredSummaries = state.summaries.where((summary) {
+              if (widget.selectDate != null && widget.selectDate.containsKey('filteredFromDate') && widget.selectDate.containsKey('filteredToDate')) {
+                final summaryDate = DateTime.parse(summary['Date']).toLocal();
+                final fromDate = DateTime.parse(widget.selectDate['filteredFromDate']).toLocal();
+                final toDate = DateTime.parse(widget.selectDate['filteredToDate']).toLocal();
 
-                  Map<String, dynamic> jsonMap = json.decode(data);
+                return summaryDate.isAfter(fromDate.subtract(Duration(days: 1))) && summaryDate.isBefore(toDate.add(Duration(days: 1)));
+              }
+              return true;
+            }).toList();
 
-                  var payments = jsonMap['Payments'];
-                  //  var cash = jsonMap['cash'];
-                  var incomingSales = jsonMap['Sales']['IncomingSales'];
-                  //  logger.wtf('Payments: $payments');
-
-                  Map<String, dynamic> jsonMapRevenue = json.decode(filterByEmployees);
-                  var revenues = jsonMapRevenue['Payments'];
-
-                  // ฟังก์ชันคำนวณ Total (Sales + Tips)
-                  double calculateTotal(List<dynamic> sales, List<dynamic> tips) {
-                    final salesTotal = sales.fold(0.0, (sum, item) => sum + (item['Value'] as double));
-                    final tipsTotal = tips.fold(0.0, (sum, item) => sum + (item['Value'] as double));
-                    // logger.t('$salesTotal + $tipsTotal');
-                    return salesTotal + tipsTotal;
-                  }
-
-                  return Column(
-                    children: [
-                      Table(
-                        border: TableBorder.all(),
-                        children: [
-                          // หัวตาราง
-                          TableRow(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Payments',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Sales',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Tips',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Total',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            ],
-                          ),
-                          // แสดงข้อมูล RevenueClassName และ Total Value
-                          ...payments.entries.map((entry) {
-                            final paymentType = entry.key;
-                            final paymentData = entry.value;
-                            // คำนวณยอดรวม Sales และ Tips
-                            double salesTotal = paymentData['Sales']?.fold(0.0, (sum, item) => sum + item['Value']) ?? 0.0;
-                            double tipsTotal = paymentData['Tips']?.fold(0.0, (sum, item) => sum + item['Value']) ?? 0.0;
-                            double total = salesTotal + tipsTotal;
-                            return TableRow(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Text(paymentType),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Text(" \$${salesTotal.toStringAsFixed(2)}"), // Total Value
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Text(" \$${tipsTotal.toStringAsFixed(2)}"), // Revenue Class Name
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Text(" \$${total.toStringAsFixed(2)}"), // Revenue Class Name
-                                ),
-                              ],
-                            );
-                          }).toList(),
-
-                          TableRow(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Total Summary',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                    " \$${payments.entries.fold(0.0, (sum, entry) => sum + (entry.value['Sales']?.fold(0.0, (s, item) => s + item['Value']) ?? 0.0)).toStringAsFixed(2)}"),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  " \$${payments.entries.fold(0.0, (sum, entry) => sum + (entry.value['Tips']?.fold(0.0, (s, item) => s + item['Value']) ?? 0.0)).toStringAsFixed(2)}",
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  " \$${payments.entries.fold(0.0, (sum, entry) => sum + (entry.value['Sales']?.fold(0.0, (s, item) => s + item['Value']) ?? 0.0) + (entry.value['Tips']?.fold(0.0, (s, item) => s + item['Value']) ?? 0.0)).toStringAsFixed(2)}",
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  );
-                },
-              );
-            } else if (state is SummaryError) {
-              return Center(child: Text('Error: ${state.message}'));
+            if (filteredSummaries.isEmpty) {
+              filteredSummaries.add({
+                'Date': 'No data for the selected date',
+                'Data': '{}',
+              });
             }
-            return Center(child: Text('No data available'));
-          },
-        ),
+
+            // Initialize a map to store total values for each payment type
+            Map<String, Map<String, double>> paymentTotals = {};
+
+            // Calculate totals for each payment type over the selected days
+            for (var summary in filteredSummaries) {
+              Map<String, dynamic> jsonMap = json.decode(summary['Data'] ?? '{}');
+              var payments = jsonMap['Payments'];
+
+              payments.forEach((paymentType, paymentData) {
+                double salesTotal = paymentData['Sales']?.fold(0.0, (sum, item) => sum + item['Value']) ?? 0.0;
+                double tipsTotal = paymentData['Tips']?.fold(0.0, (sum, item) => sum + item['Value']) ?? 0.0;
+                double total = salesTotal + tipsTotal;
+
+                if (!paymentTotals.containsKey(paymentType)) {
+                  paymentTotals[paymentType] = {'Sales': 0.0, 'Tips': 0.0, 'Total': 0.0};
+                }
+
+                paymentTotals[paymentType]?['Sales'] = (paymentTotals[paymentType]?['Sales'] ?? 0.0) + salesTotal;
+                paymentTotals[paymentType]?['Tips'] = (paymentTotals[paymentType]?['Tips'] ?? 0.0) + tipsTotal;
+                paymentTotals[paymentType]?['Total'] = (paymentTotals[paymentType]?['Total'] ?? 0.0) + total;
+              });
+            }
+
+            return Center(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                margin: EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(8.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 4.0,
+                      spreadRadius: 1.0,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: DataTable(
+                  columnSpacing: 20,
+                  headingRowHeight: 40,
+                  dataRowHeight: 40,
+                  columns: [
+                    DataColumn(label: Text('Payments')),
+                    DataColumn(label: Text('Sales')),
+                    DataColumn(label: Text('Tips')),
+                    DataColumn(label: Text('Total')),
+                  ],
+                  rows: List<DataRow>.from(
+                    paymentTotals.entries.map((entry) {
+                      final paymentType = entry.key;
+                      final paymentTotals = entry.value;
+
+                      return DataRow(cells: [
+                        DataCell(Text(paymentType)),
+                        DataCell(Text(paymentTotals == 0.0 ? "\$xx.xx" : "\$${paymentTotals['Sales']?.toStringAsFixed(2)}")),
+                        DataCell(Text(paymentTotals == 0.0 ? "\$xx.xx" : "\$${paymentTotals['Tips']?.toStringAsFixed(2)}")),
+                        DataCell(Text(paymentTotals == 0.0 ? "\$xx.xx" : "\$${paymentTotals['Total']?.toStringAsFixed(2)}")),
+                      ]);
+                    }).toList(),
+                  ),
+                ),
+              ),
+            );
+          } else if (state is SummaryError) {
+            return Center(child: Text('Error: ${state.message}'));
+          }
+          return Center(child: Text('No data available'));
+        },
       ),
     );
   }
