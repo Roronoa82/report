@@ -1,20 +1,39 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, library_private_types_in_public_api, use_key_in_widget_constructors
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, library_private_types_in_public_api, use_key_in_widget_constructors, unnecessary_null_comparison
+
+import 'dart:async';
 
 import 'package:develop_resturant/bloc/date_filter_event.dart';
-import 'package:develop_resturant/widgets/custom_date_picker_dropdown.dart';
+import 'package:develop_resturant/screens/overall/deposit_report_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
+import 'package:supercharged/supercharged.dart';
 
 import '../bloc/date_filter_bloc.dart';
 import '../bloc/date_filter_state.dart';
+import 'custom_date_picker_dropdown.dart';
+
+final logger = Logger();
 
 class DropdownFilterButton extends StatefulWidget {
   final DateTime? fromDate;
   final DateTime? toDate;
   final Function(Map<String, dynamic>) onDateSelected;
-  DropdownFilterButton({this.fromDate, this.toDate, required this.onDateSelected});
+  // final Function(int) onReportSelected;
+  final int initialSelectedReport; // รับค่าเริ่มต้น
+  final Function(int) onReportSelected;
+
+  // final Function(DateTime?) onDateSelected;
+
+  DropdownFilterButton({
+    Key? key,
+    this.fromDate,
+    this.toDate,
+    required this.onDateSelected,
+    required this.onReportSelected,
+    required this.initialSelectedReport,
+  }) : super(key: key);
 
   @override
   _DropdownFilterButtonState createState() => _DropdownFilterButtonState();
@@ -24,36 +43,53 @@ class _DropdownFilterButtonState extends State<DropdownFilterButton> {
   final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntry;
   bool isDropdownOpen = false;
+  // int selectedReport = 1; // ค่าพื้นฐานเป็น 1 หรือเลือกตามที่ต้องการ
+  StreamController<bool> export = StreamController.broadcast();
+  late int selectedReport;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedReport = widget.initialSelectedReport; // ใช้ค่าเริ่มต้น
+  }
 
   // Function สำหรับสร้าง Overlay
   OverlayEntry _createOverlayEntry() {
     return OverlayEntry(
-      builder: (context) => Positioned(
-        width: 400,
-        child: CompositedTransformFollower(
-          link: _layerLink,
-          offset: Offset(0, 50),
-          showWhenUnlinked: false,
-          child: Material(
-            elevation: 4.0,
-            borderRadius: BorderRadius.circular(8),
-            child: Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
+      builder: (context) => StreamBuilder<bool>(
+          stream: export.stream,
+          builder: (context, snapshot) {
+            return Positioned(
+              width: 620,
+              child: CompositedTransformFollower(
+                link: _layerLink,
+                offset: Offset(0, 55),
+                showWhenUnlinked: false,
+                child: Material(
+                  elevation: 4.0,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: _buildDropdownContent(), // เนื้อหา Dropdown
+                  ),
+                ),
               ),
-              child: _buildDropdownContent(), // เนื้อหา Dropdown
-            ),
-          ),
-        ),
-      ),
+            );
+          }),
     );
   }
 
   // Function สำหรับเปิดหรือปิด Dropdown
   void _toggleDropdown() {
     if (isDropdownOpen) {
+      widget.onReportSelected;
+      //         _overlayEntry = null;
+      // _isDropdownOpen = false;
+
       _overlayEntry?.remove();
     } else {
       _overlayEntry = _createOverlayEntry();
@@ -66,293 +102,316 @@ class _DropdownFilterButtonState extends State<DropdownFilterButton> {
 
   // เนื้อหา Dropdown
   Widget _buildDropdownContent() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Report (Radio Buttons)
-        Text("Report", style: TextStyle(fontWeight: FontWeight.bold)),
-        Row(
-          children: [
-            Radio(value: 1, groupValue: 1, onChanged: (val) {}),
-            Text("Summary"),
-            Radio(value: 2, groupValue: 1, onChanged: (val) {}),
-            Text("Daily"),
-          ],
-        ),
-        Row(
-          children: [
-            Radio(value: 3, groupValue: 1, onChanged: (val) {}),
-            Text("Weekly"),
-            Radio(value: 4, groupValue: 1, onChanged: (val) {}),
-            Text("Monthly"),
-          ],
-        ),
-
-        SizedBox(height: 8),
-
-        // Text("From - To", style: TextStyle(fontWeight: FontWeight.bold)),
-        BlocProvider<DateFilterBloc>(
-          create: (_) => DateFilterBloc(
-            widget.fromDate,
-            widget.toDate,
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text("Report : ", style: TextStyle(fontWeight: FontWeight.normal)),
+          SizedBox(width: 12),
+          // Summary
+          Radio<int>(
+            value: 1,
+            groupValue: selectedReport,
+            onChanged: (selectedValue) {
+              export.add(true);
+              selectedReport = selectedValue!;
+              widget.onReportSelected(selectedReport);
+            },
           ),
+          SizedBox(width: 20),
+
+          Text("Summary", style: TextStyle(fontFamily: 'Inter', color: '#3C3C3C'.toColor(), fontSize: 14, fontWeight: FontWeight.bold)),
+          Text(" (Select up to 366 day)", style: TextStyle(fontFamily: 'Inter', color: '#959595'.toColor(), fontSize: 12)),
+          SizedBox(width: 30),
+
+          // Daily
+          Radio<int>(
+            value: 2,
+            groupValue: selectedReport,
+            onChanged: (selectedValue) {
+              export.add(true);
+
+              selectedReport = selectedValue!;
+              widget.onReportSelected(selectedReport);
+            },
+          ),
+          SizedBox(width: 20),
+
+          Text("Daily", style: TextStyle(fontFamily: 'Inter', color: '#3C3C3C'.toColor(), fontSize: 14, fontWeight: FontWeight.bold)),
+          Text(" (Select up to 45 day)", style: TextStyle(fontFamily: 'Inter', color: '#959595'.toColor(), fontSize: 12)),
+        ],
+      ),
+      Row(
+        children: [
+          SizedBox(width: 65),
+
+          // Weekly
+          Radio<int>(
+            value: 3,
+            groupValue: selectedReport,
+            onChanged: (selectedValue) {
+              export.add(true);
+
+              selectedReport = selectedValue!;
+              widget.onReportSelected(selectedReport);
+            },
+          ),
+          SizedBox(width: 20),
+
+          Text("Weekly", style: TextStyle(fontFamily: 'Inter', color: '#3C3C3C'.toColor(), fontSize: 14, fontWeight: FontWeight.bold)),
+          Text(" (Select up to 30 Weeks)", style: TextStyle(fontFamily: 'Inter', color: '#959595'.toColor(), fontSize: 12)),
+          SizedBox(width: 34),
+
+          // Monthly
+          Radio<int>(
+            value: 4,
+            groupValue: selectedReport,
+            onChanged: (selectedValue) {
+              export.add(true);
+
+              selectedReport = selectedValue!;
+              widget.onReportSelected(selectedReport);
+            },
+          ),
+          SizedBox(width: 20),
+
+          Text("Monthly", style: TextStyle(fontFamily: 'Inter', color: '#3C3C3C'.toColor(), fontSize: 14, fontWeight: FontWeight.bold)),
+          Text(" (Select up to 12 Month)", style: TextStyle(fontFamily: 'Inter', color: '#959595'.toColor(), fontSize: 12)),
+        ],
+      ),
+      SizedBox(height: 8),
+      Divider(),
+      BlocProvider<DateFilterBloc>(
+          create: (_) => DateFilterBloc(
+                widget.fromDate,
+                widget.toDate,
+              ),
           child: BlocListener<DateFilterBloc, DateFilterState>(
             listener: (context, state) {},
-            child: BlocBuilder<DateFilterBloc, DateFilterState>(
-              builder: (context, state) {
-                return Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Flexible(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+            child: BlocBuilder<DateFilterBloc, DateFilterState>(builder: (context, state) {
+              return Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          'From:',
+                          style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontSize: 14,
+                            color: '#4F4F4F'.toColor(),
+                          ),
+                        ),
+                        SizedBox(width: 30),
+                        Container(
+                          width: 200,
+                          child: CustomDatePickerDropdown(
+                            initialDate: state.fromDate,
+                            onDateSelected: (selectedDate) {
+                              context.read<DateFilterBloc>().add(
+                                    UpdateDateRange(
+                                      fromDate: selectedDate,
+                                      toDate: state.toDate,
+                                    ),
+                                  );
+                            },
+                          ),
+                        ),
+                        SizedBox(width: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              'To:',
+                              style: TextStyle(
+                                fontFamily: 'Roboto',
+                                fontSize: 14,
+                                color: '#4F4F4F'.toColor(),
+                              ),
+                            ),
+                            SizedBox(width: 30),
+                            Container(
+                              width: 200,
+                              child: CustomDatePickerDropdown(
+                                initialDate: state.toDate,
+                                onDateSelected: (selectedDate) {
+                                  context.read<DateFilterBloc>().add(
+                                        UpdateDateRange(
+                                          fromDate: state.fromDate,
+                                          toDate: selectedDate,
+                                        ),
+                                      );
+                                },
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    Divider(),
+
+                    SizedBox(height: 8),
+                    // Period (All Day & Custom)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text("Period :", style: TextStyle(fontWeight: FontWeight.bold)),
+                        Row(
+                          children: [
+                            Radio(value: true, groupValue: true, onChanged: (val) {}),
+                            Text("All Day"),
+                            Radio(value: false, groupValue: true, onChanged: (val) {}),
+                            Text("Custom"),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                decoration: InputDecoration(hintText: "Start Time"),
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Expanded(
+                              child: TextField(
+                                decoration: InputDecoration(hintText: "End Time"),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 12),
+                        // Buttons (Clear, Cancel, Apply)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            TextButton(
+                              onPressed: () {},
+                              child: Text("Clear all filters", style: TextStyle(color: Colors.red)),
+                            ),
+                            Spacer(),
+                            Row(
                               children: [
-                                Text('From:'),
-                                CustomDatePickerDropdown(
-                                  initialDate: state.fromDate,
-                                  onDateSelected: (selectedDate) {
-                                    context.read<DateFilterBloc>().add(
-                                          UpdateDateRange(
-                                            fromDate: selectedDate,
-                                            toDate: state.toDate,
-                                          ),
-                                        );
-                                  },
+                                TextButton(
+                                  onPressed: _toggleDropdown, // ปิด Dropdown
+                                  style: TextButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24), // ขนาดของปุ่ม
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8), // ความโค้งของมุม
+                                    ),
+                                  ),
+                                  child: Text(
+                                    "Cancel",
+                                    style: TextStyle(fontFamily: 'Inter', color: '#6C757D'.toColor()),
+                                  ),
                                 ),
+                                SizedBox(width: 8),
                               ],
                             ),
-                          ),
-                          SizedBox(width: 16),
-                          Flexible(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('To:'),
-                                CustomDatePickerDropdown(
-                                  initialDate: state.toDate,
-                                  onDateSelected: (selectedDate) {
-                                    context.read<DateFilterBloc>().add(
-                                          UpdateDateRange(
-                                            fromDate: state.fromDate,
-                                            toDate: selectedDate,
-                                          ),
-                                        );
-                                  },
+                            ElevatedButton(
+                              onPressed: () {
+                                if (state.fromDate != null && state.toDate != null) {
+                                  widget.onReportSelected(selectedReport); // ส่งค่าที่เลือกกลับไปยังหน้าแม่
+                                  // ตรวจสอบค่า selectedReport ก่อน
+                                  if (selectedReport == 1) {
+                                    // Summary
+                                  } else if (selectedReport == 2) {
+                                    // Daily
+                                  } else if (selectedReport == 3) {
+                                    // Weekly
+                                  } else if (selectedReport == 4) {
+                                    // Monthly
+                                  }
+
+                                  final filterData = {
+                                    'filteredFromDate': DateFormat('yyyy-MM-dd').format(state.fromDate!),
+                                    'filteredToDate': DateFormat('yyyy-MM-dd').format(state.toDate!),
+                                  };
+                                  widget.onDateSelected(filterData);
+                                  logger.e(filterData);
+                                  final onReportSelect = {
+                                    'reportType': selectedReport,
+                                  };
+                                  logger.e(selectedReport);
+                                  logger.e(onReportSelect);
+
+                                  _toggleDropdown();
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                    content: Text('Please select both From and To dates'),
+                                  ));
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                primary: '#496EE2'.toColor(),
+                                onPrimary: Colors.white,
+                                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5),
                                 ),
-                              ],
+                                elevation: 5,
+                              ),
+                              child: Text(
+                                'Apply',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 14,
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          if (state.fromDate != null && state.toDate != null) {
-                            final filterData = {
-                              'filteredFromDate': DateFormat('yyyy-MM-dd').format(state.fromDate!),
-                              'filteredToDate': DateFormat('yyyy-MM-dd').format(state.toDate!),
-                            };
-                            widget.onDateSelected(filterData);
-                            _toggleDropdown();
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text('Please select both From and To dates'),
-                            ));
-                          }
-                        },
-                        child: Text('Apply'),
-
-                        // child: DateFilterPage(
-                        //   onFilterApplied: (filterData) {
-                        //     print('Filtered From: ${filterData['filteredFromDate']}');
-                        //     print('Filtered To: ${filterData['filteredToDate']}');
-                        //     widget.onDateSelected(filterData);
-                        //     _toggleDropdown(); // ปิด Dropdown เมื่อ Apply
-                        //   },
-                        // ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-
-        SizedBox(height: 8),
-        // Period (All Day & Custom)
-        Text("Period", style: TextStyle(fontWeight: FontWeight.bold)),
-        Row(
-          children: [
-            Radio(value: true, groupValue: true, onChanged: (val) {}),
-            Text("All Day"),
-            Radio(value: false, groupValue: true, onChanged: (val) {}),
-            Text("Custom"),
-          ],
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                decoration: InputDecoration(hintText: "Start Time"),
-              ),
-            ),
-            SizedBox(width: 8),
-            Expanded(
-              child: TextField(
-                decoration: InputDecoration(hintText: "End Time"),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 12),
-        // Buttons (Clear, Cancel, Apply)
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            TextButton(
-              onPressed: () {},
-              child: Text("Clear all filters", style: TextStyle(color: Colors.red)),
-            ),
-            Row(
-              children: [
-                TextButton(
-                  onPressed: _toggleDropdown, // ปิด Dropdown
-                  child: Text("Cancel"),
-                ),
-                SizedBox(width: 8),
-              ],
-            ),
-          ],
-        )
-      ],
-    );
+                          ],
+                        )
+                      ],
+                    )
+                  ]));
+            }),
+          ))
+    ]);
   }
 
   @override
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
       link: _layerLink,
-      child: ElevatedButton.icon(
-        label: Text("Filters Report / Date"),
-        icon: Icon(Icons.keyboard_arrow_down),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          primary: '#3C3C3C'.toColor(),
+          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          backgroundColor: '#FFFFFF'.toColor(),
+        ),
         onPressed: _toggleDropdown,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.tune,
+              color: '#3C3C3C'.toColor(),
+              size: 16,
+            ),
+            SizedBox(width: 8),
+            Text(
+              "Filters Report / Date",
+              style: TextStyle(
+                fontFamily: 'Inter',
+                color: '#3C3C3C'.toColor(),
+              ),
+            ),
+            SizedBox(width: 8),
+            Icon(Icons.keyboard_arrow_down, color: '#3C3C3C'.toColor()),
+          ],
+        ),
       ),
     );
   }
 
   @override
   void dispose() {
-    // ตรวจสอบว่า _overlayEntry ไม่เป็น null ก่อนที่จะลบ
-    // if (_overlayEntry != null) {
-    //   _overlayEntry?.remove(); // เคลียร์ Overlay ตอนปิด Widget
-    // }
     super.dispose();
   }
 }
-
-final logger = Logger();
-
-// class DateFilterPage extends StatelessWidget {
-//   final Function(Map<String, dynamic>) onFilterApplied;
-//   DateFilterPage({
-//     Key? key,
-//     required this.onFilterApplied,
-//   }) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocListener<DateFilterBloc, DateFilterState>(
-//       listener: (context, state) {
-//         // logger.e("Updated From Date: ${state.fromDate}");
-//         // logger.e("Updated To Date: ${state.toDate}");
-//       },
-//       child: BlocBuilder<DateFilterBloc, DateFilterState>(
-//         builder: (context, state) {
-//           return Padding(
-//             padding: const EdgeInsets.all(16.0),
-//             child: Column(
-//               mainAxisSize: MainAxisSize.min,
-//               children: [
-//                 Row(
-//                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                   children: [
-//                     // Dropdown สำหรับเลือก From Date
-//                     Flexible(
-//                       child: Column(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           Text('From:'),
-//                           CustomDatePickerDropdown(
-//                             initialDate: state.fromDate,
-//                             onDateSelected: (selectedDate) {
-//                               // logger.f('Selected From Date: $selectedDate');
-//                               // อัปเดตสถานะ From Date ผ่าน Bloc
-//                               context.read<DateFilterBloc>().add(
-//                                     UpdateDateRange(
-//                                       fromDate: selectedDate,
-//                                       toDate: state.toDate,
-//                                     ),
-//                                   );
-//                             },
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                     SizedBox(width: 16),
-//                     // Dropdown สำหรับเลือก To Date
-//                     Flexible(
-//                       child: Column(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           Text('To:'),
-//                           CustomDatePickerDropdown(
-//                             initialDate: state.toDate,
-//                             onDateSelected: (selectedDate) {
-//                               // logger.f('Selected To Date: $selectedDate'); // Log วันที่ที่เลือก
-//                               context.read<DateFilterBloc>().add(
-//                                     UpdateDateRange(
-//                                       fromDate: state.fromDate,
-//                                       toDate: selectedDate,
-//                                     ),
-//                                   );
-//                             },
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 SizedBox(height: 16),
-//                 ElevatedButton(
-//                   onPressed: () {
-//                     if (state.fromDate != null && state.toDate != null) {
-//                       final filterData = {
-//                         'filteredFromDate': DateFormat('yyyy-MM-dd').format(state.fromDate!),
-//                         'filteredToDate': DateFormat('yyyy-MM-dd').format(state.toDate!),
-//                       };
-//                       // logger.d('Filter Data: $filterData'); // Log ข้อมูลที่จะส่งไปยัง onFilterApplied
-//                       onFilterApplied(filterData);
-//                       // logger.d('Filter Applied Successfully');
-//                     } else {
-//                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-//                         content: Text('Please select both From and To dates'),
-//                       ));
-//                     }
-//                   },
-//                   child: Text('Apply'),
-//                 ),
-//               ],
-//             ),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }

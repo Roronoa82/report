@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:supercharged/supercharged.dart';
 
 class CustomDatePickerDropdown extends StatefulWidget {
   final DateTime initialDate;
@@ -21,7 +23,7 @@ class _CustomDatePickerDropdownState extends State<CustomDatePickerDropdown> {
   OverlayEntry _createOverlayEntry(BuildContext context) {
     return OverlayEntry(
       builder: (context) => Positioned(
-        width: 200, // ความกว้างของ DatePicker
+        width: 300, // ความกว้างของ DatePicker
         height: 200,
         child: CompositedTransformFollower(
           link: _layerLink,
@@ -37,9 +39,9 @@ class _CustomDatePickerDropdownState extends State<CustomDatePickerDropdown> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: CalendarDatePicker(
-                initialDate: _selectedDate ?? DateTime.now(),
+                initialDate: _selectedDate ?? DateTime(2023),
                 firstDate: DateTime(2020),
-                lastDate: DateTime(2101),
+                lastDate: DateTime(2026),
                 onDateChanged: (pickedDate) {
                   setState(() {
                     _selectedDate = pickedDate;
@@ -79,18 +81,39 @@ class _CustomDatePickerDropdownState extends State<CustomDatePickerDropdown> {
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
       link: _layerLink,
-      child: TextField(
-        readOnly: true,
-        controller: TextEditingController(
-          text: _selectedDate != null
-              ? "${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}"
-              : "",
+      child: Container(
+        height: 38,
+        child: TextFormField(
+          textAlign: TextAlign.start,
+          readOnly: true,
+          controller: TextEditingController(
+            text: _selectedDate != null
+                ? "${_selectedDate!.year}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.day.toString().padLeft(2, '0')}"
+                : "",
+          ),
+          decoration: InputDecoration(
+            hintText: _selectedDate != null
+                ? "${_selectedDate!.year}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.day.toString().padLeft(2, '0')}"
+                : "${DateTime(2023).year}/${DateTime(08, 08).month.toString().padLeft(2, '0')}/${DateTime(01, 31).day.toString().padLeft(2, '0')}",
+            suffixIcon: Padding(
+              padding: EdgeInsetsDirectional.all(8),
+              child: FaIcon(
+                FontAwesomeIcons.solidCalendarDays,
+                color: '#2F80ED'.toColor(),
+                size: 20,
+              ),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: BorderSide(color: '#00000033'.toColor(), width: 1.0),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: BorderSide(color: '#00000033'.toColor(), width: 1.0),
+            ),
+          ),
+          onTap: _toggleOverlay, // เปิด/ปิด DatePicker
         ),
-        decoration: InputDecoration(
-          hintText: "Select Date",
-          suffixIcon: Icon(Icons.calendar_today),
-        ),
-        onTap: _toggleOverlay, // เปิด/ปิด DatePicker
       ),
     );
   }

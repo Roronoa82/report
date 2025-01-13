@@ -44,8 +44,6 @@ class _AverageSalePerTicketTableState extends State<AverageSalePerTicketTable> {
             }
             return true;
           }).toList();
-          // logger.f(state.summaries.length);
-          // logger.f(filteredSummaries.length);
 
           if (filteredSummaries.isEmpty) {
             return const Center(child: Text('No data for the selected date'));

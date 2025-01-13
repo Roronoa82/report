@@ -64,8 +64,6 @@ class _SalesByOrderTypeTableState extends State<SalesByOrderTypeTable> {
               }
             });
           }
-
-          // logger.d(salebyordertype);
         }
         // Calculate the total sales
         double totalSales = salesByOrderType.values.reduce((a, b) => a + b);

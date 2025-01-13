@@ -30,18 +30,6 @@ class SummaryLoaded extends SummaryState {
   @override
   List<Object?> get props => [summaries, allSummaries, filteredSummaries];
 // }
-
-// class SummarySaleLoaded extends SummaryState {
-//   final List<Map<String, dynamic>> rawSummarySales; // Raw JSON
-//   final List<SummarySale> allSummarySales; // List ของ SummarySale
-
-//   SummarySaleLoaded({
-//     required this.rawSummarySales,
-//     required this.allSummarySales,
-//   });
-
-//   @override
-//   List<Object?> get props => [rawSummarySales, allSummarySales];
 }
 
 class SummaryError extends SummaryState {
@@ -145,21 +133,6 @@ abstract class SummarySalesState extends Equatable {
 class SummarySalesInitial extends SummarySalesState {}
 
 class SummarySalesLoading extends SummarySalesState {}
-
-class SummarySalesLoaded extends SummarySalesState {
-  final List<Map<String, dynamic>> summaries;
-  final List<Summary> allSummaries; // เก็บข้อมูลทั้งหมด
-  final List<Summary> filteredSummaries; // เก็บข้อมูลที่กรองแล้ว
-
-  // final List<List<Map<String, dynamic>>> filteredData;
-
-  SummarySalesLoaded(this.summaries, {required this.allSummaries, required this.filteredSummaries});
-
-  // SummaryLoaded(this.summaries);
-
-  @override
-  List<Object?> get props => [summaries, allSummaries, filteredSummaries];
-}
 
 class SummarySalesError extends SummarySalesState {
   final String message;

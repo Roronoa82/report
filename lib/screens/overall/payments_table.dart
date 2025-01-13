@@ -81,45 +81,43 @@ class _PaymentsTableState extends State<PaymentsTable> {
               });
             }
 
-            return Center(
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                margin: EdgeInsets.all(10.0),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(8.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 4.0,
-                      spreadRadius: 1.0,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: DataTable(
-                  columnSpacing: 20,
-                  headingRowHeight: 40,
-                  dataRowHeight: 40,
-                  columns: [
-                    DataColumn(label: Text('Payments')),
-                    DataColumn(label: Text('Sales')),
-                    DataColumn(label: Text('Tips')),
-                    DataColumn(label: Text('Total')),
-                  ],
-                  rows: List<DataRow>.from(
-                    paymentTotals.entries.map((entry) {
-                      final paymentType = entry.key;
-                      final paymentTotals = entry.value;
-
-                      return DataRow(cells: [
-                        DataCell(Text(paymentType)),
-                        DataCell(Text(paymentTotals == 0.0 ? "\$xx.xx" : "\$${paymentTotals['Sales']?.toStringAsFixed(2)}")),
-                        DataCell(Text(paymentTotals == 0.0 ? "\$xx.xx" : "\$${paymentTotals['Tips']?.toStringAsFixed(2)}")),
-                        DataCell(Text(paymentTotals == 0.0 ? "\$xx.xx" : "\$${paymentTotals['Total']?.toStringAsFixed(2)}")),
-                      ]);
-                    }).toList(),
+            return Container(
+              width: MediaQuery.of(context).size.width,
+              margin: EdgeInsets.all(10.0),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(8.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 4.0,
+                    spreadRadius: 1.0,
+                    offset: Offset(0, 2),
                   ),
+                ],
+              ),
+              child: DataTable(
+                columnSpacing: 20,
+                headingRowHeight: 40,
+                dataRowHeight: 40,
+                columns: [
+                  DataColumn(label: Text('Payments')),
+                  DataColumn(label: Text('Sales')),
+                  DataColumn(label: Text('Tips')),
+                  DataColumn(label: Text('Total')),
+                ],
+                rows: List<DataRow>.from(
+                  paymentTotals.entries.map((entry) {
+                    final paymentType = entry.key;
+                    final paymentTotals = entry.value;
+
+                    return DataRow(cells: [
+                      DataCell(Text(paymentType)),
+                      DataCell(Text(paymentTotals == 0.0 ? "\$xx.xx" : "\$${paymentTotals['Sales']?.toStringAsFixed(2)}")),
+                      DataCell(Text(paymentTotals == 0.0 ? "\$xx.xx" : "\$${paymentTotals['Tips']?.toStringAsFixed(2)}")),
+                      DataCell(Text(paymentTotals == 0.0 ? "\$xx.xx" : "\$${paymentTotals['Total']?.toStringAsFixed(2)}")),
+                    ]);
+                  }).toList(),
                 ),
               ),
             );

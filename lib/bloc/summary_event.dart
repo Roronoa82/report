@@ -7,8 +7,6 @@ abstract class SummaryEvent extends Equatable {
 
 class LoadSummary extends SummaryEvent {}
 
-// class LoadSummarySale extends SummaryEvent {} // Event ใหม่สำหรับ summary_sale.json
-
 // Event สำหรับกรองข้อมูลตามวันที่ที่เลือก
 class FilterSummaryByDate extends SummaryEvent {
   final DateTime fromDate;

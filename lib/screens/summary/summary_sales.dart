@@ -2,13 +2,18 @@
 
 import 'package:develop_resturant/bloc/summary_bloc.dart';
 import 'package:develop_resturant/bloc/summary_event.dart';
+import 'package:develop_resturant/screens/summary/scroll_sales.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:supercharged/supercharged.dart';
 import '../../bloc/summary_state.dart';
+import '../../widgets/dropdown_export.dart';
 import '../../widgets/dropdown_filter_button.dart';
+import '../../widgets/dropdown_morefilter.dart';
+import '../../widgets/dropdown_setting.dart';
+import '../../widgets/dropdown_share.dart';
 // import 'summary_sale_table.dart';
 // import 'summary_table_section.dart';
 
@@ -30,7 +35,6 @@ class _SummarysalesPageState extends State<SummarysalesPage> {
 
   String dropdownValue = "Filters Report / Date";
   String filterDropdownValue = "More Filters";
-  bool _isBottomSheetOpen = false;
   final logger = Logger();
   dynamic getDate;
   @override
@@ -43,9 +47,12 @@ class _SummarysalesPageState extends State<SummarysalesPage> {
       child: BlocBuilder<SummaryBloc, SummaryState>(
         builder: (context, state) {
           return Scaffold(
+            backgroundColor: "#EEEEEE".toColor(),
             body: SingleChildScrollView(
+              physics: NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.all(16),
               child: Container(
-                color: "#EEEEEE".toColor(),
+                // color: "#EEEEEE".toColor(),
                 constraints: BoxConstraints(
                   minHeight: MediaQuery.of(context).size.height, // หรือความสูงที่ต้องการ
                 ),
@@ -53,89 +60,54 @@ class _SummarysalesPageState extends State<SummarysalesPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // ส่วนหัวข้อของหน้า
-                    const Text(
+                    Text(
                       'Reports > Summary Sales',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                    SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Dropdown for Filters Report / Date
-                        DropdownFilterButton(
-                          onDateSelected: (value) {
-                            // logger.e(value);
-                            // logger.e(value.runtimeType);
-                            getDate = value;
-                            setState(() {});
-                          },
+                        Row(
+                          children: [
+                            DropdownFilterButton(
+                              onDateSelected: (value) {
+                                logger.e(value);
+                                logger.e(value.runtimeType);
+                                getDate = value;
+                                setState(() {});
+                              },
+                              onReportSelected: (selectedReport) {
+                                // จัดการค่า Report Type ที่เลือก
+                                print('Selected Report: $selectedReport');
+                              },
+                              initialSelectedReport: 1,
+                              // showRedioReport: 1,
+                            ),
+                            SizedBox(width: 10),
+                            MoreFilterMenu(),
+                            SizedBox(width: 10),
+                            SettingMenu(),
+                          ],
                         ),
-
-                        // Dropdown for More Filters
-                        DropdownButton<String>(
-                          value: "More Filters", // Default value
-                          onChanged: (String? newValue) {
-                            // Handle dropdown change here
-                          },
-                          items: <String>['More Filters', 'All Order Types', 'All Sources', 'All Sections']
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Row(
-                                children: [
-                                  Icon(Icons.more_horiz, size: 16),
-                                  SizedBox(width: 8),
-                                  Text(value),
-                                ],
-                              ),
-                            );
-                          }).toList(),
-                        ),
-
-                        // Dropdown for Share
-                        DropdownButton<String>(
-                          value: "Share", // Default value
-                          onChanged: (String? newValue) {
-                            // Handle dropdown change here
-                          },
-                          items: <String>['Share', 'Option 1', 'Option 2'].map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Row(
-                                children: [
-                                  Icon(Icons.share, size: 16),
-                                  SizedBox(width: 8),
-                                  Text(value),
-                                ],
-                              ),
-                            );
-                          }).toList(),
-                        ),
-
-                        // Dropdown for Export
-                        DropdownButton<String>(
-                          value: "Export", // Default value
-                          onChanged: (String? newValue) {
-                            // Handle dropdown change here
-                          },
-                          items: <String>['Export', 'Option 1', 'Option 2'].map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Row(
-                                children: [
-                                  Icon(Icons.download, size: 16),
-                                  SizedBox(width: 8),
-                                  Text(value),
-                                ],
-                              ),
-                            );
-                          }).toList(),
+                        Row(
+                          children: [
+                            ShareMenu(),
+                            SizedBox(width: 10), // ช่องว่างระหว่าง ShareMenu และ ExportMenu
+                            ExportMenu(),
+                          ],
                         ),
                       ],
                     ),
-                    // SalesScreen(),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Divider(),
+                    SingleChildScrollView(child: Container(width: 300, height: 500, child: SalesPage())),
+                    // Text(getDate),
                   ],
                 ),
               ),

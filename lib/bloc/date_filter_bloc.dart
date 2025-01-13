@@ -6,8 +6,8 @@ import 'date_filter_state.dart';
 class DateFilterBloc extends Bloc<DateFilterEvent, DateFilterState> {
   DateFilterBloc(DateTime? fromDate, DateTime? toDate)
       : super(DateFilterState(
-          fromDate: fromDate ?? DateTime.now(),
-          toDate: toDate ?? DateTime.now(),
+          fromDate: fromDate ?? DateTime(2023, 08, 01),
+          toDate: toDate ?? DateTime(2023, 08, 31),
         )) {
     on<UpdateDateRange>((event, emit) {
       emit(state.copyWith(fromDate: event.fromDate, toDate: event.toDate));

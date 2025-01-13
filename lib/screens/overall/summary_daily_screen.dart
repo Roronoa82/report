@@ -9,24 +9,28 @@ import '../../bloc/summary_state.dart';
 
 final logger = Logger();
 
-class SummaryScreen extends StatefulWidget {
+class SummaryDailyScreen extends StatefulWidget {
   final dynamic selectDate;
 
   final int showDepositsOnly; // ตัวแปรเพื่อควบคุมการแสดงผล
-  const SummaryScreen({Key? key, this.selectDate, required this.showDepositsOnly}) : super(key: key);
+  const SummaryDailyScreen({Key? key, this.selectDate, required this.showDepositsOnly}) : super(key: key);
 
   @override
-  _SummaryScreenState createState() => _SummaryScreenState();
+  _SummaryDailyScreenState createState() => _SummaryDailyScreenState();
 }
 
-class _SummaryScreenState extends State<SummaryScreen> {
+class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
   Map<String, double> combinedCreditCards = {};
 
   double totalDeposits = 0.0;
 
   @override
   void initState() {
-    if (widget.selectDate != null) {}
+    if (widget.selectDate != null) {
+      // logger.w(widget.selectDate);
+      // logger.w('selectDate keys: ${widget.selectDate.keys}');
+      // logger.w('++++++++++');
+    }
     super.initState();
     totalDeposits = 0.0;
   }
@@ -78,6 +82,9 @@ class _SummaryScreenState extends State<SummaryScreen> {
               'Data': '{}',
             });
           }
+
+          // logger.f(state.summaries.length);
+          // logger.f(filteredSummaries.length);
 
           // สร้างตัวแปรสำหรับเก็บยอดรวม
           Map<String, double> totalDepositsByType = {};
@@ -284,72 +291,49 @@ class _SummaryScreenState extends State<SummaryScreen> {
             });
           }
 
-          // สร้างตัวแปรสำหรับเก็บยอดรวมของ CashIn และ CashOut
-          double totalCashIn = 0.0;
-          double totalCashOut = 0.0;
+          logger.f(state.summaries.length);
+          logger.f(filteredSummaries.length);
+
+          // สร้างตัวแปรสำหรับเก็บยอดรวม
+          Map<String, double> totalServiceChargeByType = {};
+          double totalServiceCharge = 0.0; // สำหรับคำนวณยอดรวมทั้งหมด
 
           // วนลูปผ่าน summaries ที่ถูกกรอง
           for (var summary in filteredSummaries) {
             Map<String, dynamic> jsonMap = json.decode(summary['Data'] ?? '{}');
-            var deposits = jsonMap['Deposits'];
-            final cashIn = deposits['CashIn'] ?? 0.0;
-            final cashOut = deposits['CashOut'] ?? 0.0;
-
-            // รวมยอด CashIn และ CashOut
-            totalCashIn += cashIn;
-            totalCashOut += cashOut;
+            var servicecharge = jsonMap['ServiceCharge'];
           }
-
-          // สร้างแถวสำหรับ DataTable
           return Center(
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              margin: EdgeInsets.all(10.0),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(8.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 4.0,
-                    spreadRadius: 1.0,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: DataTable(
-                columnSpacing: 20,
-                headingRowHeight: 40,
-                dataRowHeight: 40,
-                columns: [
-                  DataColumn(
-                    label: Text(
-                      'Cash In / Cash Out',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Total',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
-                rows: [
-                  // แถวสำหรับ Cash In
-                  DataRow(cells: [
-                    DataCell(Text('Cash In')),
-                    DataCell(Text('\$${totalCashIn.toStringAsFixed(2)}')),
-                  ]),
-                  // แถวสำหรับ Cash Out
-                  DataRow(cells: [
-                    DataCell(Text('Cash Out')),
-                    DataCell(Text('\$${totalCashOut.toStringAsFixed(2)}')),
-                  ]),
-                ],
-              ),
+              child: Container(
+            width: MediaQuery.of(context).size.width,
+            margin: EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 4.0,
+                  spreadRadius: 1.0,
+                  offset: Offset(0, 2),
+                ),
+              ],
             ),
-          );
+            child: DataTable(columnSpacing: 20, headingRowHeight: 40, dataRowHeight: 40, columns: [
+              DataColumn(
+                label: Text(
+                  'Cash In / Cash Out',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'Total',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ], rows: []),
+          ));
         } else if (state is SummaryError) {
           return Center(child: Text('Error: ${state.message}'));
         }

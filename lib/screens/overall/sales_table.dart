@@ -23,9 +23,9 @@ class _SalesTableState extends State<SalesTable> {
   void initState() {
     // TODO: implement initState
     if (widget.selectDate != null) {
-      logger.w(widget.selectDate);
-      logger.w('selectDate keys: ${widget.selectDate.keys}');
-      logger.w('++++++++++');
+      // logger.w(widget.selectDate);
+      // logger.w('selectDate keys: ${widget.selectDate.keys}');
+      // logger.w('++++++++++');
     }
     super.initState();
   }
@@ -85,6 +85,7 @@ class _SalesTableState extends State<SalesTable> {
             totalTaxSales: totalTaxSales,
             totalIncomingSales: totalIncomingSales,
             combinedRevenue: combinedRevenue,
+            totalSales: totalNetSales + totalTaxSales + totalIncomingSales,
           );
 
           double totalSales = totalNetSales + totalTaxSales;
@@ -223,6 +224,7 @@ class SalesSummary {
   final double totalNetSales;
   final double totalTaxSales;
   final double totalIncomingSales;
+  final double totalSales; // เพิ่ม totalSales
   final Map<String, double> combinedRevenue;
 
   SalesSummary({
@@ -230,5 +232,6 @@ class SalesSummary {
     required this.totalTaxSales,
     required this.totalIncomingSales,
     required this.combinedRevenue,
+    required this.totalSales,
   });
 }
