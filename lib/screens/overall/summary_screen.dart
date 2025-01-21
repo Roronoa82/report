@@ -220,6 +220,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
               }
             });
           }
+          final screenWidth = MediaQuery.of(context).size.width;
 
           // สร้าง DataTable
           return Center(
@@ -239,7 +240,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                 ],
               ),
               child: DataTable(
-                columnSpacing: 20,
+                columnSpacing: screenWidth * 0.05,
                 headingRowHeight: 40,
                 dataRowHeight: 40,
                 columns: [

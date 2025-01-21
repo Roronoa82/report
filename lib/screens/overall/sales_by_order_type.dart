@@ -21,6 +21,8 @@ class SalesByOrderTypeTable extends StatefulWidget {
 class _SalesByOrderTypeTableState extends State<SalesByOrderTypeTable> {
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return BlocBuilder<SummaryBloc, SummaryState>(builder: (context, state) {
       if (state is SummaryLoading) {
         return Center(child: CircularProgressIndicator());
@@ -40,7 +42,6 @@ class _SalesByOrderTypeTableState extends State<SalesByOrderTypeTable> {
           return Center(child: Text('No data for the selected date'));
         }
 
-        // Initialize the salesByOrderType map to accumulate values
         Map<String, double> salesByOrderType = {
           'DineIn': 0.0,
           'Togo': 0.0,
@@ -66,10 +67,8 @@ class _SalesByOrderTypeTableState extends State<SalesByOrderTypeTable> {
             });
           }
         }
-        // Calculate the total sales
         double totalSales = salesByOrderType.values.reduce((a, b) => a + b);
 
-        // Create DataRow list using map
         final rows = salesByOrderType.entries.map((entry) {
           String orderType = entry.key;
           double totalValue = entry.value;
@@ -82,7 +81,6 @@ class _SalesByOrderTypeTableState extends State<SalesByOrderTypeTable> {
           ]);
         }).toList();
 
-        // Add the Total Sales row
         rows.add(DataRow(cells: [
           DataCell(textheader('Total Sales')),
           DataCell(Text('')),
@@ -107,7 +105,7 @@ class _SalesByOrderTypeTableState extends State<SalesByOrderTypeTable> {
               ],
             ),
             child: DataTable(
-              columnSpacing: 20,
+              columnSpacing: screenWidth * 0.05,
               headingRowHeight: 40,
               dataRowHeight: 40,
               columns: [

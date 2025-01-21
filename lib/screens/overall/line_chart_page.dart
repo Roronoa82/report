@@ -343,7 +343,7 @@ class _LineChartPageState extends State<LineChartPage> {
                                     );
                                   },
                                 ),
-                                barGroups: barGroups, // ใช้ข้อมูลที่สร้างจาก dailyTotalSales
+                                barGroups: barGroups,
                                 titlesData: FlTitlesData(
                                   leftTitles: AxisTitles(
                                     sideTitles: SideTitles(
@@ -361,9 +361,8 @@ class _LineChartPageState extends State<LineChartPage> {
                                     sideTitles: SideTitles(
                                       reservedSize: 30,
                                       showTitles: true,
-                                      interval: 1, // แสดงทุกวัน
+                                      interval: 1,
                                       getTitlesWidget: (value, _) {
-                                        // แปลงค่า value เป็นชื่อวันในสัปดาห์
                                         List<String> weekDays = [
                                           'S',
                                           'S',
@@ -375,15 +374,14 @@ class _LineChartPageState extends State<LineChartPage> {
                                         ];
                                         int index = value.toInt() % 7;
                                         return Text(
-                                          weekDays[index], // แสดงชื่อวันตามค่า index
+                                          weekDays[index],
                                           style: TextStyle(fontSize: 8),
                                         );
                                       },
                                     ),
                                   ),
                                 ),
-                                minY: 0, // ตั้งค่าให้ Y-axis เริ่มจาก 0
-
+                                minY: 0,
                                 barTouchData: BarTouchData(
                                   touchTooltipData: BarTouchTooltipData(
                                     tooltipBgColor: Colors.black,
@@ -397,7 +395,6 @@ class _LineChartPageState extends State<LineChartPage> {
                                         },
                                         orElse: () => {},
                                       );
-
                                       String formattedDate = 'Unknown Date';
                                       if (matchedSummary != null) {
                                         final summaryDate = DateTime.parse(matchedSummary['Date']);
@@ -456,7 +453,6 @@ class _LineChartPageState extends State<LineChartPage> {
                                     }
                                   },
                                 ),
-
                                 alignment: BarChartAlignment.spaceEvenly,
                               ),
                             ),

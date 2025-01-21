@@ -12,7 +12,7 @@ final logger = Logger();
 
 class AverageSalePerTicketTable extends StatefulWidget {
   final dynamic selectDate;
-  const AverageSalePerTicketTable({Key? key, this.selectDate}) : super(key: key);
+  AverageSalePerTicketTable({Key? key, this.selectDate}) : super(key: key);
 
   @override
   _AverageSalePerTicketTableState createState() => _AverageSalePerTicketTableState();
@@ -27,6 +27,8 @@ class _AverageSalePerTicketTableState extends State<AverageSalePerTicketTable> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return BlocBuilder<SummaryBloc, SummaryState>(
       builder: (context, state) {
         if (state is SummaryLoading) {
@@ -98,7 +100,7 @@ class _AverageSalePerTicketTableState extends State<AverageSalePerTicketTable> {
                 ],
               ),
               child: DataTable(
-                columnSpacing: 20,
+                columnSpacing: screenWidth * 0.05,
                 headingRowHeight: 40,
                 dataRowHeight: 40,
                 columns: [

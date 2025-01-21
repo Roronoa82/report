@@ -48,7 +48,6 @@ class _DropdownFilterButtonState extends State<DropdownFilterButton> {
     selectedReport = widget.initialSelectedReport;
   }
 
-  // Function สำหรับสร้าง Overlay
   OverlayEntry _createOverlayEntry() {
     return OverlayEntry(
       builder: (context) => StreamBuilder<bool>(
@@ -69,7 +68,7 @@ class _DropdownFilterButtonState extends State<DropdownFilterButton> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: _buildDropdownContent(), // เนื้อหา Dropdown
+                    child: _buildDropdownContent(),
                   ),
                 ),
               ),
@@ -284,11 +283,11 @@ class _DropdownFilterButtonState extends State<DropdownFilterButton> {
                             Row(
                               children: [
                                 TextButton(
-                                  onPressed: _toggleDropdown, // ปิด Dropdown
+                                  onPressed: _toggleDropdown,
                                   style: TextButton.styleFrom(
-                                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24), // ขนาดของปุ่ม
+                                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8), // ความโค้งของมุม
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
                                   ),
                                   child: Text(
@@ -366,7 +365,10 @@ class _DropdownFilterButtonState extends State<DropdownFilterButton> {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           primary: '#3C3C3C'.toColor(),
-          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+          padding: EdgeInsets.symmetric(
+            vertical: MediaQuery.of(context).size.height * 0.02,
+            horizontal: MediaQuery.of(context).size.width * 0.007,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),

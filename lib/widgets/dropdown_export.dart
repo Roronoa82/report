@@ -119,7 +119,10 @@ class _ExportMenuState extends State<ExportMenu> {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           primary: '#3C3C3C'.toColor(),
-          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24), // ขนาดของปุ่ม
+          padding: EdgeInsets.symmetric(
+            vertical: MediaQuery.of(context).size.height * 0.02,
+            horizontal: MediaQuery.of(context).size.width * 0.007,
+          ), // ขนาดของปุ่ม
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8), // ความโค้งของมุม
           ),

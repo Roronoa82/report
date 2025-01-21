@@ -51,6 +51,9 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
   @override
   Widget build(BuildContext context) {
     List<String> filterOptions = ['All Employees', 'All Order Types', 'All Sources', 'All Sections'];
+
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
     return BlocProvider(
       create: (context) => SummaryBloc()..add(LoadSummary()),
       child: BlocBuilder<SummaryBloc, SummaryState>(
@@ -58,7 +61,8 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
           return Scaffold(
             backgroundColor: "#EEEEEE".toColor(),
             body: SingleChildScrollView(
-              padding: EdgeInsets.all(16),
+              // scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.all(screenWidth * 0.015),
               child: Container(
                 constraints: BoxConstraints(
                   minHeight: MediaQuery.of(context).size.height,
@@ -69,12 +73,12 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
                     Text(
                       widget.isFromSalesPage ? 'Reports > Summary Sales' : 'Reports > Overall Summary',
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: screenWidth * 0.013,
                         fontWeight: FontWeight.w700,
                         color: '#3C3C3C'.toColor(),
                       ),
                     ),
-                    SizedBox(height: 12),
+                    SizedBox(height: screenHeight * 0.02),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -93,14 +97,14 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
                               },
                               initialSelectedReport: selectedReport,
                             ),
-                            SizedBox(width: 10),
+                            SizedBox(width: screenWidth * 0.004),
                             MoreFilterMenu(),
                           ],
                         ),
                         Row(
                           children: [
                             ShareMenu(),
-                            SizedBox(width: 10),
+                            SizedBox(width: screenWidth * 0.004),
                             ExportMenu(),
                           ],
                         ),
@@ -113,7 +117,7 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
                       style: TextStyle(
                         fontFamily: 'Inter',
                         color: '#3C3C3C'.toColor(),
-                        fontSize: 20,
+                        fontSize: screenWidth * 0.01,
                       ),
                     ),
                     if (selectedReport == 1)
@@ -128,7 +132,7 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
                       Center(
                         child: Text(
                           'Please select a report type',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                          style: TextStyle(fontSize: screenWidth * 0.001, color: Colors.grey),
                         ),
                       ),
                   ],

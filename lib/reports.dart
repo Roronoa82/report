@@ -185,11 +185,19 @@ class _ReportPageState extends State<ReportPage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+    double horizontalPadding = screenWidth * 0.19;
+    double verticalPadding = screenHeight * 0.05;
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(150),
         child: Container(
-          padding: EdgeInsets.only(left: 400, right: 400, top: 50),
+          padding: EdgeInsets.only(
+            left: horizontalPadding,
+            right: horizontalPadding,
+            top: verticalPadding,
+          ),
           color: Color.fromARGB(255, 255, 255, 255),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -199,7 +207,11 @@ class _ReportPageState extends State<ReportPage> {
                 children: [
                   Text(
                     "Develop Resturant",
-                    style: TextStyle(fontFamily: 'Inter', color: '#959595'.toColor(), fontSize: 30),
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      color: '#959595'.toColor(),
+                      fontSize: screenWidth * 0.0135,
+                    ),
                   ),
                   Container(
                     child: CompositedTransformTarget(
@@ -284,7 +296,10 @@ class _ReportPageState extends State<ReportPage> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 400, vertical: 10),
+          padding: EdgeInsets.symmetric(
+            vertical: MediaQuery.of(context).size.height * 0.0,
+            horizontal: MediaQuery.of(context).size.width * 0.19,
+          ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
