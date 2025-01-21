@@ -2,6 +2,8 @@
 
 import 'package:develop_resturant/bloc/summary_bloc.dart';
 import 'package:develop_resturant/bloc/summary_event.dart';
+import 'package:develop_resturant/screens/overall/monthly_table_section.dart';
+import 'package:develop_resturant/screens/overall/weekly_table_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
@@ -12,18 +14,15 @@ import '../../widgets/dropdown_filter_button.dart';
 import '../../widgets/dropdown_morefilter.dart';
 import '../../widgets/dropdown_share.dart';
 import 'daily_table_section.dart';
-import 'deposit_report_page.dart';
 import 'summary_table_section.dart';
 
 class OverallSummaryPage extends StatefulWidget {
   final Map<String, dynamic> payments;
-  final bool isFromSalesPage; // เพิ่มพารามิเตอร์ใหม่
-  // final int selectedReport; // เพิ่ม parameter selectedReport
+  final bool isFromSalesPage;
 
   OverallSummaryPage({
     required this.payments,
     this.isFromSalesPage = false,
-    // this.selectedReport = 1, // รับค่า selectedReport
   });
 
   @override
@@ -39,7 +38,7 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
   bool _isBottomSheetOpen = false;
   final logger = Logger();
   dynamic getDate;
-  int selectedReport = 1; // ไม่ตั้งค่าเริ่มต้น ให้รอค่าจาก DropdownFilterButton
+  int selectedReport = 1;
 
   bool isDailyReport = false;
 
@@ -67,12 +66,12 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // ส่วนหัวข้อของหน้า
                     Text(
                       widget.isFromSalesPage ? 'Reports > Summary Sales' : 'Reports > Overall Summary',
                       style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                        color: '#3C3C3C'.toColor(),
                       ),
                     ),
                     SizedBox(height: 12),
@@ -89,7 +88,7 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
                               onReportSelected: (selectedReportValue) {
                                 logger.d('Selected Report: $selectedReportValue');
                                 setState(() {
-                                  selectedReport = selectedReportValue; // อัปเดต selectedReport
+                                  selectedReport = selectedReportValue;
                                 });
                               },
                               initialSelectedReport: selectedReport,
@@ -117,11 +116,14 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
                         fontSize: 20,
                       ),
                     ),
-                    // การสลับเนื้อหา
                     if (selectedReport == 1)
                       SummaryTableSection(getDate: getDate)
                     else if (selectedReport == 2)
                       DailyTableSection(getDate: getDate)
+                    else if (selectedReport == 3)
+                      WeeklyTableSection(getDate: getDate)
+                    else if (selectedReport == 4)
+                      MonthlyTableSection(getDate: getDate)
                     else
                       Center(
                         child: Text(
@@ -129,10 +131,6 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
                           style: TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                       ),
-
-                    // SummaryTableSection(getDate: getDate),
-                    // SizedBox(width: 10),
-                    // DailyTableSection(getDate: getDate),
                   ],
                 ),
               ),

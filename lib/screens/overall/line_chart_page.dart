@@ -12,16 +12,16 @@ import 'sales_table.dart';
 
 final logger = Logger();
 
-class LineChartSample extends StatefulWidget {
+class LineChartPage extends StatefulWidget {
   final dynamic selectDate;
 
-  const LineChartSample({Key? key, this.selectDate}) : super(key: key);
+  const LineChartPage({Key? key, this.selectDate}) : super(key: key);
 
   @override
-  _LineChartSampleState createState() => _LineChartSampleState();
+  _LineChartPageState createState() => _LineChartPageState();
 }
 
-class _LineChartSampleState extends State<LineChartSample> {
+class _LineChartPageState extends State<LineChartPage> {
   SalesSummary? salesSummary;
 
   @override
@@ -39,23 +39,19 @@ class _LineChartSampleState extends State<LineChartSample> {
                 final fromDate = DateTime.parse(widget.selectDate['filteredFromDate']).toLocal();
                 final toDate = DateTime.parse(widget.selectDate['filteredToDate']).toLocal();
 
-                // เงื่อนไขการกรอง
                 return summaryDate.isAfter(fromDate.subtract(Duration(days: 1))) && summaryDate.isBefore(toDate.add(Duration(days: 1)));
               }
               return true;
             }).toList();
 
-            // สร้าง SalesSummary
             double totalNetSales = 0.0;
             double totalTaxSales = 0.0;
             double totalIncomingSales = 0.0;
             double totalSales = 0.0;
             Map<String, double> combinedRevenue = {};
-            Map<int, double> dailyNetSales = {}; // Key เป็นวันที่ (1-31), Value เป็นยอดขายรวมของวันนั้น
-            Map<int, double> dailyTotalSales = {}; // Key: วันที่ (1-31), Value: ยอดขายรวมของวันนั้น
-            // คำนวณข้อมูลจาก state.summaries
+            Map<int, double> dailyNetSales = {};
+            Map<int, double> dailyTotalSales = {};
             for (var summary in filteredSummaries) {
-              // คำนวณยอดขายตามที่เคยทำใน SalesTable
               var jsonMap = json.decode(summary['Data'] ?? '{}');
               var netSales = jsonMap['Sales']?['NetSales'] ?? [];
               var taxSales = jsonMap['Sales']?['TaxSales'] ?? [];
@@ -64,7 +60,6 @@ class _LineChartSampleState extends State<LineChartSample> {
               totalNetSales += netSales.fold(0.0, (sum, sale) => sum + (sale['Value'] as double? ?? 0.0));
               totalTaxSales += taxSales.fold(0.0, (sum, sale) => sum + (sale['Value'] as double? ?? 0.0));
               totalIncomingSales += incomingSales.fold(0.0, (sum, item) => sum + (item['Value'] as double? ?? 0.0));
-// รวมยอดขายทั้งหมด
               totalSales += netSales.fold(0.0, (sum, sale) => sum + (sale['Value'] as double? ?? 0.0));
               totalSales += taxSales.fold(0.0, (sum, sale) => sum + (sale['Value'] as double? ?? 0.0));
               totalSales += incomingSales.fold(0.0, (sum, sale) => sum + (sale['Value'] as double? ?? 0.0));
@@ -74,11 +69,13 @@ class _LineChartSampleState extends State<LineChartSample> {
               dailySales += taxSales.fold(0.0, (sum, sale) => sum + (sale['Value'] as double? ?? 0.0));
               dailySales += incomingSales.fold(0.0, (sum, sale) => sum + (sale['Value'] as double? ?? 0.0));
 
-              // ดึงวันที่จาก summary และเพิ่มยอดขายในวันที่นั้น
-              final date = DateTime.parse(summary['Date']).day; // ใช้เฉพาะวันที่ (1-31)
-              dailyTotalSales[date] = (dailyTotalSales[date] ?? 0.0) + dailySales;
+              final dateTime = DateTime.parse(summary['Date']); // ใช้เฉพาะวันที่ (1-31)
+              final day = dateTime.day;
+              final month = dateTime.month;
+              final year = dateTime.year;
 
-//------------------------
+              dailyTotalSales[day] = (dailyTotalSales[day] ?? 0.0) + dailySales;
+
               Map<String, dynamic> jsonMapRevenue = json.decode(summary['FilterByRevenue'] ?? '{}');
               var revenues = jsonMapRevenue['Revenues'] ?? [];
               for (var revenue in revenues) {
@@ -91,27 +88,24 @@ class _LineChartSampleState extends State<LineChartSample> {
               }
             }
 
-            // สร้าง SalesSummary object
             SalesSummary salesSummary = SalesSummary(
               totalNetSales: totalNetSales,
               totalTaxSales: totalTaxSales,
               totalIncomingSales: totalIncomingSales,
-              totalSales: totalNetSales + totalTaxSales + totalIncomingSales, // รวมยอดขายทั้งหมด
+              totalSales: totalNetSales + totalTaxSales + totalIncomingSales,
               combinedRevenue: combinedRevenue,
             );
 
-            // ส่ง SalesSummary ไปที่ฟังก์ชันกราฟ
             final lineSpots = getLineChartData(dailyTotalSales);
             final barGroups = getBarChartData(dailyTotalSales);
 
             return Container(
               decoration: BoxDecoration(
                 color: "#FFFFFF".toColor(),
-
-                borderRadius: BorderRadius.circular(10), // เพิ่มมุมโค้ง (ถ้าต้องการ)
+                borderRadius: BorderRadius.circular(10),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1), // เพิ่มเงา
+                    color: Colors.black.withOpacity(0.1),
                     blurRadius: 5,
                     offset: Offset(0, 3),
                   ),
@@ -186,15 +180,141 @@ class _LineChartSampleState extends State<LineChartSample> {
                             sideTitles: SideTitles(
                               reservedSize: 30,
                               showTitles: true,
-                              interval: 4, // Show every day on X-axis
+                              interval: 4,
                               getTitlesWidget: (value, _) {
                                 return Text(
-                                  value.toInt().toString(), // Display day of the month
+                                  value.toInt().toString(),
                                   style: TextStyle(fontSize: 10),
                                 );
                               },
                             ),
                           ),
+                        ),
+                        lineTouchData: LineTouchData(
+                          touchTooltipData: LineTouchTooltipData(
+                            tooltipBgColor: Colors.black,
+                            tooltipPadding: const EdgeInsets.all(8),
+                            tooltipMargin: 8,
+                            tooltipRoundedRadius: 0,
+                            getTooltipItems: (touchedSpots) {
+                              return touchedSpots.map((spot) {
+                                final dateIndex = spot.x.toInt();
+                                final matchedSummary = filteredSummaries.firstWhere(
+                                  (summary) {
+                                    Map<String, dynamic> jsonMapFilterEmployee = json.decode(summary['FilterByEmployees'] ?? '{}');
+                                    final summaryDate = DateTime.parse(summary['Date']).toLocal();
+                                    return summaryDate.day == dateIndex;
+                                  },
+                                  orElse: () => {},
+                                );
+
+                                String formattedDate = 'Unknown Date';
+                                int uniqueEmployeeCount = 0; // ตัวแปรเพื่อเก็บจำนวน EmployeesID ที่พบในแต่ละวัน
+                                if (matchedSummary != null) {
+                                  final summaryDate = DateTime.parse(matchedSummary['Date']);
+                                  final day = summaryDate.day;
+                                  final month = summaryDate.month;
+                                  final year = summaryDate.year;
+                                  const monthNames = [
+                                    'January',
+                                    'February',
+                                    'March',
+                                    'April',
+                                    'May',
+                                    'June',
+                                    'July',
+                                    'August',
+                                    'September',
+                                    'October',
+                                    'November',
+                                    'December'
+                                  ];
+                                  final monthName = monthNames[month - 1];
+                                  formattedDate = '$day $monthName, $year';
+
+                                  Map<String, dynamic> jsonMapFilterEmployee = json.decode(matchedSummary['FilterByEmployees'] ?? '{}');
+                                  Set<int> employeesSet = Set<int>();
+
+                                  void extractEmployeesId(List<dynamic> data) {
+                                    for (var item in data) {
+                                      if (item.containsKey('EmployeesID')) {
+                                        int employeesID = item['EmployeesID'];
+                                        employeesSet.add(employeesID);
+                                      }
+                                    }
+                                  }
+
+                                  var filterByEmployees = jsonMapFilterEmployee['FilterByEmployees'];
+                                  if (filterByEmployees != null) {
+                                    extractEmployeesId(filterByEmployees['Sales'] ?? []);
+                                    extractEmployeesId(filterByEmployees['TaxSales'] ?? []);
+                                    extractEmployeesId(filterByEmployees['IncomingSales'] ?? []);
+                                  }
+
+                                  var payments = jsonMapFilterEmployee['Payments'];
+                                  if (payments != null) {
+                                    extractEmployeesId(payments['Cash']?['Sales'] ?? []);
+                                    extractEmployeesId(payments['Credit']?['Sales'] ?? []);
+                                    extractEmployeesId(payments['Prepaid']?['Sales'] ?? []);
+                                    extractEmployeesId(payments['Prepaid']?['Tips'] ?? []);
+                                  }
+
+                                  var deposits = jsonMapFilterEmployee['Deposits'];
+                                  if (deposits != null) {
+                                    extractEmployeesId(deposits['CashSale'] ?? []);
+                                    extractEmployeesId(deposits['Gratuity'] ?? []);
+                                    extractEmployeesId(deposits['CreditCardTip'] ?? []);
+                                  }
+
+                                  var creditCards = jsonMapFilterEmployee['CreditCards'];
+                                  if (creditCards != null) {
+                                    extractEmployeesId(creditCards['Visa'] ?? []);
+                                    extractEmployeesId(creditCards['Mastercard'] ?? []);
+                                    extractEmployeesId(creditCards['Amex'] ?? []);
+                                  }
+
+                                  var serviceCharge = jsonMapFilterEmployee['ServiceCharge'];
+                                  if (serviceCharge != null) {
+                                    extractEmployeesId(serviceCharge['Gratuity'] ?? []);
+                                    extractEmployeesId(serviceCharge['Delivery3rdParty'] ?? []);
+                                  }
+                                  uniqueEmployeeCount = employeesSet.length;
+                                }
+
+                                return LineTooltipItem(
+                                  '',
+                                  TextStyle(),
+                                  children: [
+                                    TextSpan(
+                                      text: '$formattedDate\n',
+                                      style: TextStyle(color: '#909090'.toColor(), fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Inter'),
+                                    ),
+                                    TextSpan(
+                                      text: '________________________\n',
+                                      style: TextStyle(
+                                        color: '#909090'.toColor(),
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: '\$${spot.y.toStringAsFixed(2)}\n',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: '$uniqueEmployeeCount PAYMENTS',
+                                      style: TextStyle(color: '#909090'.toColor(), fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Inter'),
+                                    ),
+                                  ],
+                                );
+                              }).toList();
+                            },
+                          ),
+                          touchCallback: (event, response) {
+                            if (event.isInterestedForInteractions && response != null) {}
+                          },
                         ),
                       ),
                     ),
@@ -266,9 +386,77 @@ class _LineChartSampleState extends State<LineChartSample> {
 
                                 barTouchData: BarTouchData(
                                   touchTooltipData: BarTouchTooltipData(
-                                    tooltipBgColor: '#000000'.toColor(),
+                                    tooltipBgColor: Colors.black,
+                                    tooltipPadding: const EdgeInsets.all(8),
+                                    tooltipMargin: 8,
+                                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                                      final matchedSummary = filteredSummaries.firstWhere(
+                                        (summary) {
+                                          final summaryDate = DateTime.parse(summary['Date']).toLocal();
+                                          return summaryDate.day == groupIndex;
+                                        },
+                                        orElse: () => {},
+                                      );
+
+                                      String formattedDate = 'Unknown Date';
+                                      if (matchedSummary != null) {
+                                        final summaryDate = DateTime.parse(matchedSummary['Date']);
+                                        final day = summaryDate.weekday;
+                                        final month = summaryDate.month;
+                                        final year = summaryDate.year;
+
+                                        const dayNames = [
+                                          'Sunday',
+                                          'Monday',
+                                          'Tuesday',
+                                          'Wednesday',
+                                          'Thursday',
+                                          'Friday',
+                                          'Saturday',
+                                        ];
+                                        final dayName = dayNames[day - 1];
+                                        formattedDate = '$dayName';
+                                      }
+
+                                      return BarTooltipItem(
+                                        '',
+                                        TextStyle(),
+                                        children: [
+                                          TextSpan(
+                                            text: formattedDate,
+                                            style:
+                                                TextStyle(color: '#909090'.toColor(), fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Inter'),
+                                          ),
+                                          TextSpan(
+                                            text: '\n_____________________\n',
+                                            style: TextStyle(
+                                              color: '#909090'.toColor(),
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: '\$${rod.toY.toStringAsFixed(2)}\n', // จำนวนเงิน
+                                            style: TextStyle(
+                                              color: '#FFFFFF'.toColor(),
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: '18 PAYMENTS', // ข้อมูลเพิ่มเติม
+                                            style: const TextStyle(
+                                              color: Colors.white70,
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   ),
+                                  touchCallback: (event, response) {
+                                    if (event.isInterestedForInteractions && response != null) {
+                                      // เพิ่ม action ถ้าต้องการ
+                                    }
+                                  },
                                 ),
+
                                 alignment: BarChartAlignment.spaceEvenly,
                               ),
                             ),

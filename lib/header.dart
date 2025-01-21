@@ -17,22 +17,17 @@ class Header extends StatelessWidget {
             "Develop Resturant",
             style: TextStyle(color: Colors.grey, fontSize: 18),
           ),
-          // Dropdown for user name
           Container(
-            // width: 200,
             decoration: BoxDecoration(
-              color: Colors.white, // สีพื้นหลังของปุ่ม
-              borderRadius: BorderRadius.circular(8), // มุมโค้งมน
-              border: Border.all(color: Colors.grey, width: 1), // เส้นขอบของปุ่ม
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.grey, width: 1),
             ),
-
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: DropdownButton<String>(
-                value: "Thanapat", // Default value
-                onChanged: (String? newValue) {
-                  // Handle dropdown change here
-                },
+                value: "Thanapat",
+                onChanged: (String? newValue) {},
                 items: <String>['Thanapat', 'Logout'].map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,

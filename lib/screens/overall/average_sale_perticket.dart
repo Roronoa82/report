@@ -1,7 +1,10 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
+import 'package:supercharged/supercharged.dart';
 import '../../bloc/summary_bloc.dart';
 import '../../bloc/summary_state.dart';
 
@@ -18,12 +21,7 @@ class AverageSalePerTicketTable extends StatefulWidget {
 class _AverageSalePerTicketTableState extends State<AverageSalePerTicketTable> {
   @override
   void initState() {
-    // TODO: implement initState
-    if (widget.selectDate != null) {
-      // logger.w(widget.selectDate);
-      // logger.w('selectDate keys: ${widget.selectDate.keys}');
-      // logger.w('++++++++++');
-    }
+    if (widget.selectDate != null) {}
     super.initState();
   }
 
@@ -103,21 +101,21 @@ class _AverageSalePerTicketTableState extends State<AverageSalePerTicketTable> {
                 columnSpacing: 20,
                 headingRowHeight: 40,
                 dataRowHeight: 40,
-                columns: const [
-                  DataColumn(label: Center(child: Text('Average Sale Per \nTicket'))),
-                  DataColumn(label: Center(child: Text('Sales'))),
-                  DataColumn(label: Center(child: Text('Ticket'))),
-                  DataColumn(label: Center(child: Text('Average/Ticket'))),
+                columns: [
+                  DataColumn(label: Center(child: textheader('Average Sale Per \nTicket'))),
+                  DataColumn(label: Center(child: textheader('Sales'))),
+                  DataColumn(label: Center(child: textheader('Ticket'))),
+                  DataColumn(label: Center(child: textheader('Average/Ticket'))),
                 ],
                 rows: [
                   // เพิ่ม rows สำหรับแต่ละประเภท
                   ...averagesaleperticketSummary.entries.map((entry) {
                     return DataRow(
                       cells: [
-                        DataCell(Center(child: Text(entry.key))),
-                        DataCell(Center(child: Text("\$${entry.value['Sale']!.toStringAsFixed(2)}"))),
-                        DataCell(Center(child: Text(entry.value['Ticket']!.toStringAsFixed(0)))),
-                        DataCell(Center(child: Text("\$${entry.value['Average/Ticket']!.toStringAsFixed(2)}"))),
+                        DataCell(Center(child: textdetails(entry.key))),
+                        DataCell(Center(child: textdetails("\$${entry.value['Sale']!.toStringAsFixed(2)}"))),
+                        DataCell(Center(child: textdetails(entry.value['Ticket']!.toStringAsFixed(0)))),
+                        DataCell(Center(child: textdetails("\$${entry.value['Average/Ticket']!.toStringAsFixed(2)}"))),
                       ],
                     );
                   }).toList(),
@@ -125,10 +123,10 @@ class _AverageSalePerTicketTableState extends State<AverageSalePerTicketTable> {
                   // เพิ่มแถว Total
                   DataRow(
                     cells: [
-                      const DataCell(Center(child: Text('Total', style: TextStyle(fontWeight: FontWeight.bold)))),
-                      DataCell(Center(child: Text("\$${totalSales.toStringAsFixed(2)}", style: TextStyle(fontWeight: FontWeight.bold)))),
-                      DataCell(Center(child: Text(totalTickets.toStringAsFixed(0), style: TextStyle(fontWeight: FontWeight.bold)))),
-                      DataCell(Center(child: Text("\$${totalAverageTicket.toStringAsFixed(2)}", style: TextStyle(fontWeight: FontWeight.bold)))),
+                      DataCell(Center(child: textheader('Total'))),
+                      DataCell(Center(child: textheader("\$${totalSales.toStringAsFixed(2)}"))),
+                      DataCell(Center(child: textheader(totalTickets.toStringAsFixed(0)))),
+                      DataCell(Center(child: textheader("\$${totalAverageTicket.toStringAsFixed(2)}"))),
                     ],
                   ),
                 ],
@@ -140,6 +138,30 @@ class _AverageSalePerTicketTableState extends State<AverageSalePerTicketTable> {
         }
         return const Center(child: Text('No data available'));
       },
+    );
+  }
+
+  Text textheader(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 14,
+        color: '#3C3C3C'.toColor(),
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
+  Text textdetails(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 14,
+        color: '#3C3C3C'.toColor(),
+        fontWeight: FontWeight.w300,
+      ),
     );
   }
 }

@@ -7,7 +7,6 @@ abstract class SummaryEvent extends Equatable {
 
 class LoadSummary extends SummaryEvent {}
 
-// Event สำหรับกรองข้อมูลตามวันที่ที่เลือก
 class FilterSummaryByDate extends SummaryEvent {
   final DateTime fromDate;
   final DateTime toDate;
@@ -20,26 +19,6 @@ class DateFilterChanged extends SummaryEvent {
   final DateTime endDate;
 
   DateFilterChanged({required this.startDate, required this.endDate});
-}
-
-abstract class PaymentsEvent {}
-
-class LoadPayments extends PaymentsEvent {}
-
-abstract class FilterEvent extends Equatable {
-  @override
-  List<Object> get props => [];
-}
-
-class LoadDataEvent extends FilterEvent {}
-
-class FilterByDateEvent extends FilterEvent {
-  final DateTime selectedDate;
-
-  FilterByDateEvent(this.selectedDate);
-
-  @override
-  List<Object> get props => [selectedDate];
 }
 
 class FilterDateEvent extends SummaryEvent {

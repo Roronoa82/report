@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter/services.dart'; // สำหรับโหลดไฟล์ assets
+import 'package:flutter/services.dart';
 
 class SalesData {
   final int rpSummarySalesID;

@@ -3,7 +3,6 @@
 import 'dart:async';
 
 import 'package:develop_resturant/bloc/date_filter_event.dart';
-import 'package:develop_resturant/screens/overall/deposit_report_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -20,11 +19,8 @@ class DropdownFilterButton extends StatefulWidget {
   final DateTime? fromDate;
   final DateTime? toDate;
   final Function(Map<String, dynamic>) onDateSelected;
-  // final Function(int) onReportSelected;
-  final int initialSelectedReport; // รับค่าเริ่มต้น
+  final int initialSelectedReport;
   final Function(int) onReportSelected;
-
-  // final Function(DateTime?) onDateSelected;
 
   DropdownFilterButton({
     Key? key,
@@ -43,14 +39,13 @@ class _DropdownFilterButtonState extends State<DropdownFilterButton> {
   final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntry;
   bool isDropdownOpen = false;
-  // int selectedReport = 1; // ค่าพื้นฐานเป็น 1 หรือเลือกตามที่ต้องการ
   StreamController<bool> export = StreamController.broadcast();
   late int selectedReport;
 
   @override
   void initState() {
     super.initState();
-    selectedReport = widget.initialSelectedReport; // ใช้ค่าเริ่มต้น
+    selectedReport = widget.initialSelectedReport;
   }
 
   // Function สำหรับสร้าง Overlay
@@ -83,13 +78,9 @@ class _DropdownFilterButtonState extends State<DropdownFilterButton> {
     );
   }
 
-  // Function สำหรับเปิดหรือปิด Dropdown
   void _toggleDropdown() {
     if (isDropdownOpen) {
       widget.onReportSelected;
-      //         _overlayEntry = null;
-      // _isDropdownOpen = false;
-
       _overlayEntry?.remove();
     } else {
       _overlayEntry = _createOverlayEntry();
@@ -100,7 +91,6 @@ class _DropdownFilterButtonState extends State<DropdownFilterButton> {
     });
   }
 
-  // เนื้อหา Dropdown
   Widget _buildDropdownContent() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
       Row(
@@ -109,22 +99,21 @@ class _DropdownFilterButtonState extends State<DropdownFilterButton> {
         children: [
           Text("Report : ", style: TextStyle(fontWeight: FontWeight.normal)),
           SizedBox(width: 12),
-          // Summary
-          Radio<int>(
-            value: 1,
-            groupValue: selectedReport,
-            onChanged: (selectedValue) {
-              export.add(true);
-              selectedReport = selectedValue!;
-              widget.onReportSelected(selectedReport);
-            },
-          ),
-          SizedBox(width: 20),
-
-          Text("Summary", style: TextStyle(fontFamily: 'Inter', color: '#3C3C3C'.toColor(), fontSize: 14, fontWeight: FontWeight.bold)),
-          Text(" (Select up to 366 day)", style: TextStyle(fontFamily: 'Inter', color: '#959595'.toColor(), fontSize: 12)),
-          SizedBox(width: 30),
-
+          Row(children: [
+            Radio<int>(
+              value: 1,
+              groupValue: selectedReport,
+              onChanged: (selectedValue) {
+                export.add(true);
+                selectedReport = selectedValue!;
+                widget.onReportSelected(selectedReport);
+              },
+            ),
+            SizedBox(width: 20),
+            Text("Summary", style: TextStyle(fontFamily: 'Inter', color: '#3C3C3C'.toColor(), fontSize: 14, fontWeight: FontWeight.bold)),
+            Text(" (Select up to 366 day)", style: TextStyle(fontFamily: 'Inter', color: '#959595'.toColor(), fontSize: 12)),
+            SizedBox(width: 30),
+          ]),
           // Daily
           Radio<int>(
             value: 2,
@@ -145,7 +134,6 @@ class _DropdownFilterButtonState extends State<DropdownFilterButton> {
       Row(
         children: [
           SizedBox(width: 65),
-
           // Weekly
           Radio<int>(
             value: 3,
@@ -314,8 +302,7 @@ class _DropdownFilterButtonState extends State<DropdownFilterButton> {
                             ElevatedButton(
                               onPressed: () {
                                 if (state.fromDate != null && state.toDate != null) {
-                                  widget.onReportSelected(selectedReport); // ส่งค่าที่เลือกกลับไปยังหน้าแม่
-                                  // ตรวจสอบค่า selectedReport ก่อน
+                                  widget.onReportSelected(selectedReport);
                                   if (selectedReport == 1) {
                                     // Summary
                                   } else if (selectedReport == 2) {

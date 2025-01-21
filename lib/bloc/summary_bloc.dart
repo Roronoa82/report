@@ -1,18 +1,14 @@
 //summary_Bloc
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
-
 import '../model_summary.dart';
 import 'summary_event.dart';
 import 'summary_state.dart';
 
 class SummaryBloc extends Bloc<SummaryEvent, SummaryState> {
-  final logger = Logger();
-  List<Summary> _allSummaries = []; // เก็บข้อมูลทั้งหมด
+  List<Summary> _allSummaries = [];
 
   SummaryBloc() : super(SummaryInitial()) {
     on<LoadSummary>(_onLoadSummary);
@@ -36,8 +32,6 @@ class SummaryBloc extends Bloc<SummaryEvent, SummaryState> {
       final content = await file.readAsString();
       final List<dynamic> jsonData = json.decode(content);
       _allSummaries = jsonData.map((data) {
-        // logger.d(data);
-
         return Summary.fromJson(data);
       }).toList();
 

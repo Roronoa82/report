@@ -12,7 +12,7 @@ final logger = Logger();
 class SummaryDailyScreen extends StatefulWidget {
   final dynamic selectDate;
 
-  final int showDepositsOnly; // ตัวแปรเพื่อควบคุมการแสดงผล
+  final int showDepositsOnly;
   const SummaryDailyScreen({Key? key, this.selectDate, required this.showDepositsOnly}) : super(key: key);
 
   @override
@@ -26,11 +26,7 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
 
   @override
   void initState() {
-    if (widget.selectDate != null) {
-      // logger.w(widget.selectDate);
-      // logger.w('selectDate keys: ${widget.selectDate.keys}');
-      // logger.w('++++++++++');
-    }
+    if (widget.selectDate != null) {}
     super.initState();
     totalDeposits = 0.0;
   }
@@ -58,7 +54,6 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
     );
   }
 
-  // Widget สำหรับ DepositsTable
   Widget DepositsTable({dynamic selectDate}) {
     return BlocBuilder<SummaryBloc, SummaryState>(
       builder: (context, state) {
@@ -83,14 +78,9 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
             });
           }
 
-          // logger.f(state.summaries.length);
-          // logger.f(filteredSummaries.length);
-
-          // สร้างตัวแปรสำหรับเก็บยอดรวม
           Map<String, double> totalDepositsByType = {};
-          double totalDeposits = 0.0; // สำหรับคำนวณยอดรวมทั้งหมด
+          double totalDeposits = 0.0;
 
-          // วนลูปผ่าน summaries ที่ถูกกรอง
           for (var summary in filteredSummaries) {
             Map<String, dynamic> jsonMap = json.decode(summary['Data'] ?? '{}');
             var deposits = jsonMap['Deposits'];
@@ -100,15 +90,11 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
               if (depositData is List) {
                 depositTotal = depositData.fold(0.0, (sum, item) => sum + (item['Value'] ?? 0.0));
               }
-
-              // สะสมยอดรวมใน totalDepositsByType
               if (totalDepositsByType.containsKey(depositType)) {
                 totalDepositsByType[depositType] = totalDepositsByType[depositType]! + depositTotal;
               } else {
                 totalDepositsByType[depositType] = depositTotal;
               }
-
-              // คำนวณยอดรวมทั้งหมด
               totalDeposits += depositTotal;
             });
           }
@@ -142,11 +128,9 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
                 ),
               ),
             ], rows: [
-              // แสดงข้อมูลยอดรวมจาก totalDepositsByType
               ...totalDepositsByType.entries.map((entry) {
                 final depositType = entry.key;
                 final depositTotal = entry.value;
-                // กำหนดสัญลักษณ์ + หรือ - ขึ้นอยู่กับค่าที่ได้
                 final formattedTotal = depositTotal >= 0 ? "+\$${depositTotal.toStringAsFixed(2)}" : "-\$${depositTotal.abs().toStringAsFixed(2)}";
 
                 return DataRow(cells: [
@@ -154,8 +138,6 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
                   DataCell(Text(formattedTotal)),
                 ]);
               }).toList(),
-
-              // แถวสุดท้ายสำหรับการแสดง Total Deposits
               DataRow(cells: [
                 DataCell(
                   Text(
@@ -175,7 +157,6 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
     );
   }
 
-  // Widget สำหรับ CraditCartTable
   Widget CraditCartTable({dynamic selectDate}) {
     return BlocBuilder<SummaryBloc, SummaryState>(
       builder: (context, state) {
@@ -193,7 +174,6 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
             return true;
           }).toList();
 
-          // รวมข้อมูล CreditCards
           for (var summary in filteredSummaries) {
             Map<String, dynamic> jsonMap = json.decode(summary['Data'] ?? '{}');
             var creditCards = jsonMap['CreditCards'] ?? {};
@@ -207,8 +187,6 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
               }
             });
           }
-
-          // สร้าง DataTable
           return Center(
             child: Container(
               width: MediaQuery.of(context).size.width,
@@ -266,7 +244,6 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
     );
   }
 
-  // Widget สำหรับ CashInCashOutTable
   Widget CashInCashOutTable({dynamic selectDate}) {
     return BlocBuilder<SummaryBloc, SummaryState>(
       builder: (context, state) {
@@ -294,11 +271,9 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
           logger.f(state.summaries.length);
           logger.f(filteredSummaries.length);
 
-          // สร้างตัวแปรสำหรับเก็บยอดรวม
           Map<String, double> totalServiceChargeByType = {};
-          double totalServiceCharge = 0.0; // สำหรับคำนวณยอดรวมทั้งหมด
+          double totalServiceCharge = 0.0;
 
-          // วนลูปผ่าน summaries ที่ถูกกรอง
           for (var summary in filteredSummaries) {
             Map<String, dynamic> jsonMap = json.decode(summary['Data'] ?? '{}');
             var servicecharge = jsonMap['ServiceCharge'];
@@ -367,9 +342,8 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
           }
 
           Map<String, double> totalServiceChargeByType = {};
-          double totalServiceCharge = 0.0; // สำหรับคำนวณยอดรวมทั้งหมด
+          double totalServiceCharge = 0.0;
 
-          // วนลูปผ่าน summaries ที่ถูกกรอง
           for (var summary in filteredSummaries) {
             Map<String, dynamic> jsonMap = json.decode(summary['Data'] ?? '{}');
             var servicecharge = jsonMap['ServiceCharge'];
@@ -386,7 +360,6 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
                 totalServiceChargeByType[servicechargeType] = servicechargeTotal;
               }
 
-              // คำนวณยอดรวมทั้งหมด
               totalServiceCharge += servicechargeTotal;
             });
           }
@@ -420,11 +393,9 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
                 ),
               ),
             ], rows: [
-              // แสดงข้อมูลยอดรวมจาก totalServiceChargeByType
               ...totalServiceChargeByType.entries.map((entry) {
                 final servicechargeType = entry.key;
                 final servicechargeTotal = entry.value;
-                // กำหนดสัญลักษณ์ + หรือ - ขึ้นอยู่กับค่าที่ได้
                 final formattedTotal =
                     servicechargeTotal >= 0 ? "\$${servicechargeTotal.toStringAsFixed(2)}" : "\$${servicechargeTotal.abs().toStringAsFixed(2)}";
 
@@ -433,8 +404,6 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
                   DataCell(Text(formattedTotal)),
                 ]);
               }).toList(),
-
-              // แถวสุดท้ายสำหรับการแสดง Total ServiceCharge
               DataRow(cells: [
                 DataCell(
                   Text(
@@ -454,7 +423,6 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
     );
   }
 
-  // Widget สำหรับ CashInCashOutTable
   Widget GiftCardTable({dynamic selectDate}) {
     return BlocBuilder<SummaryBloc, SummaryState>(builder: (context, state) {
       if (state is SummaryLoading) {
@@ -466,40 +434,31 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
             final fromDate = DateTime.parse(widget.selectDate['filteredFromDate']).toLocal();
             final toDate = DateTime.parse(widget.selectDate['filteredToDate']).toLocal();
 
-            // การกรองข้อมูลตามวันที่
             return summaryDate.isAfter(fromDate.subtract(Duration(days: 1))) && summaryDate.isBefore(toDate.add(Duration(days: 1)));
           }
           return true;
         }).toList();
 
-        // สร้าง Map สำหรับเก็บค่า Activations, Redeemtions, Refunds
         Map<String, double> giftCardValues = {
           "Activations": 0.0,
           "Redeemtions": 0.0,
           "Refunds": 0.0,
         };
 
-        // รวมค่าจากทุกข้อมูลใน filteredSummaries
         for (var summary in filteredSummaries) {
-          // ดึงข้อมูล GiftCards จากฟิลด์ Data
           Map<String, dynamic> jsonMap = json.decode(summary['Data'] ?? '{}');
-          var giftcard = jsonMap['GiftCards']; // 'GiftCards' is a Map, not a List
+          var giftcard = jsonMap['GiftCards'];
 
           if (giftcard is Map) {
             double activations = giftcard['Activations'] as double? ?? 0.0;
             List redeemptions = giftcard['Redeemtions'] ?? [];
             List refunds = giftcard['Refunds'] ?? [];
 
-            // เพิ่มค่า Activations
             giftCardValues["Activations"] = giftCardValues["Activations"]! + activations;
-
-            // คำนวณค่า Redeemtions
             double totalRedeemtions = redeemptions.fold(0.0, (sum, item) {
               return sum + (item['Value'] as double? ?? 0.0);
             });
             giftCardValues["Redeemtions"] = giftCardValues["Redeemtions"]! + totalRedeemtions;
-
-            // คำนวณค่า Refunds
             double totalRefunds = refunds.fold(0.0, (sum, item) {
               return sum + (item['Value'] as double? ?? 0.0);
             });
@@ -509,12 +468,11 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
           }
         }
 
-        // สร้างแถวสำหรับ DataTable
         List<DataRow> rows = giftCardValues.entries.map((entry) {
           return DataRow(
             cells: [
-              DataCell(Text(entry.key)), // ชื่อประเภท (Activations, Redeemtions, Refunds)
-              DataCell(Text("\$${entry.value.toStringAsFixed(2)}")), // ค่า Total
+              DataCell(Text(entry.key)),
+              DataCell(Text("\$${entry.value.toStringAsFixed(2)}")),
             ],
           );
         }).toList();
@@ -553,7 +511,7 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
                   ),
                 ),
               ],
-              rows: rows, // ใช้แถวที่สร้างจาก giftCardValues
+              rows: rows,
             ),
           ),
         );
@@ -564,7 +522,6 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
     });
   }
 
-  // Widget สำหรับ CustomersTable
   Widget CustomersTable({dynamic selectDate}) {
     return BlocBuilder<SummaryBloc, SummaryState>(builder: (context, state) {
       if (state is SummaryLoading) {
@@ -576,7 +533,6 @@ class _SummaryDailyScreenState extends State<SummaryDailyScreen> {
             final fromDate = DateTime.parse(widget.selectDate['filteredFromDate']).toLocal();
             final toDate = DateTime.parse(widget.selectDate['filteredToDate']).toLocal();
 
-            // การกรองข้อมูลตามวันที่
             return summaryDate.isAfter(fromDate.subtract(Duration(days: 1))) && summaryDate.isBefore(toDate.add(Duration(days: 1)));
           }
           return true;

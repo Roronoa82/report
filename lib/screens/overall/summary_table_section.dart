@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:supercharged/supercharged.dart';
 
-import 'bar_chart.dart';
+import 'line_chart_page.dart';
 import 'average_sale_perticket.dart';
 import 'discounts.dart';
 import 'payments_table.dart';
@@ -33,7 +33,7 @@ class SummaryTableSection extends StatelessWidget {
           key: _key, // ใช้ GlobalKey เพื่อจับภาพ
           child: Column(children: [
             SizedBox(height: 16),
-            Container(height: MediaQuery.of(context).size.height * 0.4, child: LineChartSample()),
+            Container(height: MediaQuery.of(context).size.height * 0.4, child: LineChartPage()),
             SizedBox(height: 16),
             Container(
               child: SalesTable(
@@ -43,8 +43,8 @@ class SummaryTableSection extends StatelessWidget {
             ),
             SizedBox(height: 16),
             Container(
+              // color: '#EEEEEE'.toColor(),
               height: MediaQuery.of(context).size.height * 0.4,
-              color: '#E3E5E5'.toColor(),
               child: PaymentsTable(
                 key: ValueKey(getDate),
                 selectDate: getDate,

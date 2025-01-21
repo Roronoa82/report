@@ -11,8 +11,8 @@ class UpdateDateRange extends DateFilterEvent {
   final DateTime toDate;
 
   UpdateDateRange({
-    required this.fromDate, // ต้องมีพารามิเตอร์นี้
-    required this.toDate, // ต้องมีพารามิเตอร์นี้
+    required this.fromDate,
+    required this.toDate,
   });
 
   @override

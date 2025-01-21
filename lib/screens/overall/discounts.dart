@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
+import 'package:supercharged/supercharged.dart';
 import '../../bloc/summary_bloc.dart';
 import '../../bloc/summary_state.dart';
 
@@ -106,48 +107,33 @@ class _DiscountsTableState extends State<DiscountsTable> {
               dataRowHeight: 40,
               columns: [
                 DataColumn(
-                  label: Text(
-                    'Discounts',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  label: textheader('Discounts'),
                 ),
                 DataColumn(
-                  label: Text(
-                    'Ticket',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  label: textheader('Ticket'),
                 ),
                 DataColumn(
-                  label: Text(
-                    'Total',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  label: textheader('Total'),
                 ),
               ],
               rows: [
-                // เพิ่มรายการ Discounts
                 ...discountSummary.entries.map((entry) {
                   final discountName = entry.key;
                   final ticketCount = entry.value['Ticket'];
                   final discountTotal = entry.value['Total'];
 
                   return DataRow(cells: [
-                    DataCell(Text(discountName)),
-                    DataCell(Text(ticketCount.toInt().toString())),
-                    DataCell(Text("\$${discountTotal.toStringAsFixed(2)}")),
+                    DataCell(textdetails(discountName)),
+                    DataCell(textdetails(ticketCount.toInt().toString())),
+                    DataCell(textdetails("\$${discountTotal.toStringAsFixed(2)}")),
                   ]);
                 }).toList(),
-
-                // แสดง Total Discounts
                 DataRow(cells: [
                   DataCell(
-                    Text(
-                      'Total Discounts',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    textheader('Total Discounts'),
                   ),
-                  DataCell(Text('')), // ช่องว่างสำหรับ Ticket
-                  DataCell(Text("\$${totalDiscounts.toStringAsFixed(2)}", style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataCell(Text('')),
+                  DataCell(textheader("\$${totalDiscounts.toStringAsFixed(2)}")),
                 ]),
               ],
             ),
@@ -158,5 +144,29 @@ class _DiscountsTableState extends State<DiscountsTable> {
       }
       return Center(child: Text('No data available'));
     });
+  }
+
+  Text textheader(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 14,
+        color: '#3C3C3C'.toColor(),
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
+  Text textdetails(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 14,
+        color: '#3C3C3C'.toColor(),
+        fontWeight: FontWeight.w300,
+      ),
+    );
   }
 }

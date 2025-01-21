@@ -1,9 +1,10 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_element, deprecated_member_use, library_private_types_in_public_api
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
+import 'package:supercharged/supercharged.dart';
 import '../../bloc/summary_bloc.dart';
 import '../../bloc/summary_state.dart';
 
@@ -18,15 +19,10 @@ class SalesTable extends StatefulWidget {
 }
 
 class _SalesTableState extends State<SalesTable> {
-  SalesSummary? salesSummary; // ตัวแปรเก็บผลลัพธ์
+  SalesSummary? salesSummary;
   @override
   void initState() {
-    // TODO: implement initState
-    if (widget.selectDate != null) {
-      // logger.w(widget.selectDate);
-      // logger.w('selectDate keys: ${widget.selectDate.keys}');
-      // logger.w('++++++++++');
-    }
+    if (widget.selectDate != null) {}
     super.initState();
   }
 
@@ -38,19 +34,16 @@ class _SalesTableState extends State<SalesTable> {
           return Center(child: CircularProgressIndicator());
         } else if (state is SummaryLoaded) {
           final filteredSummaries = state.summaries.where((summary) {
-            // ตรวจสอบคีย์วันที่
             if (widget.selectDate != null && widget.selectDate.containsKey('filteredFromDate') && widget.selectDate.containsKey('filteredToDate')) {
               final summaryDate = DateTime.parse(summary['Date']).toLocal();
               final fromDate = DateTime.parse(widget.selectDate['filteredFromDate']).toLocal();
               final toDate = DateTime.parse(widget.selectDate['filteredToDate']).toLocal();
 
-              // เงื่อนไขการกรอง
               return summaryDate.isAfter(fromDate.subtract(Duration(days: 1))) && summaryDate.isBefore(toDate.add(Duration(days: 1)));
             }
             return true;
           }).toList();
 
-          // รวมข้อมูลทั้งหมด
           double totalNetSales = 0.0;
           double totalTaxSales = 0.0;
           double totalIncomingSales = 0.0;
@@ -79,7 +72,6 @@ class _SalesTableState extends State<SalesTable> {
               combinedRevenue[revenueClassName] = (combinedRevenue[revenueClassName] ?? 0.0) + totalValue;
             }
           }
-          // สร้างตัวแปร SalesSummary
           salesSummary = SalesSummary(
             totalNetSales: totalNetSales,
             totalTaxSales: totalTaxSales,
@@ -111,32 +103,24 @@ class _SalesTableState extends State<SalesTable> {
                 dataRowHeight: 40,
                 columns: [
                   DataColumn(
-                    label: Text(
-                      'Sales',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    label: textheader('Sales'),
                   ),
                   DataColumn(
-                    label: Text(
-                      'Total',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    label: textheader('Total'),
                   ),
                 ],
                 rows: [
                   ...combinedRevenue.entries.map(
                     (entry) => DataRow(
                       cells: [
-                        DataCell(Text(entry.key)),
-                        DataCell(Text("\$${entry.value.toStringAsFixed(2)}")),
+                        DataCell(textdetails(entry.key)),
+                        DataCell(textdetails("\$${entry.value.toStringAsFixed(2)}")),
                       ],
                     ),
                   ),
-                  // _buildDividerRow(),
                   _buildBoldRow('Net Sales', totalNetSales),
                   _buildBoldRow('Taxes', totalTaxSales),
                   _buildLinkRow('Total Sales', totalSales),
-                  // _buildDividerRow(),
                   DataRow(
                     cells: [
                       DataCell(
@@ -163,15 +147,13 @@ class _SalesTableState extends State<SalesTable> {
     return DataRow(
       cells: [
         DataCell(
-          Text(
+          textheader(
             label,
-            style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
         DataCell(
-          Text(
+          textdetails(
             "\$${value.toStringAsFixed(2)}",
-            style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
       ],
@@ -182,17 +164,17 @@ class _SalesTableState extends State<SalesTable> {
     return DataRow(
       cells: [
         DataCell(
-          Text(
+          textheader(
             label,
-            style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
         DataCell(
           Text(
             "\$${value.toStringAsFixed(2)}",
             style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.blue,
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w500,
+              color: '#496EE2'.toColor(),
             ),
           ),
         ),
@@ -218,13 +200,37 @@ class _SalesTableState extends State<SalesTable> {
       ],
     );
   }
+
+  Text textheader(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 14,
+        color: '#3C3C3C'.toColor(),
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
+  Text textdetails(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 14,
+        color: '#3C3C3C'.toColor(),
+        fontWeight: FontWeight.w300,
+      ),
+    );
+  }
 }
 
 class SalesSummary {
   final double totalNetSales;
   final double totalTaxSales;
   final double totalIncomingSales;
-  final double totalSales; // เพิ่ม totalSales
+  final double totalSales;
   final Map<String, double> combinedRevenue;
 
   SalesSummary({

@@ -1,12 +1,9 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_key_in_widget_constructors, library_private_types_in_public_api, deprecated_member_use
 
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
 import 'package:supercharged/supercharged.dart';
 import 'package:pdf/widgets.dart' as pw;
-
-import '../screens/overall/summary_table_section.dart';
-import '../screens/overall/summary_table_section.dart';
 
 class ShareMenu extends StatefulWidget {
   @override
@@ -18,7 +15,6 @@ class _ShareMenuState extends State<ShareMenu> {
   bool isDropdownOpen = false;
   OverlayEntry? _overlayEntry;
   final GlobalKey _key = GlobalKey();
-  // ฟังก์ชันสำหรับสร้าง Overlay
   OverlayEntry _showOverlay(BuildContext context) {
     return OverlayEntry(
       builder: (context) => Positioned(
@@ -45,7 +41,6 @@ class _ShareMenuState extends State<ShareMenu> {
                     icon: Icons.email_outlined,
                     label: "Email",
                     onTap: () {
-                      // Handle Email action
                       _hideOverlay();
                     },
                   ),
@@ -93,8 +88,6 @@ class _ShareMenuState extends State<ShareMenu> {
                   pw.SizedBox(height: 20),
                   pw.Text('ข้อมูลจาก SummaryTableSection'),
                   pw.SizedBox(height: 20),
-                  // เพิ่มการแสดงข้อมูลจาก SummaryTableSection
-                  // เช่น ใช้ pw.Table หรือ pw.Row เพื่อนำข้อมูลแสดงใน PDF
                 ],
               );
             },
@@ -105,7 +98,6 @@ class _ShareMenuState extends State<ShareMenu> {
     );
   }
 
-  // ฟังก์ชันสำหรับสร้างตัวเลือกแชร์
   Widget _buildShareOption({
     required IconData icon,
     required String label,
@@ -133,7 +125,7 @@ class _ShareMenuState extends State<ShareMenu> {
       _hideOverlay();
     } else {
       _overlayEntry = _showOverlay(context);
-      Overlay.of(context)?.insert(_overlayEntry!);
+      Overlay.of(context).insert(_overlayEntry!);
       setState(() {
         isDropdownOpen = true;
       });

@@ -3,6 +3,7 @@
 import 'package:develop_resturant/model_summary_sale.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:supercharged/supercharged.dart';
 import '../../bloc/summary_sale_bloc.dart';
@@ -11,15 +12,15 @@ import 'details_pp_total.dart';
 
 final logger = Logger();
 
-class SalesPage extends StatefulWidget {
-  const SalesPage({Key? key, required this.onTapDetail}) : super(key: key);
+class WeeklyFilterPage extends StatefulWidget {
+  const WeeklyFilterPage({Key? key, required this.onTapDetail}) : super(key: key);
   final VoidCallback onTapDetail; // Callback สำหรับการเปลี่ยนหน้า
 
   @override
-  _SalesPageState createState() => _SalesPageState();
+  _WeeklyFilterPageState createState() => _WeeklyFilterPageState();
 }
 
-class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
+class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProviderStateMixin {
   late TabController _tabController;
   final ScrollController _scrollController = ScrollController();
   final ScrollController _scrollController1 = ScrollController(); // ประกาศ ScrollController
@@ -65,192 +66,265 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.only(left: 10.0, bottom: 10, right: 10),
+      body: BlocBuilder<SalesBloc, SalesState>(builder: (context, state) {
+        if (state is SalesLoadingState) {
+          return Center(child: CircularProgressIndicator());
+        } else if (state is SalesErrorState) {
+          return Center(child: Text('Error: ${state.message}'));
+        } else if (state is SalesLoadedState) {
+          List<SalesData> salesData = state.salesData;
 
-        color: '#EEEEEE'.toColor(), // สีพื้นหลังของ Column
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.only(left: 10.0, bottom: 10, right: 0),
-              decoration: BoxDecoration(
-                color: '#FFFFFF'.toColor(),
-                borderRadius: BorderRadius.circular(4.0),
-              ),
-              child: TabBar(
-                controller: _tabController,
-                isScrollable: true,
-                labelColor: _indicatorColors[_selectedTabIndex],
-                unselectedLabelColor: '#959595'.toColor(),
-                indicatorColor: _indicatorColors[_selectedTabIndex],
-                indicatorWeight: 4.0,
-                indicatorPadding: EdgeInsets.only(right: 30),
-                tabs: [
-                  Tab(
-                    child: Row(
-                      children: [
-                        Container(
-                          alignment: Alignment.centerLeft,
-                          width: 40,
-                          child: Text('Sales', style: TextStyle(fontSize: 14)),
-                        ),
-                        VerticalDivider(
-                          color: Colors.grey,
-                          thickness: 0.5,
-                          width: 10, // Adjust spacing between text and divider
-                        ),
-                      ],
-                    ),
+          // ฟังก์ชันคำนวณสัปดาห์
+          List<List<String>> weeks = [];
+          List<String> currentWeek = [];
+          // Map<String, Map<String, double>> weeklySales = {};
+
+          for (var sale in salesData) {
+            DateTime date = DateTime.parse(sale.date);
+
+            if (currentWeek.isEmpty || currentWeek.length < 7) {
+              if (currentWeek.isEmpty || currentWeek.last != sale.date) {
+                currentWeek.add(sale.date);
+              }
+            }
+
+            if (currentWeek.length == 7) {
+              weeks.add(List.from(currentWeek));
+              currentWeek.clear();
+            }
+          }
+
+          if (currentWeek.isNotEmpty) {
+            weeks.add(List.from(currentWeek));
+          }
+
+          logger.w(weeks);
+          return Container(
+            padding: const EdgeInsets.only(left: 10.0, bottom: 10, right: 10),
+            color: '#EEEEEE'.toColor(),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.only(left: 10.0, bottom: 10, right: 0),
+                  decoration: BoxDecoration(
+                    color: '#FFFFFF'.toColor(),
+                    borderRadius: BorderRadius.circular(4.0),
                   ),
-                  Tab(
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.only(left: 0.0, bottom: 0, right: 10),
-                          width: 140,
-                          child: Text('Sales By Order Type    ', style: TextStyle(fontSize: 14)),
-                        ),
-                        VerticalDivider(
-                          color: Colors.grey,
-                          thickness: 0.5,
-                          width: 20,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Tab(
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.only(left: 0.0, bottom: 0, right: 20),
-                          width: 85,
-                          child: Text('Payments     ', style: TextStyle(fontSize: 14)),
-                        ),
-                        VerticalDivider(
-                          color: Colors.grey,
-                          thickness: 0.5,
-                          width: 0,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Tab(
-                    child: Row(
-                      children: [
-                        Container(
-                          alignment: Alignment.centerLeft,
-                          width: 155,
-                          child: Text('Service Charge & Fee', style: TextStyle(fontSize: 14)),
-                        ),
-                        VerticalDivider(
-                          color: Colors.grey,
-                          thickness: 0.5,
-                          width: 10,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Tab(
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.only(left: 0.0, bottom: 0, right: 20),
-                          width: 115,
-                          child: Text('Gift Certificate    ', style: TextStyle(fontSize: 14)),
-                        ),
-                        VerticalDivider(
-                          color: Colors.grey,
-                          thickness: 0.5,
-                          width: 0,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Tab(
-                    child: Container(
-                      padding: EdgeInsets.only(left: 0.0, bottom: 0, right: 0),
-                      width: 60,
-                      child: Text('Other', style: TextStyle(fontSize: 14)),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 16),
-            SizedBox(
-              height: 250, // กำหนดความสูง 50 พิกเซล
-              child: Container(
-                padding: const EdgeInsets.only(
-                  left: 16.0,
-                  top: 16,
-                ),
-                decoration: BoxDecoration(
-                  color: '#FFFFFF'.toColor(),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                        padding: const EdgeInsets.only(right: 16.0, top: 70), // เพิ่มระยะห่างด้านขวา
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Divider(),
-                            Text(
-                              'Date',
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                fontFamily: 'Roboto',
-                                fontWeight: FontWeight.w500,
-                                color: '#000000DE'.toColor(),
-                              ),
-                            ),
-                            const SizedBox(height: 40.0),
-                            Text(
-                              'Current',
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                fontFamily: 'Roboto',
-                                fontWeight: FontWeight.w300,
-                                color: '#000000DE'.toColor(),
-                              ),
-                            ),
-                            const SizedBox(height: 20.0),
-                            Text(
-                              'Total',
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                fontFamily: 'Roboto',
-                                fontWeight: FontWeight.w500,
-                                color: '#000000DE'.toColor(),
-                              ),
-                            ),
-                          ],
-                        )),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        controller: _scrollController,
-                        scrollDirection: Axis.horizontal,
+                  child: TabBar(
+                    controller: _tabController,
+                    isScrollable: true,
+                    labelColor: _indicatorColors[_selectedTabIndex],
+                    unselectedLabelColor: '#959595'.toColor(),
+                    indicatorColor: _indicatorColors[_selectedTabIndex],
+                    indicatorWeight: 4.0,
+                    indicatorPadding: EdgeInsets.only(right: 30),
+                    tabs: [
+                      Tab(
                         child: Row(
                           children: [
-                            _buildSalesTable(),
-                            _buildSalesByOrderTypeTable(),
-                            _buildPaymentsTable(),
-                            _buildServiceChargeandFeeTable(),
-                            // _buildOtherTable(),
-                            _buildGiftCertificateTable(),
-                            _buildOtherTable(),
+                            Container(
+                              alignment: Alignment.centerLeft,
+                              width: 40,
+                              child: Text('Sales', style: TextStyle(fontSize: 14)),
+                            ),
+                            VerticalDivider(
+                              color: Colors.grey,
+                              thickness: 0.5,
+                              width: 10,
+                            ),
                           ],
                         ),
                       ),
-                    )
-                  ],
+                      Tab(
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(left: 0.0, bottom: 0, right: 10),
+                              width: 140,
+                              child: Text('Sales By Order Type    ', style: TextStyle(fontSize: 14)),
+                            ),
+                            VerticalDivider(
+                              color: Colors.grey,
+                              thickness: 0.5,
+                              width: 20,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Tab(
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(left: 0.0, bottom: 0, right: 20),
+                              width: 85,
+                              child: Text('Payments     ', style: TextStyle(fontSize: 14)),
+                            ),
+                            VerticalDivider(
+                              color: Colors.grey,
+                              thickness: 0.5,
+                              width: 0,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Tab(
+                        child: Row(
+                          children: [
+                            Container(
+                              alignment: Alignment.centerLeft,
+                              width: 155,
+                              child: Text('Service Charge & Fee', style: TextStyle(fontSize: 14)),
+                            ),
+                            VerticalDivider(
+                              color: Colors.grey,
+                              thickness: 0.5,
+                              width: 10,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Tab(
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(left: 0.0, bottom: 0, right: 20),
+                              width: 115,
+                              child: Text('Gift Certificate    ', style: TextStyle(fontSize: 14)),
+                            ),
+                            VerticalDivider(
+                              color: Colors.grey,
+                              thickness: 0.5,
+                              width: 0,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Tab(
+                        child: Container(
+                          padding: EdgeInsets.only(left: 0.0, bottom: 0, right: 0),
+                          width: 60,
+                          child: Text('Other', style: TextStyle(fontSize: 14)),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                SizedBox(height: 16),
+                SizedBox(
+                  height: 400, // กำหนดความสูง 50 พิกเซล
+                  child: Container(
+                    padding: const EdgeInsets.only(
+                      left: 16.0,
+                      top: 16,
+                    ),
+                    decoration: BoxDecoration(
+                      color: '#FFFFFF'.toColor(),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                            padding: const EdgeInsets.only(right: 0.0, top: 0), // เพิ่มระยะห่างด้านขวา
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  color: '#868E96'.toColor(),
+                                  width: 100,
+                                  height: 2,
+                                ),
+                                SizedBox(height: 55),
+
+                                Text(
+                                  'Date',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontFamily: 'Roboto',
+                                    fontWeight: FontWeight.w500,
+                                    color: '#000000DE'.toColor(),
+                                  ),
+                                ),
+                                SizedBox(height: 47),
+                                Container(
+                                  color: '#868E96'.toColor(),
+                                  width: 100,
+                                  height: 2,
+                                ),
+                                // SizedBox(height: 50.0),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: weeks.map((week) {
+                                    String startDate = DateFormat('MM/dd').format(DateTime.parse(week.first));
+                                    String endDate = DateFormat('MM/dd').format(DateTime.parse(week.last));
+
+                                    return Column(
+                                      children: [
+                                        // แสดงวันที่
+                                        Text(
+                                          "$startDate - $endDate",
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                            fontFamily: 'Roboto',
+                                            fontWeight: FontWeight.w300,
+                                            color: '#000000DE'.toColor(),
+                                          ),
+                                        ),
+                                        SizedBox(height: 18),
+                                        Container(
+                                          color: '#E3E5E5'.toColor(),
+                                          width: 100,
+                                          height: 1,
+                                        ),
+                                        // SizedBox(height: 4),
+                                      ],
+                                    );
+                                  }).toList(),
+                                ),
+                                const SizedBox(height: 10.0),
+                                Text(
+                                  'Total',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontFamily: 'Roboto',
+                                    fontWeight: FontWeight.w500,
+                                    color: '#000000DE'.toColor(),
+                                  ),
+                                ),
+                                const SizedBox(height: 6.0),
+
+                                Container(
+                                  color: '#868E96'.toColor(),
+                                  width: 100,
+                                  height: 2,
+                                ),
+                              ],
+                            )),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            controller: _scrollController,
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                _buildSalesTable(),
+                                _buildSalesByOrderTypeTable(),
+                                _buildPaymentsTable(),
+                                _buildServiceChargeandFeeTable(),
+                                _buildGiftCertificateTable(),
+                                _buildOtherTable(),
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          );
+        }
+        return Center(child: Text('No Data'));
+      }),
     );
   }
 
@@ -263,24 +337,67 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
         return Center(child: Text('Error: ${state.message}'));
       } else if (state is SalesLoadedState) {
         List<SalesData> salesData = state.salesData;
+        // logger.e(salesData);
 
-        double totalFood = 0, totalLiquor = 0, totalNetSales = 0, totalTaxes = 0, totalTotalSales = 0;
+        // ฟังก์ชันคำนวณสัปดาห์
+        List<List<String>> weeks = [];
+        List<String> currentWeek = [];
+        Map<String, Map<String, double>> weeklySales = {};
 
-        for (var data in salesData) {
-          totalFood += data.data.sales.food;
-          totalLiquor += data.data.sales.liquor;
-          totalNetSales += data.data.sales.netSales;
-          totalTaxes += data.data.sales.taxes;
-          totalTotalSales += data.data.sales.food + data.data.sales.liquor + data.data.sales.netSales + data.data.sales.taxes;
+        for (var sale in salesData) {
+          DateTime date = DateTime.parse(sale.date);
+
+          if (currentWeek.isEmpty || currentWeek.length < 7) {
+            if (currentWeek.isEmpty || currentWeek.last != sale.date) {
+              currentWeek.add(sale.date);
+            }
+          }
+
+          if (currentWeek.length == 7) {
+            weeks.add(List.from(currentWeek));
+            currentWeek.clear();
+          }
         }
 
+        if (currentWeek.isNotEmpty) {
+          weeks.add(List.from(currentWeek));
+        }
+
+        logger.w(weeks);
+        for (var week in weeks) {
+          String weekRange = "${week.first} - ${week.last}";
+
+          if (!weeklySales.containsKey(weekRange)) {
+            weeklySales[weekRange] = {
+              'food': 0,
+              'liquor': 0,
+              'netSales': 0,
+              'taxes': 0,
+              'totalSales': 0,
+            };
+          }
+
+          for (var sale in salesData) {
+            if (week.contains(sale.date)) {
+              weeklySales[weekRange]!['food'] = (weeklySales[weekRange]!['food'] ?? 0) + sale.data.sales.food;
+              weeklySales[weekRange]!['liquor'] = (weeklySales[weekRange]!['liquor'] ?? 0) + sale.data.sales.liquor;
+              weeklySales[weekRange]!['netSales'] = (weeklySales[weekRange]!['netSales'] ?? 0) + sale.data.sales.netSales;
+              weeklySales[weekRange]!['taxes'] = (weeklySales[weekRange]!['taxes'] ?? 0) + sale.data.sales.taxes;
+              weeklySales[weekRange]!['totalSales'] = (weeklySales[weekRange]!['totalSales'] ?? 0) +
+                  sale.data.sales.food +
+                  sale.data.sales.liquor +
+                  sale.data.sales.netSales +
+                  sale.data.sales.taxes;
+            }
+          }
+        }
         double cellHeight = MediaQuery.of(context).size.height * 0.09;
         TextStyle headerStyle = TextStyle(fontWeight: FontWeight.bold);
 
         Widget buildCell(String text, {TextStyle? style}) => Container(
               height: cellHeight,
               alignment: Alignment.center,
-              child: _buildHeaderCell(text),
+              child: Text(text, style: style),
             );
         Widget buildDataCell(String text) {
           return Container(
@@ -318,43 +435,42 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
                       ),
                     ],
                   ),
-                  Table(
-                    border: TableBorder.all(color: '#868E96'.toColor(), width: 1),
-                    columnWidths: const {
-                      0: FixedColumnWidth(85.0),
-                      1: FixedColumnWidth(85.0),
-                      2: FixedColumnWidth(85.0),
-                      3: FixedColumnWidth(85.0),
-                      4: FixedColumnWidth(85.0),
-                    },
-                    children: [
-                      TableRow(
-                        decoration: BoxDecoration(color: '#E9E6EA'.toColor()),
-                        children:
-                            ['Food', 'Liquor', 'Net Sales', 'Taxes', 'Total Sales'].map((title) => buildCell(title, style: headerStyle)).toList(),
-                      ),
-                      TableRow(
+                  Table(border: TableBorder.all(color: '#868E96'.toColor(), width: 1), columnWidths: const {
+                    0: FixedColumnWidth(85.0),
+                    1: FixedColumnWidth(85.0),
+                    2: FixedColumnWidth(85.0),
+                    3: FixedColumnWidth(85.0),
+                    4: FixedColumnWidth(85.0),
+                  }, children: [
+                    TableRow(
+                      decoration: BoxDecoration(color: '#E9E6EA'.toColor()),
+                      children: ['Food', 'Liquor', 'Net Sales', 'Taxes', 'Total Sales'].map((title) => buildCell(title, style: headerStyle)).toList(),
+                    ),
+                    ...weeklySales.entries.map((entry) {
+                      Map<String, double> totals = entry.value;
+                      return TableRow(
                         decoration: BoxDecoration(color: '#E9E6EA'.toColor()),
                         children: [
-                          totalFood,
-                          totalLiquor,
-                          totalNetSales,
-                          totalTaxes,
-                          totalTotalSales,
-                        ].map((total) => buildDataCell(total.toStringAsFixed(2))).toList(),
-                      ),
-                      TableRow(
-                        decoration: BoxDecoration(color: '#E9E6EA'.toColor()),
-                        children: [
-                          totalFood,
-                          totalLiquor,
-                          totalNetSales,
-                          totalTaxes,
-                          totalTotalSales,
-                        ].map((total) => buildDataCell(total.toStringAsFixed(2))).toList(),
-                      ),
-                    ],
-                  )
+                          // buildDataCell(week),
+                          buildDataCell(totals['food']!.toStringAsFixed(2)),
+                          buildDataCell(totals['liquor']!.toStringAsFixed(2)),
+                          buildDataCell(totals['netSales']!.toStringAsFixed(2)),
+                          buildDataCell(totals['taxes']!.toStringAsFixed(2)),
+                          buildDataCell(totals['totalSales']!.toStringAsFixed(2)),
+                        ],
+                      );
+                    }).toList(),
+                    TableRow(
+                      decoration: BoxDecoration(color: '#E9E6EA'.toColor()),
+                      children: [
+                        buildDataCell(weeklySales.values.fold(0.0, (sum, entry) => sum + entry['food']!).toStringAsFixed(2)),
+                        buildDataCell(weeklySales.values.fold(0.0, (sum, entry) => sum + entry['liquor']!).toStringAsFixed(2)),
+                        buildDataCell(weeklySales.values.fold(0.0, (sum, entry) => sum + entry['netSales']!).toStringAsFixed(2)),
+                        buildDataCell(weeklySales.values.fold(0.0, (sum, entry) => sum + entry['taxes']!).toStringAsFixed(2)),
+                        buildDataCell(weeklySales.values.fold(0.0, (sum, entry) => sum + entry['totalSales']!).toStringAsFixed(2)),
+                      ],
+                    )
+                  ])
                 ])),
           ]),
         );
@@ -371,77 +487,117 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
         return Center(child: Text('Error: ${state.message}'));
       } else if (state is SalesLoadedState) {
         List<SalesData> salesData = state.salesData;
+        List<List<String>> weeks = [];
+        List<String> currentWeek = [];
+        Map<String, Map<String, double>> weeklySalesByOrderType = {};
 
-        double totalDineIn = 0, totalTogo = 0, totalDelivery = 0;
+        for (var sale in salesData) {
+          DateTime date = DateTime.parse(sale.date);
 
-        for (var data in salesData) {
-          totalDineIn += data.data.salesByOrderType.dineIn;
-          totalTogo += data.data.salesByOrderType.togo;
-          totalDelivery += data.data.salesByOrderType.delivery;
+          if (currentWeek.isEmpty || currentWeek.length < 7) {
+            if (currentWeek.isEmpty || currentWeek.last != sale.date) {
+              currentWeek.add(sale.date);
+            }
+          }
+
+          if (currentWeek.length == 7) {
+            weeks.add(List.from(currentWeek));
+            currentWeek.clear();
+          }
+        }
+
+        if (currentWeek.isNotEmpty) {
+          weeks.add(List.from(currentWeek));
+        }
+
+        logger.w(weeks);
+        for (var week in weeks) {
+          String weekRange = "${week.first} - ${week.last}";
+
+          if (!weeklySalesByOrderType.containsKey(weekRange)) {
+            weeklySalesByOrderType[weekRange] = {
+              'dineIn': 0,
+              'togo': 0,
+              'delivery': 0,
+            };
+          }
+
+          for (var data in salesData) {
+            if (week.contains(data.date)) {
+              weeklySalesByOrderType[weekRange]!['dineIn'] = (weeklySalesByOrderType[weekRange]!['dineIn'] ?? 0) + data.data.salesByOrderType.dineIn;
+              weeklySalesByOrderType[weekRange]!['togo'] = (weeklySalesByOrderType[weekRange]!['togo'] ?? 0) + data.data.salesByOrderType.togo;
+              weeklySalesByOrderType[weekRange]!['delivery'] =
+                  (weeklySalesByOrderType[weekRange]!['delivery'] ?? 0) + data.data.salesByOrderType.delivery;
+              data.data.salesByOrderType.dineIn + data.data.salesByOrderType.togo + data.data.salesByOrderType.delivery;
+            }
+          }
         }
         return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(children: [
             SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Column(children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 255,
-                      height: 34,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: '#F8F7EA'.toColor(),
-                        border: Border.all(
-                          color: '#868E96'.toColor(),
-                          width: 1.0,
+                scrollDirection: Axis.horizontal,
+                child: Column(children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 255,
+                        height: 34,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: '#F8F7EA'.toColor(),
+                          border: Border.all(
+                            color: '#868E96'.toColor(),
+                            width: 1.0,
+                          ),
+                        ),
+                        child: Text(
+                          'Sales By Order Type',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w500),
                         ),
                       ),
-                      child: Text(
-                        'Sales By Order Type',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w500),
-                      ),
+                    ],
+                  ),
+                  Table(border: TableBorder.all(color: Colors.grey, width: 1), columnWidths: const {
+                    0: FixedColumnWidth(85.0),
+                    1: FixedColumnWidth(85.0),
+                    2: FixedColumnWidth(85.0),
+                  }, children: [
+                    TableRow(
+                      decoration: BoxDecoration(color: '#F8F7EA'.toColor()),
+                      children: ['Dine in', 'Togo', 'Delivery'].map((title) {
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 16.0, right: 16, top: 25, bottom: 25),
+                          child: Text(
+                            title,
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        );
+                      }).toList(),
                     ),
-                  ],
-                ),
-                Table(border: TableBorder.all(color: Colors.grey, width: 1), columnWidths: const {
-                  0: FixedColumnWidth(85.0),
-                  1: FixedColumnWidth(85.0),
-                  2: FixedColumnWidth(85.0),
-                }, children: [
-                  TableRow(
-                    decoration: BoxDecoration(color: '#F8F7EA'.toColor()),
-                    children: ['Dine in', 'Togo', 'Delivery'].map((title) {
-                      return Padding(
-                        padding: const EdgeInsets.only(left: 16.0, right: 16, top: 25, bottom: 25),
-                        child: _buildHeaderCell(
-                          title,
-                          // style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
+                    ...weeklySalesByOrderType.entries.map((entry) {
+                      Map<String, double> totals = entry.value;
+                      return TableRow(
+                        decoration: BoxDecoration(color: '#F8F7EA'.toColor()),
+                        children: [
+                          // buildDataCell(week),
+                          buildDataCell(totals['dineIn']!.toStringAsFixed(2)),
+                          buildDataCell(totals['togo']!.toStringAsFixed(2)),
+                          buildDataCell(totals['delivery']!.toStringAsFixed(2)),
+                        ],
                       );
                     }).toList(),
-                  ),
-                  TableRow(
-                    decoration: BoxDecoration(color: '#F8F7EA'.toColor()),
-                    children: [
-                      totalDineIn,
-                      totalTogo,
-                      totalDelivery,
-                    ].map((total) => buildDataCell(total.toStringAsFixed(2))).toList(),
-                  ),
-                  TableRow(
-                    decoration: BoxDecoration(color: '#F8F7EA'.toColor()),
-                    children: [
-                      totalDineIn,
-                      totalTogo,
-                      totalDelivery,
-                    ].map((total) => buildDataCell(total.toStringAsFixed(2))).toList(),
-                  ),
-                ]),
-              ]),
-            ),
+                    TableRow(
+                      decoration: BoxDecoration(color: '#F8F7EA'.toColor()),
+                      children: [
+                        buildDataCell(weeklySalesByOrderType.values.fold(0.0, (sum, entry) => sum + entry['dineIn']!).toStringAsFixed(2)),
+                        buildDataCell(weeklySalesByOrderType.values.fold(0.0, (sum, entry) => sum + entry['togo']!).toStringAsFixed(2)),
+                        buildDataCell(weeklySalesByOrderType.values.fold(0.0, (sum, entry) => sum + entry['delivery']!).toStringAsFixed(2)),
+                      ],
+                    )
+                  ])
+                ])),
           ]),
         );
       }
@@ -457,57 +613,105 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
         return Center(child: Text('Error: ${state.message}'));
       } else if (state is SalesLoadedState) {
         List<SalesData> salesData = state.salesData;
-        double totalCash = 0,
-            totalCheck = 0,
-            totalCoupon = 0,
-            total3RDPP = 0,
-            total3RDPPTips = 0,
-            total3rdppTotal = 0,
-            totalEmvCCsales = 0,
-            totalEmvCCTips = 0,
-            totalEmvCCTotal = 0,
-            totalCloverFlexCCsales = 0,
-            totalCloverFlexCCTips = 0,
-            totalCloverFlexCCTotal = 0,
-            totalSDPrepaidPP = 0,
-            totalSDPrepaidPPTips = 0,
-            totalSDGiftCardPPGC = 0,
-            totalSDGiftCardPPGCTips = 0,
-            totalSDGiftCardTotal = 0,
-            totalSCPrepaidPP = 0,
-            totalSCPrepaidPPTips = 0,
-            totalSCGiftCardPPGC = 0,
-            totalSCGiftCardPPGCTips = 0,
-            totalSCGiftCardTotal = 0;
+        List<List<String>> weeks = [];
+        List<String> currentWeek = [];
+        Map<String, Map<String, double>> weeklyPayments = {};
 
-        for (var data in salesData) {
-          // Payments
-          totalCash += data.data.payments.cash;
-          totalCheck += data.data.payments.check;
-          totalCoupon += data.data.payments.coupon;
-          total3RDPP += data.data.payments.pp;
-          total3RDPPTips += data.data.payments.pPTips;
-          total3rdppTotal += data.data.payments.pp + data.data.payments.pPTips;
-          totalEmvCCsales += data.data.payments.emvccSales;
-          totalEmvCCTips += data.data.payments.emvcCTips;
-          totalEmvCCTotal += data.data.payments.emvccSales + data.data.payments.emvcCTips;
-          totalCloverFlexCCsales += data.data.payments.cloverFlexCCSales;
-          totalCloverFlexCCTips += data.data.payments.cloverFlexCCTips;
-          totalCloverFlexCCTotal += data.data.payments.cloverFlexCCSales + data.data.payments.cloverFlexCCTips;
-          totalSDPrepaidPP += data.data.payments.smileDiningPP;
-          totalSDPrepaidPPTips += data.data.payments.smileDiningPPTips;
-          totalSDGiftCardPPGC += data.data.payments.smileDiningPPGC;
-          totalSDGiftCardPPGCTips += data.data.payments.smileContactlessPPGCTips;
-          totalSDGiftCardTotal += data.data.payments.smileDiningPP + data.data.payments.smileDiningPPTips + data.data.payments.smileDiningPPGC;
-          totalSCPrepaidPP += data.data.payments.smileContactlessPP;
-          totalSCPrepaidPPTips += data.data.payments.smileContactlessPPTips;
-          totalSCGiftCardPPGC += data.data.payments.smileContactlessPPGC;
-          totalSCGiftCardPPGCTips += data.data.payments.smileContactlessPPGCTips;
-          totalSCGiftCardTotal += data.data.payments.smileContactlessPP +
-              data.data.payments.smileContactlessPPTips +
-              data.data.payments.smileContactlessPPGC +
-              data.data.payments.smileContactlessPPGCTips;
+        for (var sale in salesData) {
+          DateTime date = DateTime.parse(sale.date);
+
+          if (currentWeek.isEmpty || currentWeek.length < 7) {
+            if (currentWeek.isEmpty || currentWeek.last != sale.date) {
+              currentWeek.add(sale.date);
+            }
+          }
+
+          if (currentWeek.length == 7) {
+            weeks.add(List.from(currentWeek));
+            currentWeek.clear();
+          }
         }
+
+        if (currentWeek.isNotEmpty) {
+          weeks.add(List.from(currentWeek));
+        }
+
+        logger.w(weeks);
+        for (var week in weeks) {
+          String weekRange = "${week.first} - ${week.last}";
+
+          if (!weeklyPayments.containsKey(weekRange)) {
+            weeklyPayments[weekRange] = {
+              'cash': 0,
+              'check': 0,
+              'coupon': 0,
+              '3RDPP': 0,
+              '3RDPPTips': 0,
+              '3rdpptotal': 0,
+              'EmvCCsales': 0,
+              'EmvCCTips': 0,
+              'EmvCCtotal': 0,
+              'CloverFlexCCsales': 0,
+              'CloverFlexCCTips': 0,
+              'CloverFlexCCtotal': 0,
+              'SDPrepaidPP': 0,
+              'SDPrepaidPPTips': 0,
+              'SDGiftCardPPGC': 0,
+              'SDGiftCardPPGCTips': 0,
+              'SDGiftCardtotal': 0,
+              'SCPrepaidPPTips': 0,
+              'SCPrepaidPP': 0,
+              'SCGiftCardPPGC': 0,
+              'SCGiftCardPPGCTips': 0,
+              'SCGiftCardTotal': 0,
+            };
+          }
+
+          for (var data in salesData) {
+            if (week.contains(data.date)) {
+              weeklyPayments[weekRange]!['cash'] = (weeklyPayments[weekRange]!['cash'] ?? 0) + data.data.payments.cash;
+              weeklyPayments[weekRange]!['check'] = (weeklyPayments[weekRange]!['check'] ?? 0) + data.data.payments.check;
+              weeklyPayments[weekRange]!['coupon'] = (weeklyPayments[weekRange]!['coupon'] ?? 0) + data.data.payments.coupon;
+              weeklyPayments[weekRange]!['pp'] = (weeklyPayments[weekRange]!['pp'] ?? 0) + data.data.payments.pp;
+              weeklyPayments[weekRange]!['3RDPP'] = (weeklyPayments[weekRange]!['3RDPP'] ?? 0) + data.data.payments.pPTips;
+              weeklyPayments[weekRange]!['3RDPPTips'] = (weeklyPayments[weekRange]!['3RDPPTips'] ?? 0) + data.data.payments.pPTips;
+              weeklyPayments[weekRange]!['3rdpptotal'] =
+                  (weeklyPayments[weekRange]!['3rdpptotal'] ?? 0) + data.data.payments.pp + data.data.payments.pPTips;
+              weeklyPayments[weekRange]!['EmvCCsales'] = (weeklyPayments[weekRange]!['EmvCCsales'] ?? 0) + data.data.payments.emvccSales;
+              weeklyPayments[weekRange]!['EmvCCTips'] = (weeklyPayments[weekRange]!['EmvCCTips'] ?? 0) + data.data.payments.emvcCTips;
+              weeklyPayments[weekRange]!['EmvCCtotal'] =
+                  (weeklyPayments[weekRange]!['EmvCCtotal'] ?? 0) + data.data.payments.emvccSales + data.data.payments.emvcCTips;
+              weeklyPayments[weekRange]!['CloverFlexCCsales'] =
+                  (weeklyPayments[weekRange]!['CloverFlexCCsales'] ?? 0) + data.data.payments.cloverFlexCCSales;
+              weeklyPayments[weekRange]!['CloverFlexCCTips'] =
+                  (weeklyPayments[weekRange]!['CloverFlexCCTips'] ?? 0) + data.data.payments.cloverFlexCCTips;
+              weeklyPayments[weekRange]!['CloverFlexCCtotal'] =
+                  (weeklyPayments[weekRange]!['CloverFlexCCtotal'] ?? 0) + data.data.payments.cloverFlexCCSales + data.data.payments.cloverFlexCCTips;
+              weeklyPayments[weekRange]!['SDPrepaidPP'] = (weeklyPayments[weekRange]!['SDPrepaidPP'] ?? 0) + data.data.payments.smileDiningPP;
+              weeklyPayments[weekRange]!['SDPrepaidPPTips'] = (weeklyPayments[weekRange]!['togo'] ?? 0) + data.data.payments.smileDiningPPTips;
+              weeklyPayments[weekRange]!['SDGiftCardPPGC'] = (weeklyPayments[weekRange]!['SDGiftCardPPGC'] ?? 0) + data.data.payments.smileDiningPPGC;
+              weeklyPayments[weekRange]!['SDGiftCardPPGCTips'] =
+                  (weeklyPayments[weekRange]!['SDGiftCardPPGCTips'] ?? 0) + data.data.payments.smileContactlessPPGCTips;
+              weeklyPayments[weekRange]!['SDGiftCardtotal'] = (weeklyPayments[weekRange]!['SDGiftCardtotal'] ?? 0) +
+                  data.data.payments.smileDiningPP +
+                  data.data.payments.smileDiningPPTips +
+                  data.data.payments.smileDiningPPGC;
+              weeklyPayments[weekRange]!['SCPrepaidPP'] = (weeklyPayments[weekRange]!['SCPrepaidPP'] ?? 0) + data.data.payments.smileContactlessPP;
+              weeklyPayments[weekRange]!['SCPrepaidPPTips'] =
+                  (weeklyPayments[weekRange]!['SCPrepaidPPTips'] ?? 0) + data.data.payments.smileContactlessPPTips;
+              weeklyPayments[weekRange]!['SCGiftCardPPGC'] =
+                  (weeklyPayments[weekRange]!['SCGiftCardPPGC'] ?? 0) + data.data.payments.smileContactlessPPGC;
+              weeklyPayments[weekRange]!['SCGiftCardPPGCTips'] =
+                  (weeklyPayments[weekRange]!['SCGiftCardPPGCTips'] ?? 0) + data.data.payments.smileContactlessPPGCTips;
+              weeklyPayments[weekRange]!['SCGiftCardTotal'] = (weeklyPayments[weekRange]!['SCGiftCardTotal'] ?? 0) +
+                  data.data.payments.smileContactlessPP +
+                  data.data.payments.smileContactlessPPTips +
+                  data.data.payments.smileContactlessPPGC +
+                  data.data.payments.smileContactlessPPGCTips;
+            }
+          }
+        }
+
         double cellHeight = MediaQuery.of(context).size.height * 0.09;
         TextStyle headerStyle = TextStyle(fontWeight: FontWeight.w400, color: '#3C3C3C'.toColor());
         Widget buildCell(String text, {TextStyle? style}) => Container(
@@ -875,184 +1079,40 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
                             )
                           ],
                         ),
-                        // Data Row 1
-                        TableRow(
-                          decoration: BoxDecoration(color: '#E5F0F5'.toColor()),
-                          children: [
-                            buildDataCell(totalCash.toStringAsFixed(2)),
-                            buildDataCell(totalCheck.toStringAsFixed(2)),
-                            buildDataCell(totalCoupon.toStringAsFixed(2)),
-                            // 3rd Party
-                            TableCell(
-                              verticalAlignment: TableCellVerticalAlignment.middle,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Expanded(
-                                    child: Center(
-                                      child: Text(
-                                        total3RDPP.toStringAsFixed(2),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Center(
-                                      child: Text(
-                                        total3RDPPTips.toStringAsFixed(2),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Center(
-                                      child: Text(
-                                        total3rdppTotal.toStringAsFixed(2),
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          decoration: TextDecoration.underline,
-                                          color: '#496EE2'.toColor(),
-                                          fontSize: 14,
+                        ...weeklyPayments.entries.map((entry) {
+                          Map<String, double> totals = entry.value;
+                          return TableRow(
+                            decoration: BoxDecoration(color: '#E5F0F5'.toColor()),
+                            children: [
+                              buildDataCell(totals['cash']!.toStringAsFixed(2)),
+                              buildDataCell(totals['check']!.toStringAsFixed(2)),
+                              buildDataCell(totals['coupon']!.toStringAsFixed(2)),
+                              // 3rd Party
+                              TableCell(
+                                verticalAlignment: TableCellVerticalAlignment.middle,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Expanded(
+                                      child: Center(
+                                        child: Text(
+                                          (totals['3RDPP']!.toStringAsFixed(2)),
+                                          textAlign: TextAlign.center,
                                         ),
                                       ),
                                     ),
-                                  )
-                                ],
-                              ),
-                            ),
-
-                            // Credit (EMV)
-                            TableCell(
-                              verticalAlignment: TableCellVerticalAlignment.middle,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Expanded(
-                                    child: Center(
-                                      child: Text(
-                                        totalEmvCCsales.toStringAsFixed(2),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Center(
-                                      child: Text(
-                                        totalEmvCCTips.toStringAsFixed(2),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Center(
-                                      child: Text(
-                                        totalEmvCCTotal.toStringAsFixed(2),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            // Credit (Clover Flex)
-                            TableCell(
-                              verticalAlignment: TableCellVerticalAlignment.middle,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Expanded(
-                                    child: Center(
-                                      child: Text(
-                                        totalCloverFlexCCsales.toStringAsFixed(2),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Center(
-                                      child: Text(
-                                        totalCloverFlexCCTips.toStringAsFixed(2),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Center(
-                                      child: Text(
-                                        totalCloverFlexCCTotal.toStringAsFixed(2),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            // Smile Dining
-                            TableCell(
-                              verticalAlignment: TableCellVerticalAlignment.middle,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Text(totalSDPrepaidPP.toStringAsFixed(2), textAlign: TextAlign.center),
-                                  Text(totalSDPrepaidPPTips.toStringAsFixed(2), textAlign: TextAlign.center),
-                                  Text(totalSDGiftCardPPGC.toStringAsFixed(2), textAlign: TextAlign.center),
-                                  Text(totalSDGiftCardPPGCTips.toStringAsFixed(2), textAlign: TextAlign.center),
-                                  Text(totalSDGiftCardTotal.toStringAsFixed(2), textAlign: TextAlign.center),
-                                ],
-                              ),
-                            ),
-                            // Smile Contactless
-                            TableCell(
-                              verticalAlignment: TableCellVerticalAlignment.middle,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Text(totalSCPrepaidPP.toStringAsFixed(2), textAlign: TextAlign.center),
-                                  Text(totalSCPrepaidPPTips.toStringAsFixed(2), textAlign: TextAlign.center),
-                                  Text(totalSCGiftCardPPGC.toStringAsFixed(2), textAlign: TextAlign.center),
-                                  Text(totalSCGiftCardPPGCTips.toStringAsFixed(2), textAlign: TextAlign.center),
-                                  Text(totalSCGiftCardTotal.toStringAsFixed(2), textAlign: TextAlign.center),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        // Data Row 2
-                        TableRow(
-                          decoration: BoxDecoration(color: '#E5F0F5'.toColor()),
-                          children: [
-                            buildDataCell(totalCash.toStringAsFixed(2)),
-                            buildDataCell(totalCheck.toStringAsFixed(2)),
-                            buildDataCell(totalCoupon.toStringAsFixed(2)),
-                            // 3rd Party
-                            TableCell(
-                              verticalAlignment: TableCellVerticalAlignment.middle,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Expanded(
-                                    child: Center(
-                                      child: Text(
-                                        total3RDPP.toStringAsFixed(2),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Center(
-                                      child: Text(
-                                        total3RDPPTips.toStringAsFixed(2),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Center(
-                                      child: InkWell(
-                                        onTap: widget.onTapDetail,
+                                    Expanded(
+                                      child: Center(
                                         child: Text(
-                                          total3rdppTotal.toStringAsFixed(2),
+                                          (totals['3RDPPTips']!.toStringAsFixed(2)),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Center(
+                                        child: Text(
+                                          (totals['3rdpptotal']!.toStringAsFixed(2)),
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
                                             decoration: TextDecoration.underline,
@@ -1061,109 +1121,134 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  )
-                                ],
+                                    )
+                                  ],
+                                ),
                               ),
-                            ),
-
-                            // Credit (EMV)
-                            TableCell(
-                              verticalAlignment: TableCellVerticalAlignment.middle,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Expanded(
-                                    child: Center(
-                                      child: Text(
-                                        totalEmvCCsales.toStringAsFixed(2),
-                                        textAlign: TextAlign.center,
+                              // Credit (EMV)
+                              TableCell(
+                                verticalAlignment: TableCellVerticalAlignment.middle,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Expanded(
+                                      child: Center(
+                                        child: Text(
+                                          (totals['EmvCCsales']!.toStringAsFixed(2)),
+                                          textAlign: TextAlign.center,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    child: Center(
-                                      child: Text(
-                                        totalEmvCCTips.toStringAsFixed(2),
-                                        textAlign: TextAlign.center,
+                                    Expanded(
+                                      child: Center(
+                                        child: Text(
+                                          (totals['EmvCCTips']!.toStringAsFixed(2)),
+                                          textAlign: TextAlign.center,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    child: Center(
-                                      child: Text(
-                                        totalEmvCCTotal.toStringAsFixed(2),
-                                        textAlign: TextAlign.center,
+                                    Expanded(
+                                      child: Center(
+                                        child: Text(
+                                          (totals['EmvCCtotal']!.toStringAsFixed(2)),
+                                          textAlign: TextAlign.center,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-
-                            // Credit (Clover Flex)
-                            TableCell(
-                              verticalAlignment: TableCellVerticalAlignment.middle,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Expanded(
-                                    child: Center(
-                                      child: Text(
-                                        totalCloverFlexCCsales.toStringAsFixed(2),
-                                        textAlign: TextAlign.center,
+                              // Credit (Clover Flex)
+                              TableCell(
+                                verticalAlignment: TableCellVerticalAlignment.middle,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Expanded(
+                                      child: Center(
+                                        child: Text(
+                                          (totals['CloverFlexCCsales']!.toStringAsFixed(2)),
+                                          textAlign: TextAlign.center,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    child: Center(
-                                      child: Text(
-                                        totalCloverFlexCCTips.toStringAsFixed(2),
-                                        textAlign: TextAlign.center,
+                                    Expanded(
+                                      child: Center(
+                                        child: Text(
+                                          (totals['CloverFlexCCTips']!.toStringAsFixed(2)),
+                                          textAlign: TextAlign.center,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    child: Center(
-                                      child: Text(
-                                        totalCloverFlexCCTotal.toStringAsFixed(2),
-                                        textAlign: TextAlign.center,
+                                    Expanded(
+                                      child: Center(
+                                        child: Text(
+                                          (totals['CloverFlexCCtotal']!.toStringAsFixed(2)),
+                                          textAlign: TextAlign.center,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            // Smile Dining
-                            TableCell(
-                              verticalAlignment: TableCellVerticalAlignment.middle,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Text(totalSDPrepaidPP.toStringAsFixed(2), textAlign: TextAlign.center),
-                                  Text(totalSDPrepaidPPTips.toStringAsFixed(2), textAlign: TextAlign.center),
-                                  Text(totalSDGiftCardPPGC.toStringAsFixed(2), textAlign: TextAlign.center),
-                                  Text(totalSDGiftCardPPGCTips.toStringAsFixed(2), textAlign: TextAlign.center),
-                                  Text(totalSDGiftCardTotal.toStringAsFixed(2), textAlign: TextAlign.center),
-                                ],
+                              // Smile Dining
+                              TableCell(
+                                verticalAlignment: TableCellVerticalAlignment.middle,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    buildDataCell(totals['SDPrepaidPP']!.toStringAsFixed(2)),
+                                    buildDataCell(totals['SDPrepaidPPTips']!.toStringAsFixed(2)),
+                                    buildDataCell(totals['SDGiftCardPPGC']!.toStringAsFixed(2)),
+                                    buildDataCell(totals['SDGiftCardPPGCTips']!.toStringAsFixed(2)),
+                                    buildDataCell(totals['SDGiftCardtotal']!.toStringAsFixed(2)),
+                                  ],
+                                ),
                               ),
-                            ),
-                            // Smile Contactless
-                            TableCell(
-                              verticalAlignment: TableCellVerticalAlignment.middle,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Text(totalSCPrepaidPP.toStringAsFixed(2), textAlign: TextAlign.center),
-                                  Text(totalSCPrepaidPPTips.toStringAsFixed(2), textAlign: TextAlign.center),
-                                  Text(totalSCGiftCardPPGC.toStringAsFixed(2), textAlign: TextAlign.center),
-                                  Text(totalSCGiftCardPPGCTips.toStringAsFixed(2), textAlign: TextAlign.center),
-                                  Text(totalSCGiftCardTotal.toStringAsFixed(2), textAlign: TextAlign.center),
-                                ],
+                              // Smile Contactless
+                              TableCell(
+                                verticalAlignment: TableCellVerticalAlignment.middle,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    buildDataCell(totals['SCPrepaidPP']!.toStringAsFixed(2)),
+                                    buildDataCell(totals['SCPrepaidPPTips']!.toStringAsFixed(2)),
+                                    buildDataCell(totals['SCGiftCardPPGC']!.toStringAsFixed(2)),
+                                    buildDataCell(totals['SCGiftCardPPGCTips']!.toStringAsFixed(2)),
+                                    buildDataCell(totals['SCGiftCardTotal']!.toStringAsFixed(2)),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          );
+                        }).toList(),
+                        // TableRow(
+                        //   decoration: BoxDecoration(color: '#F8F7EA'.toColor()),
+                        //   children: [
+                        // buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['cash']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['check']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['coupon']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['3RDPP']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['3RDPPTips']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['3rdpptotal']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['EmvCCsales']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['EmvCCTips']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['EmvCCtotal']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['CloverFlexCCsales']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['CloverFlexCCTips']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['CloverFlexCCtotal']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SDPrepaidPP']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SDPrepaidPPTips']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SDGiftCardPPGC']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SDGiftCardPPGCTips']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SDGiftCardtotal']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SCPrepaidPPTips']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SCPrepaidPP']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SCGiftCardPPGC']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SCGiftCardPPGCTips']!).toStringAsFixed(2)),
+                        //     buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SCGiftCardTotal']!).toStringAsFixed(2)),
+                        // ],
+                        // )
                       ],
                     ),
                   ],
@@ -1595,14 +1680,13 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
     });
   }
 
-  // ฟังก์ชันสำหรับสร้าง header ของตาราง
   Widget _buildHeaderCell(String text) {
     return Container(
       height: 40.0,
       alignment: Alignment.center,
       child: Text(
         text,
-        style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w400, color: '#3C3C3C'.toColor()),
+        style: TextStyle(fontWeight: FontWeight.w500),
       ),
     );
   }

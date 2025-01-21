@@ -19,15 +19,14 @@ class _CustomDatePickerDropdownState extends State<CustomDatePickerDropdown> {
 
   DateTime? _selectedDate;
 
-  // สร้าง Overlay สำหรับ DatePicker
   OverlayEntry _createOverlayEntry(BuildContext context) {
     return OverlayEntry(
       builder: (context) => Positioned(
-        width: 300, // ความกว้างของ DatePicker
+        width: 300,
         height: 200,
         child: CompositedTransformFollower(
           link: _layerLink,
-          offset: Offset(0, 50), // ตำแหน่งที่ DatePicker จะปรากฏ (ด้านล่างของ TextField)
+          offset: Offset(0, 50),
           showWhenUnlinked: false,
           child: Material(
             elevation: 4.0,

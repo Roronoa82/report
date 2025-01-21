@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
+import 'package:supercharged/supercharged.dart';
 import '../../bloc/summary_bloc.dart';
 import '../../bloc/summary_state.dart';
 
@@ -24,11 +25,7 @@ class PaymentsTable extends StatefulWidget {
 class _PaymentsTableState extends State<PaymentsTable> {
   @override
   void initState() {
-    if (widget.selectDate != null) {
-      // logger.w(widget.selectDate);
-      // logger.w('selectDate keys: ${widget.selectDate.keys}');
-      // logger.wtf('++++++++++');
-    }
+    if (widget.selectDate != null) {}
     super.initState();
   }
 
@@ -57,11 +54,7 @@ class _PaymentsTableState extends State<PaymentsTable> {
                 'Data': '{}',
               });
             }
-
-            // Initialize a map to store total values for each payment type
             Map<String, Map<String, double>> paymentTotals = {};
-
-            // Calculate totals for each payment type over the selected days
             for (var summary in filteredSummaries) {
               Map<String, dynamic> jsonMap = json.decode(summary['Data'] ?? '{}');
               var payments = jsonMap['Payments'];
@@ -81,43 +74,45 @@ class _PaymentsTableState extends State<PaymentsTable> {
               });
             }
 
-            return Container(
-              width: MediaQuery.of(context).size.width,
-              margin: EdgeInsets.all(10.0),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(8.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 4.0,
-                    spreadRadius: 1.0,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: DataTable(
-                columnSpacing: 20,
-                headingRowHeight: 40,
-                dataRowHeight: 40,
-                columns: [
-                  DataColumn(label: Text('Payments')),
-                  DataColumn(label: Text('Sales')),
-                  DataColumn(label: Text('Tips')),
-                  DataColumn(label: Text('Total')),
-                ],
-                rows: List<DataRow>.from(
-                  paymentTotals.entries.map((entry) {
-                    final paymentType = entry.key;
-                    final paymentTotals = entry.value;
+            return Center(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                margin: EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(8.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 4.0,
+                      spreadRadius: 1.0,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: DataTable(
+                  columnSpacing: 20,
+                  headingRowHeight: 40,
+                  dataRowHeight: 40,
+                  columns: [
+                    DataColumn(label: textheader('Payments')),
+                    DataColumn(label: textheader('Sales')),
+                    DataColumn(label: textheader('Tips')),
+                    DataColumn(label: textheader('Total')),
+                  ],
+                  rows: List<DataRow>.from(
+                    paymentTotals.entries.map((entry) {
+                      final paymentType = entry.key;
+                      final paymentTotals = entry.value;
 
-                    return DataRow(cells: [
-                      DataCell(Text(paymentType)),
-                      DataCell(Text(paymentTotals == 0.0 ? "\$xx.xx" : "\$${paymentTotals['Sales']?.toStringAsFixed(2)}")),
-                      DataCell(Text(paymentTotals == 0.0 ? "\$xx.xx" : "\$${paymentTotals['Tips']?.toStringAsFixed(2)}")),
-                      DataCell(Text(paymentTotals == 0.0 ? "\$xx.xx" : "\$${paymentTotals['Total']?.toStringAsFixed(2)}")),
-                    ]);
-                  }).toList(),
+                      return DataRow(cells: [
+                        DataCell(textdetails(paymentType)),
+                        DataCell(textdetails(paymentTotals == 0.0 ? "\$xx.xx" : "\$${paymentTotals['Sales']?.toStringAsFixed(2)}")),
+                        DataCell(textdetails(paymentTotals == 0.0 ? "\$xx.xx" : "\$${paymentTotals['Tips']?.toStringAsFixed(2)}")),
+                        DataCell(textdetails(paymentTotals == 0.0 ? "\$xx.xx" : "\$${paymentTotals['Total']?.toStringAsFixed(2)}")),
+                      ]);
+                    }).toList(),
+                  ),
                 ),
               ),
             );
@@ -126,6 +121,30 @@ class _PaymentsTableState extends State<PaymentsTable> {
           }
           return Center(child: Text('No data available'));
         },
+      ),
+    );
+  }
+
+  Text textheader(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 14,
+        color: '#3C3C3C'.toColor(),
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
+  Text textdetails(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 14,
+        color: '#3C3C3C'.toColor(),
+        fontWeight: FontWeight.w300,
       ),
     );
   }

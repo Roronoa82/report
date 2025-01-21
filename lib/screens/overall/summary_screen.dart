@@ -1,9 +1,10 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, deprecated_member_use, non_constant_identifier_names, library_private_types_in_public_api
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
+import 'package:supercharged/supercharged.dart';
 import '../../bloc/summary_bloc.dart';
 import '../../bloc/summary_state.dart';
 
@@ -12,7 +13,7 @@ final logger = Logger();
 class SummaryScreen extends StatefulWidget {
   final dynamic selectDate;
 
-  final int showDepositsOnly; // ตัวแปรเพื่อควบคุมการแสดงผล
+  final int showDepositsOnly;
   const SummaryScreen({Key? key, this.selectDate, required this.showDepositsOnly}) : super(key: key);
 
   @override
@@ -37,17 +38,47 @@ class _SummaryScreenState extends State<SummaryScreen> {
       body: Column(
         children: [
           if (widget.showDepositsOnly == 1) ...[
-            Flexible(child: DepositsTable(selectDate: widget.selectDate)),
+            Flexible(
+              child: Container(
+                color: '#EEEEEE'.toColor(),
+                child: DepositsTable(selectDate: widget.selectDate),
+              ),
+            ),
           ] else if (widget.showDepositsOnly == 2) ...[
-            Flexible(child: CraditCartTable(selectDate: widget.selectDate)),
+            Flexible(
+              child: Container(
+                color: '#EEEEEE'.toColor(),
+                child: CraditCartTable(selectDate: widget.selectDate),
+              ),
+            ),
           ] else if (widget.showDepositsOnly == 3) ...[
-            Flexible(child: CashInCashOutTable(selectDate: widget.selectDate)),
+            Flexible(
+              child: Container(
+                color: '#EEEEEE'.toColor(),
+                child: CashInCashOutTable(selectDate: widget.selectDate),
+              ),
+            ),
           ] else if (widget.showDepositsOnly == 4) ...[
-            Flexible(child: ServiceChargeTable(selectDate: widget.selectDate)),
+            Flexible(
+              child: Container(
+                color: '#EEEEEE'.toColor(),
+                child: ServiceChargeTable(selectDate: widget.selectDate),
+              ),
+            ),
           ] else if (widget.showDepositsOnly == 5) ...[
-            Flexible(child: GiftCardTable(selectDate: widget.selectDate)),
+            Flexible(
+              child: Container(
+                color: '#EEEEEE'.toColor(),
+                child: GiftCardTable(selectDate: widget.selectDate),
+              ),
+            ),
           ] else if (widget.showDepositsOnly == 6) ...[
-            Flexible(child: CustomersTable(selectDate: widget.selectDate)),
+            Flexible(
+              child: Container(
+                color: '#EEEEEE'.toColor(),
+                child: CustomersTable(selectDate: widget.selectDate),
+              ),
+            ),
           ],
         ],
       ),
@@ -79,11 +110,9 @@ class _SummaryScreenState extends State<SummaryScreen> {
             });
           }
 
-          // สร้างตัวแปรสำหรับเก็บยอดรวม
           Map<String, double> totalDepositsByType = {};
-          double totalDeposits = 0.0; // สำหรับคำนวณยอดรวมทั้งหมด
+          double totalDeposits = 0.0;
 
-          // วนลูปผ่าน summaries ที่ถูกกรอง
           for (var summary in filteredSummaries) {
             Map<String, dynamic> jsonMap = json.decode(summary['Data'] ?? '{}');
             var deposits = jsonMap['Deposits'];
@@ -94,14 +123,12 @@ class _SummaryScreenState extends State<SummaryScreen> {
                 depositTotal = depositData.fold(0.0, (sum, item) => sum + (item['Value'] ?? 0.0));
               }
 
-              // สะสมยอดรวมใน totalDepositsByType
               if (totalDepositsByType.containsKey(depositType)) {
                 totalDepositsByType[depositType] = totalDepositsByType[depositType]! + depositTotal;
               } else {
                 totalDepositsByType[depositType] = depositTotal;
               }
 
-              // คำนวณยอดรวมทั้งหมด
               totalDeposits += depositTotal;
             });
           }
@@ -123,16 +150,10 @@ class _SummaryScreenState extends State<SummaryScreen> {
             ),
             child: DataTable(columnSpacing: 20, headingRowHeight: 40, dataRowHeight: 40, columns: [
               DataColumn(
-                label: Text(
-                  'Deposits',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                label: textheader('Deposits'),
               ),
               DataColumn(
-                label: Text(
-                  'Total',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                label: textheader('Total'),
               ),
             ], rows: [
               // แสดงข้อมูลยอดรวมจาก totalDepositsByType
@@ -143,20 +164,19 @@ class _SummaryScreenState extends State<SummaryScreen> {
                 final formattedTotal = depositTotal >= 0 ? "+\$${depositTotal.toStringAsFixed(2)}" : "-\$${depositTotal.abs().toStringAsFixed(2)}";
 
                 return DataRow(cells: [
-                  DataCell(Text(depositType)),
-                  DataCell(Text(formattedTotal)),
+                  DataCell(textdetails(depositType)),
+                  DataCell(textdetails(formattedTotal)),
                 ]);
               }).toList(),
 
               // แถวสุดท้ายสำหรับการแสดง Total Deposits
               DataRow(cells: [
                 DataCell(
-                  Text(
+                  textheader(
                     'Total Deposits',
-                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
-                DataCell(Text("\$${totalDeposits.toStringAsFixed(2)}", style: TextStyle(fontWeight: FontWeight.bold))),
+                DataCell(textheader("\$${totalDeposits.toStringAsFixed(2)}")),
               ]),
             ]),
           ));
@@ -224,16 +244,10 @@ class _SummaryScreenState extends State<SummaryScreen> {
                 dataRowHeight: 40,
                 columns: [
                   DataColumn(
-                    label: Text(
-                      'Credit Cards',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    label: textheader('Credit Cards'),
                   ),
                   DataColumn(
-                    label: Text(
-                      'Total',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    label: textheader('Total'),
                   ),
                 ],
                 rows: [
@@ -242,8 +256,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                     final totalValue = entry.value;
                     return DataRow(
                       cells: [
-                        DataCell(Text(cardType)),
-                        DataCell(Text("\$${totalValue.toStringAsFixed(2)}")),
+                        DataCell(textdetails(cardType)),
+                        DataCell(textdetails("\$${totalValue.toStringAsFixed(2)}")),
                       ],
                     );
                   }).toList(),
@@ -323,28 +337,22 @@ class _SummaryScreenState extends State<SummaryScreen> {
                 dataRowHeight: 40,
                 columns: [
                   DataColumn(
-                    label: Text(
-                      'Cash In / Cash Out',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    label: textheader('Cash In / Cash Out'),
                   ),
                   DataColumn(
-                    label: Text(
-                      'Total',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    label: textheader('Total'),
                   ),
                 ],
                 rows: [
                   // แถวสำหรับ Cash In
                   DataRow(cells: [
-                    DataCell(Text('Cash In')),
-                    DataCell(Text('\$${totalCashIn.toStringAsFixed(2)}')),
+                    DataCell(textdetails('Cash In')),
+                    DataCell(textdetails('\$${totalCashIn.toStringAsFixed(2)}')),
                   ]),
                   // แถวสำหรับ Cash Out
                   DataRow(cells: [
-                    DataCell(Text('Cash Out')),
-                    DataCell(Text('\$${totalCashOut.toStringAsFixed(2)}')),
+                    DataCell(textdetails('Cash Out')),
+                    DataCell(textdetails('\$${totalCashOut.toStringAsFixed(2)}')),
                   ]),
                 ],
               ),
@@ -424,16 +432,10 @@ class _SummaryScreenState extends State<SummaryScreen> {
             ),
             child: DataTable(columnSpacing: 20, headingRowHeight: 40, dataRowHeight: 40, columns: [
               DataColumn(
-                label: Text(
-                  'Service Charge',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                label: textheader('Service Charge'),
               ),
               DataColumn(
-                label: Text(
-                  'Total',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                label: textheader('Total'),
               ),
             ], rows: [
               // แสดงข้อมูลยอดรวมจาก totalServiceChargeByType
@@ -445,20 +447,17 @@ class _SummaryScreenState extends State<SummaryScreen> {
                     servicechargeTotal >= 0 ? "\$${servicechargeTotal.toStringAsFixed(2)}" : "\$${servicechargeTotal.abs().toStringAsFixed(2)}";
 
                 return DataRow(cells: [
-                  DataCell(Text(servicechargeType)),
-                  DataCell(Text(formattedTotal)),
+                  DataCell(textdetails(servicechargeType)),
+                  DataCell(textdetails(formattedTotal)),
                 ]);
               }).toList(),
 
               // แถวสุดท้ายสำหรับการแสดง Total ServiceCharge
               DataRow(cells: [
                 DataCell(
-                  Text(
-                    'Total Payments',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  textheader('Total Payments'),
                 ),
-                DataCell(Text("\$${totalServiceCharge.toStringAsFixed(2)}")),
+                DataCell(textheader("\$${totalServiceCharge.toStringAsFixed(2)}")),
               ]),
             ]),
           ));
@@ -529,8 +528,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
         List<DataRow> rows = giftCardValues.entries.map((entry) {
           return DataRow(
             cells: [
-              DataCell(Text(entry.key)), // ชื่อประเภท (Activations, Redeemtions, Refunds)
-              DataCell(Text("\$${entry.value.toStringAsFixed(2)}")), // ค่า Total
+              DataCell(textdetails(entry.key)), // ชื่อประเภท (Activations, Redeemtions, Refunds)
+              DataCell(textdetails("\$${entry.value.toStringAsFixed(2)}")), // ค่า Total
             ],
           );
         }).toList();
@@ -557,16 +556,10 @@ class _SummaryScreenState extends State<SummaryScreen> {
               dataRowHeight: 40,
               columns: [
                 DataColumn(
-                  label: Text(
-                    'Gift Cards',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  label: textheader('Gift Cards'),
                 ),
                 DataColumn(
-                  label: Text(
-                    'Total',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  label: textheader('Total'),
                 ),
               ],
               rows: rows, // ใช้แถวที่สร้างจาก giftCardValues
@@ -638,16 +631,10 @@ class _SummaryScreenState extends State<SummaryScreen> {
               dataRowHeight: 40,
               columns: [
                 DataColumn(
-                  label: Text(
-                    'Customers',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  label: textheader('Customers'),
                 ),
                 DataColumn(
-                  label: Text(
-                    'Total',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  label: textheader('Total'),
                 ),
               ],
               rows: [
@@ -656,8 +643,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                   final totalValue = entry.value;
                   return DataRow(
                     cells: [
-                      DataCell(Text(customerType)),
-                      DataCell(Text(totalValue.toInt().toString())),
+                      DataCell(textdetails(customerType)),
+                      DataCell(textdetails(totalValue.toInt().toString())),
                     ],
                   );
                 }).toList(),
@@ -670,5 +657,29 @@ class _SummaryScreenState extends State<SummaryScreen> {
       }
       return Center(child: Text('No data available'));
     });
+  }
+
+  Text textheader(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 14,
+        color: '#3C3C3C'.toColor(),
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
+  Text textdetails(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 14,
+        color: '#3C3C3C'.toColor(),
+        fontWeight: FontWeight.w300,
+      ),
+    );
   }
 }

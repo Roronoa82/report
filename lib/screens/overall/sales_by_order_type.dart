@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
+import 'package:supercharged/supercharged.dart';
 import '../../bloc/summary_bloc.dart';
 import '../../bloc/summary_state.dart';
 
@@ -75,17 +76,17 @@ class _SalesByOrderTypeTableState extends State<SalesByOrderTypeTable> {
           double averagePercentage = (totalValue / totalSales) * 100;
 
           return DataRow(cells: [
-            DataCell(Text(orderType)),
-            DataCell(Text(averagePercentage.toStringAsFixed(2) + '%')),
-            DataCell(Text("\$${totalValue.toStringAsFixed(2)}")),
+            DataCell(textdetails(orderType)),
+            DataCell(textdetails(averagePercentage.toStringAsFixed(2) + '%')),
+            DataCell(textdetails("\$${totalValue.toStringAsFixed(2)}")),
           ]);
         }).toList();
 
         // Add the Total Sales row
         rows.add(DataRow(cells: [
-          DataCell(Text('Total Sales', style: TextStyle(fontWeight: FontWeight.bold))),
+          DataCell(textheader('Total Sales')),
           DataCell(Text('')),
-          DataCell(Text("\$${totalSales.toStringAsFixed(2)}", style: TextStyle(fontWeight: FontWeight.bold))),
+          DataCell(textheader("\$${totalSales.toStringAsFixed(2)}")),
         ]));
 
         // สร้าง DataTable
@@ -111,22 +112,13 @@ class _SalesByOrderTypeTableState extends State<SalesByOrderTypeTable> {
               dataRowHeight: 40,
               columns: [
                 DataColumn(
-                  label: Text(
-                    'Sales by Order \nType',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  label: textheader('Sales by Order \nType'),
                 ),
                 DataColumn(
-                  label: Text(
-                    'Average \npercentage',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  label: textheader('Average \npercentage'),
                 ),
                 DataColumn(
-                  label: Text(
-                    'Total',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  label: textheader('Total'),
                 ),
               ],
               rows: rows,
@@ -138,5 +130,29 @@ class _SalesByOrderTypeTableState extends State<SalesByOrderTypeTable> {
       }
       return Center(child: Text('No data available'));
     });
+  }
+
+  Text textheader(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 14,
+        color: '#3C3C3C'.toColor(),
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
+  Text textdetails(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 14,
+        color: '#3C3C3C'.toColor(),
+        fontWeight: FontWeight.w300,
+      ),
+    );
   }
 }
