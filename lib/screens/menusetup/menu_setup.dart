@@ -339,50 +339,31 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                                             ),
                                             child: Stack(
                                               children: [
-                                                food.isOutStock
-                                                    ? ColorFiltered(
-                                                        colorFilter: ColorFilter.mode(
-                                                          Colors.grey.withOpacity(0.5), // ทำให้ภาพจางลงเป็นสีเทา
-                                                          BlendMode.saturation,
-                                                        ),
-                                                        child: food.imageName!.isNotEmpty
-                                                            ? Image.network(
-                                                                food.imageName!,
-                                                                width: 150,
-                                                                height: 160,
-                                                                fit: BoxFit.cover,
-                                                              )
-                                                            : Container(
-                                                                width: 150,
-                                                                height: 160,
-                                                                child: const Icon(
-                                                                  Icons.fastfood,
-                                                                  size: 100,
-                                                                  color: Colors.grey,
-                                                                ),
-                                                              ),
+                                                // แสดงรูปภาพ
+                                                food.imageName!.isNotEmpty
+                                                    ? Image.network(
+                                                        food.imageName!,
+                                                        width: 150,
+                                                        height: 160,
+                                                        fit: BoxFit.cover,
                                                       )
-                                                    : food.imageName!.isNotEmpty
-                                                        ? Image.network(
-                                                            food.imageName!,
-                                                            width: 150,
-                                                            height: 160,
-                                                            fit: BoxFit.cover,
-                                                          )
-                                                        : Container(
-                                                            width: 150,
-                                                            height: 160,
-                                                            child: const Icon(
-                                                              Icons.fastfood,
-                                                              size: 100,
-                                                              color: Colors.grey,
-                                                            ),
-                                                          ),
+                                                    : Container(
+                                                        width: 150,
+                                                        height: 160,
+                                                        child: const Icon(
+                                                          Icons.fastfood,
+                                                          size: 100,
+                                                          color: Colors.grey,
+                                                        ),
+                                                      ),
+
+                                                // Overlay Container (แสดงเมื่อ isOutStock = true)
                                                 if (food.isOutStock)
                                                   Container(
                                                     width: 150,
                                                     height: 160,
-                                                    color: Color.fromARGB(51, 0, 0, 0), // สีทับสีดำ #00000033 (โปร่งใส 20%)
+                                                    color: Colors.grey.withOpacity(0.6), // สีเทาพร้อมโปร่งใส
+                                                    alignment: Alignment.center,
                                                   ),
                                               ],
                                             ),
