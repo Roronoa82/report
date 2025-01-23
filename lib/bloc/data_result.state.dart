@@ -1,17 +1,31 @@
-// sales_state.dart
-
+import 'package:equatable/equatable.dart';
 import '../model_data_result.dart';
 
-abstract class FoodItemState {}
-
-class FoodItemLoadingState extends FoodItemState {}
-
-class FoodItemLoadedState extends FoodItemState {
-  final List<FoodItemData> fooditemData;
-  FoodItemLoadedState(this.fooditemData);
+abstract class DataState extends Equatable {
+  @override
+  List<Object?> get props => [];
 }
 
-class FoodItemErrorState extends FoodItemState {
+class DataInitial extends DataState {}
+
+class DataLoading extends DataState {}
+
+class DataLoaded extends DataState {
+  final List<FoodItemData> foods;
+  final List<FoodCategory> categories;
+  final List<FoodSet> sets;
+
+  DataLoaded({required this.foods, required this.categories, required this.sets});
+
+  @override
+  List<Object?> get props => [foods, categories, sets];
+}
+
+class DataError extends DataState {
   final String message;
-  FoodItemErrorState(this.message);
+
+  DataError(this.message);
+
+  @override
+  List<Object?> get props => [message];
 }

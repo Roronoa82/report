@@ -61,7 +61,6 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
           return Scaffold(
             backgroundColor: "#EEEEEE".toColor(),
             body: SingleChildScrollView(
-              // scrollDirection: Axis.horizontal,
               padding: EdgeInsets.all(screenWidth * 0.015),
               child: Container(
                 constraints: BoxConstraints(

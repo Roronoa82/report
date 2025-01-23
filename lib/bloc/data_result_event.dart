@@ -1,4 +1,8 @@
-// FoodItem_event.dart
-abstract class FoodItemEvent {}
+import 'package:equatable/equatable.dart';
 
-class LoadFoodItemDataEvent extends FoodItemEvent {}
+abstract class DataEvent extends Equatable {
+  @override
+  List<Object?> get props => [];
+}
+
+class LoadDataEvent extends DataEvent {}

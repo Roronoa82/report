@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:develop_resturant/screens/summary/summary_sales.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:supercharged/supercharged.dart';
 import 'screens/menusetup/menu_setup.dart';
 import 'screens/overall/overall_summary.dart';
@@ -29,6 +30,7 @@ class _ReportPageState extends State<ReportPage> {
   final LayerLink _layerLink = LayerLink();
   String _selectedValue = "Thanapat";
   late int selectedReport;
+  // String selectedMenu = 'FoodItemScreen';
 
   // สร้าง StreamController สำหรับแต่ละ Switch
   final StreamController<bool> smileDiningController = StreamController.broadcast();
@@ -36,6 +38,7 @@ class _ReportPageState extends State<ReportPage> {
   final Map<String, Widget> menuContent = {
     'Overall Summary': OverallSummaryPage(payments: {}),
     'Summary Sales': SummarysalesPage(payments: {}),
+    'FoodItemScreen': FoodItemScreen(),
 
     // เพิ่มเนื้อหาของเมนูอื่น ๆ ที่นี่
   };
@@ -107,15 +110,12 @@ class _ReportPageState extends State<ReportPage> {
                                   return Switch(
                                     value: isSmileDiningOpen, // กำหนดสถานะเปิด/ปิด
                                     onChanged: (value) {
-                                      // อัปเดตสถานะ Switch
                                       smileDiningController.add(value);
 
-                                      // อัปเดต selectedReport
                                       setState(() {
                                         selectedReport = value ? 1 : 0;
                                       });
 
-                                      // แจ้งสถานะกลับไปยัง parent widget
                                       widget.onReportSelected(selectedReport);
                                     },
                                   );
@@ -187,7 +187,7 @@ class _ReportPageState extends State<ReportPage> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    double horizontalPadding = screenWidth * 0.19;
+    double horizontalPadding = screenWidth * 0.207;
     double verticalPadding = screenHeight * 0.05;
     return Scaffold(
       appBar: PreferredSize(
@@ -213,10 +213,68 @@ class _ReportPageState extends State<ReportPage> {
                       fontSize: screenWidth * 0.0135,
                     ),
                   ),
+                  if (selectedMenu == 'Menu Setup') // เงื่อนไขแสดง SearchBar
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: SizedBox(
+                                width: 100, // or use MediaQuery for dynamic width
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                    hintText: 'Search',
+                                    hintStyle: TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 18,
+                                      color: '#959595'.toColor(),
+                                    ),
+                                    prefixIcon: Icon(
+                                      Icons.search,
+                                      color: '#959595'.toColor(),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(24),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                    filled: true,
+                                    fillColor: '#EEEEEE'.toColor(),
+                                  ),
+                                  onChanged: (value) {
+                                    print("Search: $value");
+                                  },
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 10), // Space between SearchBar and Filter Icon
+                            Container(
+                              width: 40,
+                              height: 40,
+                              padding: EdgeInsets.all(10.0),
+                              decoration: BoxDecoration(
+                                color: '#EEEEEE'.toColor(),
+                                shape: BoxShape.circle,
+                              ),
+                              child: SvgPicture.asset(
+                                'assets/microphone.svg',
+                                width: 20,
+                                height: 20,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   Container(
                     child: CompositedTransformTarget(
                       link: _layerLink,
                       child: Container(
+                        width: MediaQuery.of(context).size.width * 0.086,
+                        height: MediaQuery.of(context).size.height * 0.05,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
@@ -298,13 +356,13 @@ class _ReportPageState extends State<ReportPage> {
         Padding(
           padding: EdgeInsets.symmetric(
             vertical: MediaQuery.of(context).size.height * 0.0,
-            horizontal: MediaQuery.of(context).size.width * 0.19,
+            horizontal: MediaQuery.of(context).size.width * 0.206,
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: MediaQuery.of(context).size.width * 0.13,
+                width: MediaQuery.of(context).size.width * 0.126,
                 color: Colors.grey[100],
                 child: ListView(
                   padding: const EdgeInsets.only(right: 16),
@@ -497,20 +555,22 @@ class _ReportPageState extends State<ReportPage> {
                 ),
               ),
               Expanded(
-                child: selectedMenu == 'Menu Setup'
-                    ? FoodItemScreen()
-                    : Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(
-                            color: '#C3C3C3'.toColor(),
-                            width: 1,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: const EdgeInsets.all(16),
-                        child: selectedMenu == 'Overall Summary' ? OverallSummaryPage(payments: {}) : SummarysalesPage(payments: {}),
-                      ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: '#C3C3C3'.toColor(),
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  child: selectedMenu == 'Menu Setup'
+                      ? FoodItemScreen()
+                      : selectedMenu == 'Overall Summary'
+                          ? OverallSummaryPage(payments: {})
+                          : SummarysalesPage(payments: {}),
+                ),
               ),
             ],
           ),

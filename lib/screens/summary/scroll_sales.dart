@@ -24,13 +24,7 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   final ScrollController _scrollController1 = ScrollController(); // ประกาศ ScrollController
   int _selectedTabIndex = 0;
-  // bool showDetailPage = false;
 
-  // bool shouldShowDetailPPTotal() {
-  //   return showDetailPage;
-  // }
-
-// กำหนดตำแหน่งที่ต้องการเลื่อน
   final List<double> _scrollOffsets = [0.0, 425.0, 680.0, 2550.0, 3485.0, 3825.0, 4080.0];
   final List<Color> _indicatorColors = [
     '#6C4E6F'.toColor(),
@@ -593,8 +587,6 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
                                         width: 1,
                                         height: 65,
                                         color: '#868E96'.toColor(),
-                                        // margin: EdgeInsets.zero,
-                                        // padding: EdgeInsets.zero,
                                       ),
                                       Text('PP \nTotal', textAlign: TextAlign.center),
                                       Divider(color: '#868E96'.toColor(), height: 1), // เส้นแบ่งระหว่างหัวข้อและตัวเลข

@@ -664,6 +664,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
               'SCGiftCardPPGC': 0,
               'SCGiftCardPPGCTips': 0,
               'SCGiftCardTotal': 0,
+              // 'TotalsAll' : 0,
             };
           }
 
@@ -1271,7 +1272,60 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
       } else if (state is SalesLoadedState) {
         List<SalesData> salesData = state.salesData;
         // คำนวณผลรวมของแต่ละประเภทจากข้อมูลทั้งหมด
+//  List<List<String>> weeks = [];
+//         List<String> currentWeek = [];
+//         Map<String, Map<String, double>> weeklyServiceChargeandFee = {};
 
+//         for (var sale in salesData) {
+//           DateTime date = DateTime.parse(sale.date);
+
+//           if (currentWeek.isEmpty || currentWeek.length < 7) {
+//             if (currentWeek.isEmpty || currentWeek.last != sale.date) {
+//               currentWeek.add(sale.date);
+//             }
+//           }
+
+//           if (currentWeek.length == 7) {
+//             weeks.add(List.from(currentWeek));
+//             currentWeek.clear();
+//           }
+//         }
+
+//         if (currentWeek.isNotEmpty) {
+//           weeks.add(List.from(currentWeek));
+//         }
+
+//         logger.w(weeks);
+//         for (var week in weeks) {
+//           String weekRange = "${week.first} - ${week.last}";
+
+//           if (!ServiceChargeandFee.containsKey(weekRange)) {
+//             ServiceChargeandFee[weekRange] = {
+//               'Gratuity': 0,
+//               'OnlineCustomCharge': 0,
+//               'ContactlessCustomCharge': 0,
+//               'SmilePOSAutoCharge': 0,
+//               'DeliveryRestaurant': 0,
+//               'DeliveryDoorDashDrive': 0,
+//               'Gratuity': 0,
+//               'Gratuity': 0,
+//               'Gratuity': 0,
+//               'Gratuity': 0,
+//               'Gratuity': 0,
+
+//             };
+//           }
+
+//           for (var data in salesData) {
+//             if (week.contains(data.date)) {
+//               ServiceChargeandFee[weekRange]!['dineIn'] = (ServiceChargeandFee[weekRange]!['dineIn'] ?? 0) + data.data.salesByOrderType.dineIn;
+//               ServiceChargeandFee[weekRange]!['togo'] = (ServiceChargeandFee[weekRange]!['togo'] ?? 0) + data.data.salesByOrderType.togo;
+//               ServiceChargeandFee[weekRange]!['delivery'] =
+//                   (ServiceChargeandFee[weekRange]!['delivery'] ?? 0) + data.data.salesByOrderType.delivery;
+//               data.data.salesByOrderType.dineIn + data.data.salesByOrderType.togo + data.data.salesByOrderType.delivery;
+//             }
+//           }
+//         }
         double totalgratuity = 0,
             totalonlineCustomCharge = 0,
             totalcontactlessCustomCharge = 0,

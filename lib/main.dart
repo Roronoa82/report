@@ -21,7 +21,7 @@ void main() {
                   DateTime.now(),
                 )),
         Provider<SalesBloc>(create: (_) => SalesBloc()..add(LoadSalesDataEvent())),
-        Provider<FoodItemBloc>(create: (_) => FoodItemBloc()..add(LoadFoodItemDataEvent())),
+        Provider<DataBloc>(create: (_) => DataBloc()..add(LoadDataEvent())),
       ],
       child: MyApp(),
     ),
