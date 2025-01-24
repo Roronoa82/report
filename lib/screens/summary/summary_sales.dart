@@ -2,9 +2,6 @@
 
 import 'package:develop_resturant/bloc/summary_bloc.dart';
 import 'package:develop_resturant/bloc/summary_event.dart';
-import 'package:develop_resturant/screens/overall/daily_table_section.dart';
-import 'package:develop_resturant/screens/overall/monthly_table_section.dart';
-import 'package:develop_resturant/screens/overall/weekly_table_section.dart';
 import 'package:develop_resturant/screens/summary/scroll_sales.dart';
 import 'package:develop_resturant/screens/summary/weekly_filter.dart';
 
@@ -20,6 +17,7 @@ import '../../widgets/dropdown_morefilter.dart';
 import '../../widgets/dropdown_setting.dart';
 import '../../widgets/dropdown_share.dart';
 import 'details_pp_total.dart';
+import 'monthly_filter.dart';
 
 class SummarysalesPage extends StatefulWidget {
   final Map<String, dynamic> payments;
@@ -42,7 +40,7 @@ class _SummarysalesPageState extends State<SummarysalesPage> {
   String filterDropdownValue = "More Filters";
   final logger = Logger();
   dynamic getDate;
-  int selectedReport = 1;
+  int selectedReport = 2;
 
   // ฟังก์ชันสำหรับตรวจสอบเงื่อนไข
   bool showDetailPage = false;
@@ -60,7 +58,7 @@ class _SummarysalesPageState extends State<SummarysalesPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> filterOptions = ['All Employees', 'All Order Types', 'All Sources', 'All Sections'];
+    // List<String> filterOptions = ['All Employees', 'All Order Types', 'All Sources', 'All Sections'];
     return BlocProvider(
       create: (context) => SummaryBloc()..add(LoadSummary()),
       child: BlocBuilder<SummaryBloc, SummaryState>(
@@ -88,7 +86,21 @@ class _SummarysalesPageState extends State<SummarysalesPage> {
 
             // ใช้วันที่ที่กำหนดเอง (customDate)
             String displayDate = formatDate(customDate);
+            String reportTitle;
 
+            if (showDetailPage) {
+              reportTitle = 'Reports > Summary Sales > 3rd Party';
+            } else {
+              if (selectedReport == 2) {
+                reportTitle = 'Reports > Summary Sales > Daily';
+              } else if (selectedReport == 3) {
+                reportTitle = 'Reports > Summary Sales > Weekly';
+              } else if (selectedReport == 4) {
+                reportTitle = 'Reports > Summary Sales > Monthly';
+              } else {
+                reportTitle = 'Reports > Summary Sales';
+              }
+            }
             return Scaffold(
               backgroundColor: "#EEEEEE".toColor(),
               body: SingleChildScrollView(
@@ -102,9 +114,7 @@ class _SummarysalesPageState extends State<SummarysalesPage> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        showDetailPage
-                            ? 'Reports > Summary Sales > 3rd Party'
-                            : (selectedReport == 3 ? 'Reports > Summary Sales > Weekly' : 'Reports > Summary Sales'),
+                        reportTitle,
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w700,
@@ -202,7 +212,7 @@ class _SummarysalesPageState extends State<SummarysalesPage> {
                       SizedBox(
                         height: 16,
                       ),
-                      if (selectedReport == 1)
+                      if (selectedReport == 2)
                         SingleChildScrollView(
                           child: Container(
                             width: 300,
@@ -216,8 +226,6 @@ class _SummarysalesPageState extends State<SummarysalesPage> {
                                   }),
                           ),
                         )
-                      else if (selectedReport == 2)
-                        DailyTableSection(getDate: getDate)
                       else if (selectedReport == 3)
                         SingleChildScrollView(
                           child: Container(
@@ -229,7 +237,15 @@ class _SummarysalesPageState extends State<SummarysalesPage> {
                           ),
                         )
                       else if (selectedReport == 4)
-                        MonthlyTableSection(getDate: getDate)
+                        SingleChildScrollView(
+                          child: Container(
+                            width: 300,
+                            height: 500,
+                            child: MonthlyFilterPage(
+                              onTapDetail: () {},
+                            ),
+                          ),
+                        )
                       else
                         Center(
                           child: Text(

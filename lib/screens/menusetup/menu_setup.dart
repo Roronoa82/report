@@ -677,8 +677,8 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                       print('Edit Icon Pressed');
                     },
                     child: _boxCustom(
-                      padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 15),
-                      child: SvgPicture.asset('assets/swap.svg', width: 25, height: 20, color: '#000000'.toColor()),
+                      padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 12),
+                      child: SvgPicture.asset('assets/swap.svg', width: 25, height: 25),
                     ),
                   ),
                   SizedBox(width: 12),
@@ -752,12 +752,8 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                 print('Edit Icon Pressed');
               },
               child: _boxCustom(
-                padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 15),
-                child: SvgPicture.asset(
-                  'assets/swap.svg',
-                  width: 25,
-                  height: 20,
-                ),
+                padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 12),
+                child: SvgPicture.asset('assets/swap.svg', width: 25, height: 25),
               ),
             ),
             SizedBox(width: 12),

@@ -30,23 +30,18 @@ class _ReportPageState extends State<ReportPage> {
   final LayerLink _layerLink = LayerLink();
   String _selectedValue = "Thanapat";
   late int selectedReport;
-  // String selectedMenu = 'FoodItemScreen';
 
-  // สร้าง StreamController สำหรับแต่ละ Switch
   final StreamController<bool> smileDiningController = StreamController.broadcast();
 
   final Map<String, Widget> menuContent = {
     'Overall Summary': OverallSummaryPage(payments: {}),
     'Summary Sales': SummarysalesPage(payments: {}),
     'FoodItemScreen': FoodItemScreen(),
-
-    // เพิ่มเนื้อหาของเมนูอื่น ๆ ที่นี่
   };
   @override
   void initState() {
     super.initState();
-    selectedReport = widget.initialSelectedReport; // กำหนดค่าเริ่มต้นจาก parent
-    // smileDiningController.add(false); // ค่าเริ่มต้นของ Switch
+    selectedReport = widget.initialSelectedReport;
   }
 
   void _showOverlay(BuildContext context) {
@@ -250,7 +245,7 @@ class _ReportPageState extends State<ReportPage> {
                                 ),
                               ),
                             ),
-                            SizedBox(width: 10), // Space between SearchBar and Filter Icon
+                            SizedBox(width: 10),
                             Container(
                               width: 40,
                               height: 40,
@@ -363,7 +358,7 @@ class _ReportPageState extends State<ReportPage> {
             children: [
               Container(
                 width: MediaQuery.of(context).size.width * 0.126,
-                color: Colors.grey[100],
+                color: '#FFFFFF'.toColor(),
                 child: ListView(
                   padding: const EdgeInsets.only(right: 16),
                   children: [
@@ -440,11 +435,6 @@ class _ReportPageState extends State<ReportPage> {
                               ].map((item) {
                                 return ListTile(
                                   title: Text(item),
-                                  onTap: () {
-                                    setState(() {
-                                      selectedMenu = item;
-                                    });
-                                  },
                                   tileColor: selectedMenu == item ? '#000000'.toColor() : Colors.white,
                                   selected: selectedMenu == item,
                                 );

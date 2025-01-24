@@ -16,6 +16,7 @@ import 'custom_date_picker_dropdown.dart';
 final logger = Logger();
 
 class DropdownFilterButton extends StatefulWidget {
+  final String? reportname;
   final DateTime? fromDate;
   final DateTime? toDate;
   final Function(Map<String, dynamic>) onDateSelected;
@@ -29,6 +30,7 @@ class DropdownFilterButton extends StatefulWidget {
     required this.onDateSelected,
     required this.onReportSelected,
     required this.initialSelectedReport,
+    this.reportname,
   }) : super(key: key);
 
   @override
@@ -41,11 +43,13 @@ class _DropdownFilterButtonState extends State<DropdownFilterButton> {
   bool isDropdownOpen = false;
   StreamController<bool> export = StreamController.broadcast();
   late int selectedReport;
+  String selectedMenu = 'Overall Summary';
 
   @override
   void initState() {
     super.initState();
     selectedReport = widget.initialSelectedReport;
+    selectedMenu = widget.reportname ?? '';
   }
 
   OverlayEntry _createOverlayEntry() {
@@ -98,21 +102,22 @@ class _DropdownFilterButtonState extends State<DropdownFilterButton> {
         children: [
           Text("Report : ", style: TextStyle(fontWeight: FontWeight.normal)),
           SizedBox(width: 12),
-          Row(children: [
-            Radio<int>(
-              value: 1,
-              groupValue: selectedReport,
-              onChanged: (selectedValue) {
-                export.add(true);
-                selectedReport = selectedValue!;
-                widget.onReportSelected(selectedReport);
-              },
-            ),
-            SizedBox(width: 20),
-            Text("Summary", style: TextStyle(fontFamily: 'Inter', color: '#3C3C3C'.toColor(), fontSize: 14, fontWeight: FontWeight.bold)),
-            Text(" (Select up to 366 day)", style: TextStyle(fontFamily: 'Inter', color: '#959595'.toColor(), fontSize: 12)),
-            SizedBox(width: 30),
-          ]),
+          if (selectedMenu == 'Overall Summary')
+            Row(children: [
+              Radio<int>(
+                value: 1,
+                groupValue: selectedReport,
+                onChanged: (selectedValue) {
+                  export.add(true);
+                  selectedReport = selectedValue!;
+                  widget.onReportSelected(selectedReport);
+                },
+              ),
+              SizedBox(width: 20),
+              Text("Summary", style: TextStyle(fontFamily: 'Inter', color: '#3C3C3C'.toColor(), fontSize: 14, fontWeight: FontWeight.bold)),
+              Text(" (Select up to 366 day)", style: TextStyle(fontFamily: 'Inter', color: '#959595'.toColor(), fontSize: 12)),
+              SizedBox(width: 30),
+            ]),
           // Daily
           Radio<int>(
             value: 2,

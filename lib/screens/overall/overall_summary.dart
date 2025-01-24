@@ -51,7 +51,21 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
   @override
   Widget build(BuildContext context) {
     List<String> filterOptions = ['All Employees', 'All Order Types', 'All Sources', 'All Sections'];
+    String reportTitle;
 
+    if (widget.isFromSalesPage) {
+      reportTitle = 'Reports > Overall Summary';
+    } else {
+      if (selectedReport == 2) {
+        reportTitle = 'Reports > Overall Summary > Daily';
+      } else if (selectedReport == 3) {
+        reportTitle = 'Reports > Overall Summary > Weekly';
+      } else if (selectedReport == 4) {
+        reportTitle = 'Reports > Overall Summary > Monthly';
+      } else {
+        reportTitle = 'Reports > Overall Summary';
+      }
+    }
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     return BlocProvider(
@@ -70,7 +84,8 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      widget.isFromSalesPage ? 'Reports > Summary Sales' : 'Reports > Overall Summary',
+                      reportTitle,
+                      // widget.isFromSalesPage ? 'Reports > Summary Sales' : 'Reports > Overall Summary',
                       style: TextStyle(
                         fontSize: screenWidth * 0.013,
                         fontWeight: FontWeight.w700,
@@ -95,6 +110,7 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
                                 });
                               },
                               initialSelectedReport: selectedReport,
+                              reportname: 'Overall Summary',
                             ),
                             SizedBox(width: screenWidth * 0.004),
                             MoreFilterMenu(),

@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, library_private_types_in_public_api
 
 import 'package:develop_resturant/model_summary_sale.dart';
 import 'package:flutter/material.dart';
@@ -8,28 +8,22 @@ import 'package:logger/logger.dart';
 import 'package:supercharged/supercharged.dart';
 import '../../bloc/summary_sale_bloc.dart';
 import '../../bloc/summary_sale_state.dart';
-import 'details_pp_total.dart';
 
 final logger = Logger();
 
-class WeeklyFilterPage extends StatefulWidget {
-  const WeeklyFilterPage({Key? key, required this.onTapDetail}) : super(key: key);
+class MonthlyFilterPage extends StatefulWidget {
+  const MonthlyFilterPage({Key? key, required this.onTapDetail}) : super(key: key);
   final VoidCallback onTapDetail; // Callback สำหรับการเปลี่ยนหน้า
 
   @override
-  _WeeklyFilterPageState createState() => _WeeklyFilterPageState();
+  _MonthlyFilterPageState createState() => _MonthlyFilterPageState();
 }
 
-class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProviderStateMixin {
+class _MonthlyFilterPageState extends State<MonthlyFilterPage> with TickerProviderStateMixin {
   late TabController _tabController;
   final ScrollController _scrollController = ScrollController();
   final ScrollController _scrollController1 = ScrollController(); // ประกาศ ScrollController
   int _selectedTabIndex = 0;
-  // bool showDetailPage = false;
-
-  // bool shouldShowDetailPPTotal() {
-  //   return showDetailPage;
-  // }
 
 // กำหนดตำแหน่งที่ต้องการเลื่อน
   final List<double> _scrollOffsets = [0.0, 425.0, 680.0, 2550.0, 3485.0, 3825.0, 4080.0];
@@ -63,6 +57,12 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
     });
   }
 
+  DateTime customDate = DateTime(2023, 8);
+
+  String formatDate(DateTime date) {
+    return DateFormat('MMM yyyy').format(date);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,31 +74,30 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
         } else if (state is SalesLoadedState) {
           List<SalesData> salesData = state.salesData;
 
-          // ฟังก์ชันคำนวณสัปดาห์
-          List<List<String>> weeks = [];
-          List<String> currentWeek = [];
-          // Map<String, Map<String, double>> weeklySales = {};
+          List<List<String>> months = [];
+          List<String> currentMonth = [];
+          int? currentMonthNumber;
 
           for (var sale in salesData) {
             DateTime date = DateTime.parse(sale.date);
 
-            if (currentWeek.isEmpty || currentWeek.length < 7) {
-              if (currentWeek.isEmpty || currentWeek.last != sale.date) {
-                currentWeek.add(sale.date);
+            if (currentMonth.isEmpty || currentMonthNumber != date.month) {
+              if (currentMonth.isNotEmpty) {
+                months.add(List.from(currentMonth));
+                currentMonth.clear();
               }
+              currentMonthNumber = date.month;
             }
 
-            if (currentWeek.length == 7) {
-              weeks.add(List.from(currentWeek));
-              currentWeek.clear();
-            }
+            currentMonth.add(sale.date);
           }
 
-          if (currentWeek.isNotEmpty) {
-            weeks.add(List.from(currentWeek));
+          if (currentMonth.isNotEmpty) {
+            months.add(List.from(currentMonth));
           }
+          String displayDate = formatDate(customDate);
 
-          // logger.w(weeks);
+          logger.w(months);
           return Container(
             padding: const EdgeInsets.only(left: 10.0, bottom: 10, right: 10),
             color: '#EEEEEE'.toColor(),
@@ -253,15 +252,12 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                                 // SizedBox(height: 50.0),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: weeks.map((week) {
-                                    String startDate = DateFormat('MM/dd').format(DateTime.parse(week.first));
-                                    String endDate = DateFormat('MM/dd').format(DateTime.parse(week.last));
-
+                                  children: months.map((week) {
                                     return Column(
                                       children: [
                                         // แสดงวันที่
                                         Text(
-                                          "$startDate - $endDate",
+                                          "$displayDate",
                                           style: TextStyle(
                                             fontSize: 16.0,
                                             fontFamily: 'Roboto',
@@ -339,36 +335,35 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
         List<SalesData> salesData = state.salesData;
         // logger.e(salesData);
 
-        // ฟังก์ชันคำนวณสัปดาห์
-        List<List<String>> weeks = [];
-        List<String> currentWeek = [];
-        Map<String, Map<String, double>> weeklySales = {};
+        List<List<String>> months = [];
+        List<String> currentMonth = [];
+        Map<String, Map<String, double>> monthlySales = {};
+
+        int? currentMonthNumber;
 
         for (var sale in salesData) {
           DateTime date = DateTime.parse(sale.date);
 
-          if (currentWeek.isEmpty || currentWeek.length < 7) {
-            if (currentWeek.isEmpty || currentWeek.last != sale.date) {
-              currentWeek.add(sale.date);
+          if (currentMonth.isEmpty || currentMonthNumber != date.month) {
+            if (currentMonth.isNotEmpty) {
+              months.add(List.from(currentMonth));
+              currentMonth.clear();
             }
+            currentMonthNumber = date.month;
           }
 
-          if (currentWeek.length == 7) {
-            weeks.add(List.from(currentWeek));
-            currentWeek.clear();
-          }
+          currentMonth.add(sale.date);
         }
 
-        if (currentWeek.isNotEmpty) {
-          weeks.add(List.from(currentWeek));
+        if (currentMonth.isNotEmpty) {
+          months.add(List.from(currentMonth));
         }
 
-        logger.w(weeks);
-        for (var week in weeks) {
-          String weekRange = "${week.first} - ${week.last}";
+        for (var month in months) {
+          String monthRange = "${month.first} - ${month.last}";
 
-          if (!weeklySales.containsKey(weekRange)) {
-            weeklySales[weekRange] = {
+          if (!monthlySales.containsKey(monthRange)) {
+            monthlySales[monthRange] = {
               'food': 0,
               'liquor': 0,
               'netSales': 0,
@@ -378,12 +373,12 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
           }
 
           for (var sale in salesData) {
-            if (week.contains(sale.date)) {
-              weeklySales[weekRange]!['food'] = (weeklySales[weekRange]!['food'] ?? 0) + sale.data.sales.food;
-              weeklySales[weekRange]!['liquor'] = (weeklySales[weekRange]!['liquor'] ?? 0) + sale.data.sales.liquor;
-              weeklySales[weekRange]!['netSales'] = (weeklySales[weekRange]!['netSales'] ?? 0) + sale.data.sales.netSales;
-              weeklySales[weekRange]!['taxes'] = (weeklySales[weekRange]!['taxes'] ?? 0) + sale.data.sales.taxes;
-              weeklySales[weekRange]!['totalSales'] = (weeklySales[weekRange]!['totalSales'] ?? 0) +
+            if (month.contains(sale.date)) {
+              monthlySales[monthRange]!['food'] = (monthlySales[monthRange]!['food'] ?? 0) + sale.data.sales.food;
+              monthlySales[monthRange]!['liquor'] = (monthlySales[monthRange]!['liquor'] ?? 0) + sale.data.sales.liquor;
+              monthlySales[monthRange]!['netSales'] = (monthlySales[monthRange]!['netSales'] ?? 0) + sale.data.sales.netSales;
+              monthlySales[monthRange]!['taxes'] = (monthlySales[monthRange]!['taxes'] ?? 0) + sale.data.sales.taxes;
+              monthlySales[monthRange]!['totalSales'] = (monthlySales[monthRange]!['totalSales'] ?? 0) +
                   sale.data.sales.food +
                   sale.data.sales.liquor +
                   sale.data.sales.netSales +
@@ -446,7 +441,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                       decoration: BoxDecoration(color: '#E9E6EA'.toColor()),
                       children: ['Food', 'Liquor', 'Net Sales', 'Taxes', 'Total Sales'].map((title) => buildCell(title, style: headerStyle)).toList(),
                     ),
-                    ...weeklySales.entries.map((entry) {
+                    ...monthlySales.entries.map((entry) {
                       Map<String, double> totals = entry.value;
                       return TableRow(
                         decoration: BoxDecoration(color: '#E9E6EA'.toColor()),
@@ -463,11 +458,11 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                     TableRow(
                       decoration: BoxDecoration(color: '#E9E6EA'.toColor()),
                       children: [
-                        buildDataCell(weeklySales.values.fold(0.0, (sum, entry) => sum + entry['food']!).toStringAsFixed(2)),
-                        buildDataCell(weeklySales.values.fold(0.0, (sum, entry) => sum + entry['liquor']!).toStringAsFixed(2)),
-                        buildDataCell(weeklySales.values.fold(0.0, (sum, entry) => sum + entry['netSales']!).toStringAsFixed(2)),
-                        buildDataCell(weeklySales.values.fold(0.0, (sum, entry) => sum + entry['taxes']!).toStringAsFixed(2)),
-                        buildDataCell(weeklySales.values.fold(0.0, (sum, entry) => sum + entry['totalSales']!).toStringAsFixed(2)),
+                        buildDataCell(monthlySales.values.fold(0.0, (sum, entry) => sum + entry['food']!).toStringAsFixed(2)),
+                        buildDataCell(monthlySales.values.fold(0.0, (sum, entry) => sum + entry['liquor']!).toStringAsFixed(2)),
+                        buildDataCell(monthlySales.values.fold(0.0, (sum, entry) => sum + entry['netSales']!).toStringAsFixed(2)),
+                        buildDataCell(monthlySales.values.fold(0.0, (sum, entry) => sum + entry['taxes']!).toStringAsFixed(2)),
+                        buildDataCell(monthlySales.values.fold(0.0, (sum, entry) => sum + entry['totalSales']!).toStringAsFixed(2)),
                       ],
                     )
                   ])
@@ -487,35 +482,35 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
         return Center(child: Text('Error: ${state.message}'));
       } else if (state is SalesLoadedState) {
         List<SalesData> salesData = state.salesData;
-        List<List<String>> weeks = [];
-        List<String> currentWeek = [];
-        Map<String, Map<String, double>> weeklySalesByOrderType = {};
+        List<List<String>> months = [];
+        List<String> currentMonth = [];
+        Map<String, Map<String, double>> monthlySalesByOrderType = {};
+
+        int? currentMonthNumber;
 
         for (var sale in salesData) {
           DateTime date = DateTime.parse(sale.date);
 
-          if (currentWeek.isEmpty || currentWeek.length < 7) {
-            if (currentWeek.isEmpty || currentWeek.last != sale.date) {
-              currentWeek.add(sale.date);
+          if (currentMonth.isEmpty || currentMonthNumber != date.month) {
+            if (currentMonth.isNotEmpty) {
+              months.add(List.from(currentMonth));
+              currentMonth.clear();
             }
+            currentMonthNumber = date.month;
           }
 
-          if (currentWeek.length == 7) {
-            weeks.add(List.from(currentWeek));
-            currentWeek.clear();
-          }
+          currentMonth.add(sale.date);
         }
 
-        if (currentWeek.isNotEmpty) {
-          weeks.add(List.from(currentWeek));
+        if (currentMonth.isNotEmpty) {
+          months.add(List.from(currentMonth));
         }
 
-        logger.w(weeks);
-        for (var week in weeks) {
-          String weekRange = "${week.first} - ${week.last}";
+        for (var month in months) {
+          String monthRange = "${month.first} - ${month.last}";
 
-          if (!weeklySalesByOrderType.containsKey(weekRange)) {
-            weeklySalesByOrderType[weekRange] = {
+          if (!monthlySalesByOrderType.containsKey(monthRange)) {
+            monthlySalesByOrderType[monthRange] = {
               'dineIn': 0,
               'togo': 0,
               'delivery': 0,
@@ -523,11 +518,12 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
           }
 
           for (var data in salesData) {
-            if (week.contains(data.date)) {
-              weeklySalesByOrderType[weekRange]!['dineIn'] = (weeklySalesByOrderType[weekRange]!['dineIn'] ?? 0) + data.data.salesByOrderType.dineIn;
-              weeklySalesByOrderType[weekRange]!['togo'] = (weeklySalesByOrderType[weekRange]!['togo'] ?? 0) + data.data.salesByOrderType.togo;
-              weeklySalesByOrderType[weekRange]!['delivery'] =
-                  (weeklySalesByOrderType[weekRange]!['delivery'] ?? 0) + data.data.salesByOrderType.delivery;
+            if (month.contains(data.date)) {
+              monthlySalesByOrderType[monthRange]!['dineIn'] =
+                  (monthlySalesByOrderType[monthRange]!['dineIn'] ?? 0) + data.data.salesByOrderType.dineIn;
+              monthlySalesByOrderType[monthRange]!['togo'] = (monthlySalesByOrderType[monthRange]!['togo'] ?? 0) + data.data.salesByOrderType.togo;
+              monthlySalesByOrderType[monthRange]!['delivery'] =
+                  (monthlySalesByOrderType[monthRange]!['delivery'] ?? 0) + data.data.salesByOrderType.delivery;
               data.data.salesByOrderType.dineIn + data.data.salesByOrderType.togo + data.data.salesByOrderType.delivery;
             }
           }
@@ -576,7 +572,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                         );
                       }).toList(),
                     ),
-                    ...weeklySalesByOrderType.entries.map((entry) {
+                    ...monthlySalesByOrderType.entries.map((entry) {
                       Map<String, double> totals = entry.value;
                       return TableRow(
                         decoration: BoxDecoration(color: '#F8F7EA'.toColor()),
@@ -591,9 +587,9 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                     TableRow(
                       decoration: BoxDecoration(color: '#F8F7EA'.toColor()),
                       children: [
-                        buildDataCell(weeklySalesByOrderType.values.fold(0.0, (sum, entry) => sum + entry['dineIn']!).toStringAsFixed(2)),
-                        buildDataCell(weeklySalesByOrderType.values.fold(0.0, (sum, entry) => sum + entry['togo']!).toStringAsFixed(2)),
-                        buildDataCell(weeklySalesByOrderType.values.fold(0.0, (sum, entry) => sum + entry['delivery']!).toStringAsFixed(2)),
+                        buildDataCell(monthlySalesByOrderType.values.fold(0.0, (sum, entry) => sum + entry['dineIn']!).toStringAsFixed(2)),
+                        buildDataCell(monthlySalesByOrderType.values.fold(0.0, (sum, entry) => sum + entry['togo']!).toStringAsFixed(2)),
+                        buildDataCell(monthlySalesByOrderType.values.fold(0.0, (sum, entry) => sum + entry['delivery']!).toStringAsFixed(2)),
                       ],
                     )
                   ])
@@ -613,35 +609,35 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
         return Center(child: Text('Error: ${state.message}'));
       } else if (state is SalesLoadedState) {
         List<SalesData> salesData = state.salesData;
-        List<List<String>> weeks = [];
-        List<String> currentWeek = [];
-        Map<String, Map<String, double>> weeklyPayments = {};
+        List<List<String>> months = [];
+        List<String> currentMonth = [];
+        Map<String, Map<String, double>> monthlyPayments = {};
+
+        int? currentMonthNumber;
 
         for (var sale in salesData) {
           DateTime date = DateTime.parse(sale.date);
 
-          if (currentWeek.isEmpty || currentWeek.length < 7) {
-            if (currentWeek.isEmpty || currentWeek.last != sale.date) {
-              currentWeek.add(sale.date);
+          if (currentMonth.isEmpty || currentMonthNumber != date.month) {
+            if (currentMonth.isNotEmpty) {
+              months.add(List.from(currentMonth));
+              currentMonth.clear();
             }
+            currentMonthNumber = date.month;
           }
 
-          if (currentWeek.length == 7) {
-            weeks.add(List.from(currentWeek));
-            currentWeek.clear();
-          }
+          currentMonth.add(sale.date);
         }
 
-        if (currentWeek.isNotEmpty) {
-          weeks.add(List.from(currentWeek));
+        if (currentMonth.isNotEmpty) {
+          months.add(List.from(currentMonth));
         }
 
-        logger.w(weeks);
-        for (var week in weeks) {
-          String weekRange = "${week.first} - ${week.last}";
+        for (var month in months) {
+          String monthRange = "${month.first} - ${month.last}";
 
-          if (!weeklyPayments.containsKey(weekRange)) {
-            weeklyPayments[weekRange] = {
+          if (!monthlyPayments.containsKey(monthRange)) {
+            monthlyPayments[monthRange] = {
               'cash': 0,
               'check': 0,
               'coupon': 0,
@@ -669,42 +665,45 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
           }
 
           for (var data in salesData) {
-            if (week.contains(data.date)) {
-              weeklyPayments[weekRange]!['cash'] = (weeklyPayments[weekRange]!['cash'] ?? 0) + data.data.payments.cash;
-              weeklyPayments[weekRange]!['check'] = (weeklyPayments[weekRange]!['check'] ?? 0) + data.data.payments.check;
-              weeklyPayments[weekRange]!['coupon'] = (weeklyPayments[weekRange]!['coupon'] ?? 0) + data.data.payments.coupon;
-              weeklyPayments[weekRange]!['pp'] = (weeklyPayments[weekRange]!['pp'] ?? 0) + data.data.payments.pp;
-              weeklyPayments[weekRange]!['3RDPP'] = (weeklyPayments[weekRange]!['3RDPP'] ?? 0) + data.data.payments.pPTips;
-              weeklyPayments[weekRange]!['3RDPPTips'] = (weeklyPayments[weekRange]!['3RDPPTips'] ?? 0) + data.data.payments.pPTips;
-              weeklyPayments[weekRange]!['3rdpptotal'] =
-                  (weeklyPayments[weekRange]!['3rdpptotal'] ?? 0) + data.data.payments.pp + data.data.payments.pPTips;
-              weeklyPayments[weekRange]!['EmvCCsales'] = (weeklyPayments[weekRange]!['EmvCCsales'] ?? 0) + data.data.payments.emvccSales;
-              weeklyPayments[weekRange]!['EmvCCTips'] = (weeklyPayments[weekRange]!['EmvCCTips'] ?? 0) + data.data.payments.emvcCTips;
-              weeklyPayments[weekRange]!['EmvCCtotal'] =
-                  (weeklyPayments[weekRange]!['EmvCCtotal'] ?? 0) + data.data.payments.emvccSales + data.data.payments.emvcCTips;
-              weeklyPayments[weekRange]!['CloverFlexCCsales'] =
-                  (weeklyPayments[weekRange]!['CloverFlexCCsales'] ?? 0) + data.data.payments.cloverFlexCCSales;
-              weeklyPayments[weekRange]!['CloverFlexCCTips'] =
-                  (weeklyPayments[weekRange]!['CloverFlexCCTips'] ?? 0) + data.data.payments.cloverFlexCCTips;
-              weeklyPayments[weekRange]!['CloverFlexCCtotal'] =
-                  (weeklyPayments[weekRange]!['CloverFlexCCtotal'] ?? 0) + data.data.payments.cloverFlexCCSales + data.data.payments.cloverFlexCCTips;
-              weeklyPayments[weekRange]!['SDPrepaidPP'] = (weeklyPayments[weekRange]!['SDPrepaidPP'] ?? 0) + data.data.payments.smileDiningPP;
-              weeklyPayments[weekRange]!['SDPrepaidPPTips'] = (weeklyPayments[weekRange]!['togo'] ?? 0) + data.data.payments.smileDiningPPTips;
-              weeklyPayments[weekRange]!['SDGiftCardPPGC'] = (weeklyPayments[weekRange]!['SDGiftCardPPGC'] ?? 0) + data.data.payments.smileDiningPPGC;
-              weeklyPayments[weekRange]!['SDGiftCardPPGCTips'] =
-                  (weeklyPayments[weekRange]!['SDGiftCardPPGCTips'] ?? 0) + data.data.payments.smileContactlessPPGCTips;
-              weeklyPayments[weekRange]!['SDGiftCardtotal'] = (weeklyPayments[weekRange]!['SDGiftCardtotal'] ?? 0) +
+            if (month.contains(data.date)) {
+              monthlyPayments[monthRange]!['cash'] = (monthlyPayments[monthRange]!['cash'] ?? 0) + data.data.payments.cash;
+              monthlyPayments[monthRange]!['check'] = (monthlyPayments[monthRange]!['check'] ?? 0) + data.data.payments.check;
+              monthlyPayments[monthRange]!['coupon'] = (monthlyPayments[monthRange]!['coupon'] ?? 0) + data.data.payments.coupon;
+              monthlyPayments[monthRange]!['pp'] = (monthlyPayments[monthRange]!['pp'] ?? 0) + data.data.payments.pp;
+              monthlyPayments[monthRange]!['3RDPP'] = (monthlyPayments[monthRange]!['3RDPP'] ?? 0) + data.data.payments.pPTips;
+              monthlyPayments[monthRange]!['3RDPPTips'] = (monthlyPayments[monthRange]!['3RDPPTips'] ?? 0) + data.data.payments.pPTips;
+              monthlyPayments[monthRange]!['3rdpptotal'] =
+                  (monthlyPayments[monthRange]!['3rdpptotal'] ?? 0) + data.data.payments.pp + data.data.payments.pPTips;
+              monthlyPayments[monthRange]!['EmvCCsales'] = (monthlyPayments[monthRange]!['EmvCCsales'] ?? 0) + data.data.payments.emvccSales;
+              monthlyPayments[monthRange]!['EmvCCTips'] = (monthlyPayments[monthRange]!['EmvCCTips'] ?? 0) + data.data.payments.emvcCTips;
+              monthlyPayments[monthRange]!['EmvCCtotal'] =
+                  (monthlyPayments[monthRange]!['EmvCCtotal'] ?? 0) + data.data.payments.emvccSales + data.data.payments.emvcCTips;
+              monthlyPayments[monthRange]!['CloverFlexCCsales'] =
+                  (monthlyPayments[monthRange]!['CloverFlexCCsales'] ?? 0) + data.data.payments.cloverFlexCCSales;
+              monthlyPayments[monthRange]!['CloverFlexCCTips'] =
+                  (monthlyPayments[monthRange]!['CloverFlexCCTips'] ?? 0) + data.data.payments.cloverFlexCCTips;
+              monthlyPayments[monthRange]!['CloverFlexCCtotal'] = (monthlyPayments[monthRange]!['CloverFlexCCtotal'] ?? 0) +
+                  data.data.payments.cloverFlexCCSales +
+                  data.data.payments.cloverFlexCCTips;
+              monthlyPayments[monthRange]!['SDPrepaidPP'] = (monthlyPayments[monthRange]!['SDPrepaidPP'] ?? 0) + data.data.payments.smileDiningPP;
+              monthlyPayments[monthRange]!['SDPrepaidPPTips'] = (monthlyPayments[monthRange]!['togo'] ?? 0) + data.data.payments.smileDiningPPTips;
+              monthlyPayments[monthRange]!['SDGiftCardPPGC'] =
+                  (monthlyPayments[monthRange]!['SDGiftCardPPGC'] ?? 0) + data.data.payments.smileDiningPPGC;
+              monthlyPayments[monthRange]!['SDGiftCardPPGCTips'] =
+                  (monthlyPayments[monthRange]!['SDGiftCardPPGCTips'] ?? 0) + data.data.payments.smileContactlessPPGCTips;
+              monthlyPayments[monthRange]!['SDGiftCardtotal'] = (monthlyPayments[monthRange]!['SDGiftCardtotal'] ?? 0) +
                   data.data.payments.smileDiningPP +
                   data.data.payments.smileDiningPPTips +
                   data.data.payments.smileDiningPPGC;
-              weeklyPayments[weekRange]!['SCPrepaidPP'] = (weeklyPayments[weekRange]!['SCPrepaidPP'] ?? 0) + data.data.payments.smileContactlessPP;
-              weeklyPayments[weekRange]!['SCPrepaidPPTips'] =
-                  (weeklyPayments[weekRange]!['SCPrepaidPPTips'] ?? 0) + data.data.payments.smileContactlessPPTips;
-              weeklyPayments[weekRange]!['SCGiftCardPPGC'] =
-                  (weeklyPayments[weekRange]!['SCGiftCardPPGC'] ?? 0) + data.data.payments.smileContactlessPPGC;
-              weeklyPayments[weekRange]!['SCGiftCardPPGCTips'] =
-                  (weeklyPayments[weekRange]!['SCGiftCardPPGCTips'] ?? 0) + data.data.payments.smileContactlessPPGCTips;
-              weeklyPayments[weekRange]!['SCGiftCardTotal'] = (weeklyPayments[weekRange]!['SCGiftCardTotal'] ?? 0) +
+              monthlyPayments[monthRange]!['SCPrepaidPP'] =
+                  (monthlyPayments[monthRange]!['SCPrepaidPP'] ?? 0) + data.data.payments.smileContactlessPP;
+              monthlyPayments[monthRange]!['SCPrepaidPPTips'] =
+                  (monthlyPayments[monthRange]!['SCPrepaidPPTips'] ?? 0) + data.data.payments.smileContactlessPPTips;
+              monthlyPayments[monthRange]!['SCGiftCardPPGC'] =
+                  (monthlyPayments[monthRange]!['SCGiftCardPPGC'] ?? 0) + data.data.payments.smileContactlessPPGC;
+              monthlyPayments[monthRange]!['SCGiftCardPPGCTips'] =
+                  (monthlyPayments[monthRange]!['SCGiftCardPPGCTips'] ?? 0) + data.data.payments.smileContactlessPPGCTips;
+              monthlyPayments[monthRange]!['SCGiftCardTotal'] = (monthlyPayments[monthRange]!['SCGiftCardTotal'] ?? 0) +
                   data.data.payments.smileContactlessPP +
                   data.data.payments.smileContactlessPPTips +
                   data.data.payments.smileContactlessPPGC +
@@ -1079,7 +1078,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                             )
                           ],
                         ),
-                        ...weeklyPayments.entries.map((entry) {
+                        ...monthlyPayments.entries.map((entry) {
                           Map<String, double> totals = entry.value;
                           return TableRow(
                             decoration: BoxDecoration(color: '#E5F0F5'.toColor()),
@@ -1225,9 +1224,9 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                         TableRow(
                           decoration: BoxDecoration(color: '#E5F0F5'.toColor()),
                           children: [
-                            buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['cash']!).toStringAsFixed(2)),
-                            buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['check']!).toStringAsFixed(2)),
-                            buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['coupon']!).toStringAsFixed(2)),
+                            buildDataCell(monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['cash']!).toStringAsFixed(2)),
+                            buildDataCell(monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['check']!).toStringAsFixed(2)),
+                            buildDataCell(monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['coupon']!).toStringAsFixed(2)),
                             // 3rd Party
                             TableCell(
                               verticalAlignment: TableCellVerticalAlignment.middle,
@@ -1237,7 +1236,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                                   Expanded(
                                     child: Center(
                                       child: Text(
-                                        (weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['3RDPP']!).toStringAsFixed(2)),
+                                        (monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['3RDPP']!).toStringAsFixed(2)),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
@@ -1245,7 +1244,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                                   Expanded(
                                     child: Center(
                                       child: Text(
-                                        (weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['3RDPPTips']!).toStringAsFixed(2)),
+                                        (monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['3RDPPTips']!).toStringAsFixed(2)),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
@@ -1253,7 +1252,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                                   Expanded(
                                     child: Center(
                                       child: Text(
-                                        (weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['3rdpptotal']!).toStringAsFixed(2)),
+                                        (monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['3rdpptotal']!).toStringAsFixed(2)),
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           decoration: TextDecoration.underline,
@@ -1275,7 +1274,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                                   Expanded(
                                     child: Center(
                                       child: Text(
-                                        (weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['EmvCCsales']!).toStringAsFixed(2)),
+                                        (monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['EmvCCsales']!).toStringAsFixed(2)),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
@@ -1283,7 +1282,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                                   Expanded(
                                     child: Center(
                                       child: Text(
-                                        (weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['EmvCCTips']!).toStringAsFixed(2)),
+                                        (monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['EmvCCTips']!).toStringAsFixed(2)),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
@@ -1291,7 +1290,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                                   Expanded(
                                     child: Center(
                                       child: Text(
-                                        (weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['EmvCCtotal']!).toStringAsFixed(2)),
+                                        (monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['EmvCCtotal']!).toStringAsFixed(2)),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
@@ -1308,7 +1307,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                                   Expanded(
                                     child: Center(
                                       child: Text(
-                                        (weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['CloverFlexCCsales']!).toStringAsFixed(2)),
+                                        (monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['CloverFlexCCsales']!).toStringAsFixed(2)),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
@@ -1316,7 +1315,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                                   Expanded(
                                     child: Center(
                                       child: Text(
-                                        (weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['CloverFlexCCTips']!).toStringAsFixed(2)),
+                                        (monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['CloverFlexCCTips']!).toStringAsFixed(2)),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
@@ -1324,7 +1323,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                                   Expanded(
                                     child: Center(
                                       child: Text(
-                                        (weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['CloverFlexCCtotal']!).toStringAsFixed(2)),
+                                        (monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['CloverFlexCCtotal']!).toStringAsFixed(2)),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
@@ -1338,12 +1337,12 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SDPrepaidPP']!).toStringAsFixed(2)),
-                                  buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SDPrepaidPPTips']!).toStringAsFixed(2)),
-                                  buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SDGiftCardPPGC']!).toStringAsFixed(2)),
+                                  buildDataCell(monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['SDPrepaidPP']!).toStringAsFixed(2)),
+                                  buildDataCell(monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['SDPrepaidPPTips']!).toStringAsFixed(2)),
+                                  buildDataCell(monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['SDGiftCardPPGC']!).toStringAsFixed(2)),
                                   buildDataCell(
-                                      weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SDGiftCardPPGCTips']!).toStringAsFixed(2)),
-                                  buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SDGiftCardtotal']!).toStringAsFixed(2)),
+                                      monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['SDGiftCardPPGCTips']!).toStringAsFixed(2)),
+                                  buildDataCell(monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['SDGiftCardtotal']!).toStringAsFixed(2)),
                                 ],
                               ),
                             ),
@@ -1353,12 +1352,12 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SCPrepaidPP']!).toStringAsFixed(2)),
-                                  buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SCPrepaidPPTips']!).toStringAsFixed(2)),
-                                  buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SCGiftCardPPGC']!).toStringAsFixed(2)),
+                                  buildDataCell(monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['SCPrepaidPP']!).toStringAsFixed(2)),
+                                  buildDataCell(monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['SCPrepaidPPTips']!).toStringAsFixed(2)),
+                                  buildDataCell(monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['SCGiftCardPPGC']!).toStringAsFixed(2)),
                                   buildDataCell(
-                                      weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SCGiftCardPPGCTips']!).toStringAsFixed(2)),
-                                  buildDataCell(weeklyPayments.values.fold(0.0, (sum, entry) => sum + entry['SCGiftCardTotal']!).toStringAsFixed(2)),
+                                      monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['SCGiftCardPPGCTips']!).toStringAsFixed(2)),
+                                  buildDataCell(monthlyPayments.values.fold(0.0, (sum, entry) => sum + entry['SCGiftCardTotal']!).toStringAsFixed(2)),
                                 ],
                               ),
                             ),
@@ -1386,35 +1385,35 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
       } else if (state is SalesLoadedState) {
         List<SalesData> salesData = state.salesData;
         // คำนวณผลรวมของแต่ละประเภทจากข้อมูลทั้งหมด
-        List<List<String>> weeks = [];
-        List<String> currentWeek = [];
-        Map<String, Map<String, double>> weeklyServiceChargeandFee = {};
+        List<List<String>> months = [];
+        List<String> currentMonth = [];
+        Map<String, Map<String, double>> monthlyServiceChargeandFee = {};
+
+        int? currentMonthNumber;
 
         for (var sale in salesData) {
           DateTime date = DateTime.parse(sale.date);
 
-          if (currentWeek.isEmpty || currentWeek.length < 7) {
-            if (currentWeek.isEmpty || currentWeek.last != sale.date) {
-              currentWeek.add(sale.date);
+          if (currentMonth.isEmpty || currentMonthNumber != date.month) {
+            if (currentMonth.isNotEmpty) {
+              months.add(List.from(currentMonth));
+              currentMonth.clear();
             }
+            currentMonthNumber = date.month;
           }
 
-          if (currentWeek.length == 7) {
-            weeks.add(List.from(currentWeek));
-            currentWeek.clear();
-          }
+          currentMonth.add(sale.date);
         }
 
-        if (currentWeek.isNotEmpty) {
-          weeks.add(List.from(currentWeek));
+        if (currentMonth.isNotEmpty) {
+          months.add(List.from(currentMonth));
         }
 
-        logger.w(weeks);
-        for (var week in weeks) {
-          String weekRange = "${week.first} - ${week.last}";
+        for (var month in months) {
+          String monthRange = "${month.first} - ${month.last}";
 
-          if (!weeklyServiceChargeandFee.containsKey(weekRange)) {
-            weeklyServiceChargeandFee[weekRange] = {
+          if (!monthlyServiceChargeandFee.containsKey(monthRange)) {
+            monthlyServiceChargeandFee[monthRange] = {
               'Gratuity': 0,
               'OnlineCustomCharge': 0,
               'ContactlessCustomCharge': 0,
@@ -1430,29 +1429,29 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
           }
 
           for (var data in salesData) {
-            if (week.contains(data.date)) {
-              weeklyServiceChargeandFee[weekRange]!['Gratuity'] =
-                  (weeklyServiceChargeandFee[weekRange]!['Gratuity'] ?? 0) + data.data.serviceChargeAndFee.gratuity;
-              weeklyServiceChargeandFee[weekRange]!['OnlineCustomCharge'] =
-                  (weeklyServiceChargeandFee[weekRange]!['OnlineCustomCharge'] ?? 0) + data.data.serviceChargeAndFee.onlineCustomCharge;
-              weeklyServiceChargeandFee[weekRange]!['ContactlessCustomCharge'] =
-                  (weeklyServiceChargeandFee[weekRange]!['ContactlessCustomCharge'] ?? 0) + data.data.serviceChargeAndFee.contactlessCustomCharge;
-              weeklyServiceChargeandFee[weekRange]!['SmilePOSAutoCharge'] =
-                  (weeklyServiceChargeandFee[weekRange]!['SmilePOSAutoCharge'] ?? 0) + data.data.serviceChargeAndFee.smilePOSAutoCharge;
-              weeklyServiceChargeandFee[weekRange]!['DeliveryRestaurant'] =
-                  (weeklyServiceChargeandFee[weekRange]!['DeliveryRestaurant'] ?? 0) + data.data.serviceChargeAndFee.deliveryRestaurant;
-              weeklyServiceChargeandFee[weekRange]!['DeliveryDoorDashDrive'] =
-                  (weeklyServiceChargeandFee[weekRange]!['DeliveryDoorDashDrive'] ?? 0) + data.data.serviceChargeAndFee.deliveryDoorDashDrive;
-              weeklyServiceChargeandFee[weekRange]!['Others'] =
-                  (weeklyServiceChargeandFee[weekRange]!['Others'] ?? 0) + data.data.serviceChargeAndFee.others;
-              weeklyServiceChargeandFee[weekRange]!['Utensils'] =
-                  (weeklyServiceChargeandFee[weekRange]!['Utensils'] ?? 0) + data.data.serviceChargeAndFee.utensils;
-              weeklyServiceChargeandFee[weekRange]!['PaymentFee'] =
-                  (weeklyServiceChargeandFee[weekRange]!['PaymentFee'] ?? 0) + data.data.serviceChargeAndFee.paymentFee;
-              weeklyServiceChargeandFee[weekRange]!['ServiceFeeOnCreditCard'] =
-                  (weeklyServiceChargeandFee[weekRange]!['ServiceFeeOnCreditCard'] ?? 0) + data.data.serviceChargeAndFee.serviceFeeOnCreditCard;
-              weeklyServiceChargeandFee[weekRange]!['ServiceFeeAdjustment'] =
-                  (weeklyServiceChargeandFee[weekRange]!['ServiceFeeAdjustment'] ?? 0) + data.data.serviceChargeAndFee.serviceFeeAdjustment;
+            if (month.contains(data.date)) {
+              monthlyServiceChargeandFee[monthRange]!['Gratuity'] =
+                  (monthlyServiceChargeandFee[monthRange]!['Gratuity'] ?? 0) + data.data.serviceChargeAndFee.gratuity;
+              monthlyServiceChargeandFee[monthRange]!['OnlineCustomCharge'] =
+                  (monthlyServiceChargeandFee[monthRange]!['OnlineCustomCharge'] ?? 0) + data.data.serviceChargeAndFee.onlineCustomCharge;
+              monthlyServiceChargeandFee[monthRange]!['ContactlessCustomCharge'] =
+                  (monthlyServiceChargeandFee[monthRange]!['ContactlessCustomCharge'] ?? 0) + data.data.serviceChargeAndFee.contactlessCustomCharge;
+              monthlyServiceChargeandFee[monthRange]!['SmilePOSAutoCharge'] =
+                  (monthlyServiceChargeandFee[monthRange]!['SmilePOSAutoCharge'] ?? 0) + data.data.serviceChargeAndFee.smilePOSAutoCharge;
+              monthlyServiceChargeandFee[monthRange]!['DeliveryRestaurant'] =
+                  (monthlyServiceChargeandFee[monthRange]!['DeliveryRestaurant'] ?? 0) + data.data.serviceChargeAndFee.deliveryRestaurant;
+              monthlyServiceChargeandFee[monthRange]!['DeliveryDoorDashDrive'] =
+                  (monthlyServiceChargeandFee[monthRange]!['DeliveryDoorDashDrive'] ?? 0) + data.data.serviceChargeAndFee.deliveryDoorDashDrive;
+              monthlyServiceChargeandFee[monthRange]!['Others'] =
+                  (monthlyServiceChargeandFee[monthRange]!['Others'] ?? 0) + data.data.serviceChargeAndFee.others;
+              monthlyServiceChargeandFee[monthRange]!['Utensils'] =
+                  (monthlyServiceChargeandFee[monthRange]!['Utensils'] ?? 0) + data.data.serviceChargeAndFee.utensils;
+              monthlyServiceChargeandFee[monthRange]!['PaymentFee'] =
+                  (monthlyServiceChargeandFee[monthRange]!['PaymentFee'] ?? 0) + data.data.serviceChargeAndFee.paymentFee;
+              monthlyServiceChargeandFee[monthRange]!['ServiceFeeOnCreditCard'] =
+                  (monthlyServiceChargeandFee[monthRange]!['ServiceFeeOnCreditCard'] ?? 0) + data.data.serviceChargeAndFee.serviceFeeOnCreditCard;
+              monthlyServiceChargeandFee[monthRange]!['ServiceFeeAdjustment'] =
+                  (monthlyServiceChargeandFee[monthRange]!['ServiceFeeAdjustment'] ?? 0) + data.data.serviceChargeAndFee.serviceFeeAdjustment;
             }
           }
         }
@@ -1526,7 +1525,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                             'Service\nFee\nAdjustment',
                           ].map((title) => buildCell(title, style: headerStyle)).toList(),
                         ),
-                        ...weeklyServiceChargeandFee.entries.map((entry) {
+                        ...monthlyServiceChargeandFee.entries.map((entry) {
                           Map<String, double> totals = entry.value;
                           return TableRow(
                             decoration: BoxDecoration(color: '#ECF5EB'.toColor()),
@@ -1548,26 +1547,27 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                         TableRow(
                           decoration: BoxDecoration(color: '#ECF5EB'.toColor()),
                           children: [
-                            buildDataCell(weeklyServiceChargeandFee.values.fold(0.0, (sum, entry) => sum + entry['Gratuity']!).toStringAsFixed(2)),
+                            buildDataCell(monthlyServiceChargeandFee.values.fold(0.0, (sum, entry) => sum + entry['Gratuity']!).toStringAsFixed(2)),
                             buildDataCell(
-                                weeklyServiceChargeandFee.values.fold(0.0, (sum, entry) => sum + entry['OnlineCustomCharge']!).toStringAsFixed(2)),
-                            buildDataCell(weeklyServiceChargeandFee.values
+                                monthlyServiceChargeandFee.values.fold(0.0, (sum, entry) => sum + entry['OnlineCustomCharge']!).toStringAsFixed(2)),
+                            buildDataCell(monthlyServiceChargeandFee.values
                                 .fold(0.0, (sum, entry) => sum + entry['ContactlessCustomCharge']!)
                                 .toStringAsFixed(2)),
                             buildDataCell(
-                                weeklyServiceChargeandFee.values.fold(0.0, (sum, entry) => sum + entry['SmilePOSAutoCharge']!).toStringAsFixed(2)),
+                                monthlyServiceChargeandFee.values.fold(0.0, (sum, entry) => sum + entry['SmilePOSAutoCharge']!).toStringAsFixed(2)),
                             buildDataCell(
-                                weeklyServiceChargeandFee.values.fold(0.0, (sum, entry) => sum + entry['DeliveryRestaurant']!).toStringAsFixed(2)),
-                            buildDataCell(
-                                weeklyServiceChargeandFee.values.fold(0.0, (sum, entry) => sum + entry['DeliveryDoorDashDrive']!).toStringAsFixed(2)),
-                            buildDataCell(weeklyServiceChargeandFee.values.fold(0.0, (sum, entry) => sum + entry['Others']!).toStringAsFixed(2)),
-                            buildDataCell(weeklyServiceChargeandFee.values.fold(0.0, (sum, entry) => sum + entry['Utensils']!).toStringAsFixed(2)),
-                            buildDataCell(weeklyServiceChargeandFee.values.fold(0.0, (sum, entry) => sum + entry['PaymentFee']!).toStringAsFixed(2)),
-                            buildDataCell(weeklyServiceChargeandFee.values
+                                monthlyServiceChargeandFee.values.fold(0.0, (sum, entry) => sum + entry['DeliveryRestaurant']!).toStringAsFixed(2)),
+                            buildDataCell(monthlyServiceChargeandFee.values
+                                .fold(0.0, (sum, entry) => sum + entry['DeliveryDoorDashDrive']!)
+                                .toStringAsFixed(2)),
+                            buildDataCell(monthlyServiceChargeandFee.values.fold(0.0, (sum, entry) => sum + entry['Others']!).toStringAsFixed(2)),
+                            buildDataCell(monthlyServiceChargeandFee.values.fold(0.0, (sum, entry) => sum + entry['Utensils']!).toStringAsFixed(2)),
+                            buildDataCell(monthlyServiceChargeandFee.values.fold(0.0, (sum, entry) => sum + entry['PaymentFee']!).toStringAsFixed(2)),
+                            buildDataCell(monthlyServiceChargeandFee.values
                                 .fold(0.0, (sum, entry) => sum + entry['ServiceFeeOnCreditCard']!)
                                 .toStringAsFixed(2)),
                             buildDataCell(
-                                weeklyServiceChargeandFee.values.fold(0.0, (sum, entry) => sum + entry['ServiceFeeAdjustment']!).toStringAsFixed(2)),
+                                monthlyServiceChargeandFee.values.fold(0.0, (sum, entry) => sum + entry['ServiceFeeAdjustment']!).toStringAsFixed(2)),
                           ],
                         )
                       ],
@@ -1591,34 +1591,35 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
         return Center(child: Text('Error: ${state.message}'));
       } else if (state is SalesLoadedState) {
         List<SalesData> salesData = state.salesData;
-        List<List<String>> weeks = [];
-        List<String> currentWeek = [];
-        Map<String, Map<String, double>> weeklyGiftCertificate = {};
+        List<List<String>> months = [];
+        List<String> currentMonth = [];
+        Map<String, Map<String, double>> monthlyGiftCertificate = {};
+
+        int? currentMonthNumber;
 
         for (var sale in salesData) {
           DateTime date = DateTime.parse(sale.date);
 
-          if (currentWeek.isEmpty || currentWeek.length < 7) {
-            if (currentWeek.isEmpty || currentWeek.last != sale.date) {
-              currentWeek.add(sale.date);
+          if (currentMonth.isEmpty || currentMonthNumber != date.month) {
+            if (currentMonth.isNotEmpty) {
+              months.add(List.from(currentMonth));
+              currentMonth.clear();
             }
+            currentMonthNumber = date.month;
           }
 
-          if (currentWeek.length == 7) {
-            weeks.add(List.from(currentWeek));
-            currentWeek.clear();
-          }
+          currentMonth.add(sale.date);
         }
 
-        if (currentWeek.isNotEmpty) {
-          weeks.add(List.from(currentWeek));
+        if (currentMonth.isNotEmpty) {
+          months.add(List.from(currentMonth));
         }
 
-        for (var week in weeks) {
-          String weekRange = "${week.first} - ${week.last}";
+        for (var month in months) {
+          String monthRange = "${month.first} - ${month.last}";
 
-          if (!weeklyGiftCertificate.containsKey(weekRange)) {
-            weeklyGiftCertificate[weekRange] = {
+          if (!monthlyGiftCertificate.containsKey(monthRange)) {
+            monthlyGiftCertificate[monthRange] = {
               'GiftSales': 0,
               'GiftRedeem': 0,
               'EGiftSalesShop': 0,
@@ -1627,15 +1628,15 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
           }
 
           for (var data in salesData) {
-            if (week.contains(data.date)) {
-              weeklyGiftCertificate[weekRange]!['GiftSales'] =
-                  (weeklyGiftCertificate[weekRange]!['GiftSales'] ?? 0) + data.data.giftCertificate.giftSales;
-              weeklyGiftCertificate[weekRange]!['GiftRedeem'] =
-                  (weeklyGiftCertificate[weekRange]!['GiftRedeem'] ?? 0) + data.data.giftCertificate.giftRedeem;
-              weeklyGiftCertificate[weekRange]!['EGiftSalesShop'] =
-                  (weeklyGiftCertificate[weekRange]!['EGiftSalesShop'] ?? 0) + data.data.giftCertificate.eGiftSalesShop;
-              weeklyGiftCertificate[weekRange]!['EGiftSalesOnline'] =
-                  (weeklyGiftCertificate[weekRange]!['EGiftSalesOnline'] ?? 0) + data.data.giftCertificate.eGiftSalesOnline;
+            if (month.contains(data.date)) {
+              monthlyGiftCertificate[monthRange]!['GiftSales'] =
+                  (monthlyGiftCertificate[monthRange]!['GiftSales'] ?? 0) + data.data.giftCertificate.giftSales;
+              monthlyGiftCertificate[monthRange]!['GiftRedeem'] =
+                  (monthlyGiftCertificate[monthRange]!['GiftRedeem'] ?? 0) + data.data.giftCertificate.giftRedeem;
+              monthlyGiftCertificate[monthRange]!['EGiftSalesShop'] =
+                  (monthlyGiftCertificate[monthRange]!['EGiftSalesShop'] ?? 0) + data.data.giftCertificate.eGiftSalesShop;
+              monthlyGiftCertificate[monthRange]!['EGiftSalesOnline'] =
+                  (monthlyGiftCertificate[monthRange]!['EGiftSalesOnline'] ?? 0) + data.data.giftCertificate.eGiftSalesOnline;
             }
           }
         }
@@ -1725,7 +1726,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                             ),
                           ],
                         ),
-                        ...weeklyGiftCertificate.entries.map((entry) {
+                        ...monthlyGiftCertificate.entries.map((entry) {
                           Map<String, double> totals = entry.value;
                           return TableRow(
                             decoration: BoxDecoration(color: '#FCE9EA'.toColor()),
@@ -1761,15 +1762,15 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                         TableRow(
                           decoration: BoxDecoration(color: '#FCE9EA'.toColor()),
                           children: [
-                            buildDataCell(weeklyGiftCertificate.values.fold(0.0, (sum, entry) => sum + entry['GiftSales']!).toStringAsFixed(2)),
-                            buildDataCell(weeklyGiftCertificate.values.fold(0.0, (sum, entry) => sum + entry['GiftRedeem']!).toStringAsFixed(2)),
+                            buildDataCell(monthlyGiftCertificate.values.fold(0.0, (sum, entry) => sum + entry['GiftSales']!).toStringAsFixed(2)),
+                            buildDataCell(monthlyGiftCertificate.values.fold(0.0, (sum, entry) => sum + entry['GiftRedeem']!).toStringAsFixed(2)),
                             TableCell(
                               verticalAlignment: TableCellVerticalAlignment.middle,
                               child: Row(
                                 children: [
                                   Expanded(
                                     child: buildDataCell(
-                                        weeklyGiftCertificate.values.fold(0.0, (sum, entry) => sum + entry['EGiftSalesShop']!).toStringAsFixed(2)),
+                                        monthlyGiftCertificate.values.fold(0.0, (sum, entry) => sum + entry['EGiftSalesShop']!).toStringAsFixed(2)),
                                   ),
                                   Container(
                                     width: 1, // ความกว้างของเส้น
@@ -1777,7 +1778,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                                   ),
                                   Expanded(
                                     child: buildDataCell(
-                                        weeklyGiftCertificate.values.fold(0.0, (sum, entry) => sum + entry['EGiftSalesOnline']!).toStringAsFixed(2)),
+                                        monthlyGiftCertificate.values.fold(0.0, (sum, entry) => sum + entry['EGiftSalesOnline']!).toStringAsFixed(2)),
                                   ),
                                 ],
                               ),
@@ -1805,34 +1806,35 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
         return Center(child: Text('Error: ${state.message}'));
       } else if (state is SalesLoadedState) {
         List<SalesData> salesData = state.salesData;
-        List<List<String>> weeks = [];
-        List<String> currentWeek = [];
-        Map<String, Map<String, double>> weeklyOther = {};
+        List<List<String>> months = [];
+        List<String> currentMonth = [];
+        Map<String, Map<String, double>> monthlyOther = {};
+
+        int? currentMonthNumber;
 
         for (var sale in salesData) {
           DateTime date = DateTime.parse(sale.date);
 
-          if (currentWeek.isEmpty || currentWeek.length < 7) {
-            if (currentWeek.isEmpty || currentWeek.last != sale.date) {
-              currentWeek.add(sale.date);
+          if (currentMonth.isEmpty || currentMonthNumber != date.month) {
+            if (currentMonth.isNotEmpty) {
+              months.add(List.from(currentMonth));
+              currentMonth.clear();
             }
+            currentMonthNumber = date.month;
           }
 
-          if (currentWeek.length == 7) {
-            weeks.add(List.from(currentWeek));
-            currentWeek.clear();
-          }
+          currentMonth.add(sale.date);
         }
 
-        if (currentWeek.isNotEmpty) {
-          weeks.add(List.from(currentWeek));
+        if (currentMonth.isNotEmpty) {
+          months.add(List.from(currentMonth));
         }
 
-        for (var week in weeks) {
-          String weekRange = "${week.first} - ${week.last}";
+        for (var month in months) {
+          String monthRange = "${month.first} - ${month.last}";
 
-          if (!weeklyOther.containsKey(weekRange)) {
-            weeklyOther[weekRange] = {
+          if (!monthlyOther.containsKey(monthRange)) {
+            monthlyOther[monthRange] = {
               'Discount': 0,
               'CashInCashOut': 0,
               'CashDeposit': 0,
@@ -1840,20 +1842,13 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
           }
 
           for (var data in salesData) {
-            if (week.contains(data.date)) {
-              weeklyOther[weekRange]!['Discount'] = (weeklyOther[weekRange]!['Discount'] ?? 0) + data.data.giftCertificate.giftSales;
-              weeklyOther[weekRange]!['CashInCashOut'] = (weeklyOther[weekRange]!['CashInCashOut'] ?? 0) + data.data.giftCertificate.giftRedeem;
-              weeklyOther[weekRange]!['CashDeposit'] = (weeklyOther[weekRange]!['CashDeposit'] ?? 0) + data.data.giftCertificate.eGiftSalesShop;
+            if (month.contains(data.date)) {
+              monthlyOther[monthRange]!['Discount'] = (monthlyOther[monthRange]!['Discount'] ?? 0) + data.data.giftCertificate.giftSales;
+              monthlyOther[monthRange]!['CashInCashOut'] = (monthlyOther[monthRange]!['CashInCashOut'] ?? 0) + data.data.giftCertificate.giftRedeem;
+              monthlyOther[monthRange]!['CashDeposit'] = (monthlyOther[monthRange]!['CashDeposit'] ?? 0) + data.data.giftCertificate.eGiftSalesShop;
             }
           }
         }
-
-        // double totaldiscount = 0, totalcashInCashOut = 0, totalcashDeposit = 0;
-        // for (var data in salesData) {
-        //   totaldiscount += data.data.other.discount;
-        //   totalcashInCashOut += data.data.other.cashDeposit;
-        //   totalcashDeposit += data.data.other.cashDeposit;
-        // }
 
         return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -1899,7 +1894,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                             ),
                           ],
                         ),
-                        ...weeklyOther.entries.map((entry) {
+                        ...monthlyOther.entries.map((entry) {
                           Map<String, double> totals = entry.value;
                           return TableRow(
                             decoration: BoxDecoration(color: '#EDEFF0'.toColor()),
@@ -1918,13 +1913,13 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
                         TableRow(
                           decoration: BoxDecoration(color: '#EDEFF0'.toColor()),
                           children: [
-                            buildDataCell(weeklyOther.values.fold(0.0, (sum, entry) => sum + entry['Discount']!).toStringAsFixed(2)),
-                            buildDataCell(weeklyOther.values.fold(0.0, (sum, entry) => sum + entry['CashInCashOut']!).toStringAsFixed(2)),
+                            buildDataCell(monthlyOther.values.fold(0.0, (sum, entry) => sum + entry['Discount']!).toStringAsFixed(2)),
+                            buildDataCell(monthlyOther.values.fold(0.0, (sum, entry) => sum + entry['CashInCashOut']!).toStringAsFixed(2)),
                             Container(
                               alignment: Alignment.center,
                               height: 40,
                               child: Center(
-                                child: Text(weeklyOther.values.fold(0.0, (sum, entry) => sum + entry['CashDeposit']!).toStringAsFixed(2),
+                                child: Text(monthlyOther.values.fold(0.0, (sum, entry) => sum + entry['CashDeposit']!).toStringAsFixed(2),
                                     style: TextStyle(color: '496EE2'.toColor()), textAlign: TextAlign.center),
                               ),
                             )

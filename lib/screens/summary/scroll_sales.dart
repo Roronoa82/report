@@ -7,7 +7,6 @@ import 'package:logger/logger.dart';
 import 'package:supercharged/supercharged.dart';
 import '../../bloc/summary_sale_bloc.dart';
 import '../../bloc/summary_sale_state.dart';
-import 'details_pp_total.dart';
 
 final logger = Logger();
 
@@ -40,10 +39,9 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
     super.initState();
     _tabController = TabController(length: 6, vsync: this);
 
-    // ซิงค์การเปลี่ยน TabBar และการเลื่อน
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) {
-        double targetOffset = _scrollOffsets[_tabController.index]; // เลื่อนไปที่ตำแหน่งจาก List
+        double targetOffset = _scrollOffsets[_tabController.index];
         _scrollController.animateTo(
           targetOffset,
           duration: const Duration(milliseconds: 300),

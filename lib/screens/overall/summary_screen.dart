@@ -34,54 +34,52 @@ class _SummaryScreenState extends State<SummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          if (widget.showDepositsOnly == 1) ...[
-            Flexible(
-              child: Container(
-                color: '#EEEEEE'.toColor(),
-                child: DepositsTable(selectDate: widget.selectDate),
-              ),
+    return Column(
+      children: [
+        if (widget.showDepositsOnly == 1) ...[
+          Flexible(
+            child: Container(
+              color: '#EEEEEE'.toColor(),
+              child: DepositsTable(selectDate: widget.selectDate),
             ),
-          ] else if (widget.showDepositsOnly == 2) ...[
-            Flexible(
-              child: Container(
-                color: '#EEEEEE'.toColor(),
-                child: CraditCartTable(selectDate: widget.selectDate),
-              ),
+          ),
+        ] else if (widget.showDepositsOnly == 2) ...[
+          Flexible(
+            child: Container(
+              color: '#EEEEEE'.toColor(),
+              child: CraditCartTable(selectDate: widget.selectDate),
             ),
-          ] else if (widget.showDepositsOnly == 3) ...[
-            Flexible(
-              child: Container(
-                color: '#EEEEEE'.toColor(),
-                child: CashInCashOutTable(selectDate: widget.selectDate),
-              ),
+          ),
+        ] else if (widget.showDepositsOnly == 3) ...[
+          Flexible(
+            child: Container(
+              color: '#EEEEEE'.toColor(),
+              child: CashInCashOutTable(selectDate: widget.selectDate),
             ),
-          ] else if (widget.showDepositsOnly == 4) ...[
-            Flexible(
-              child: Container(
-                color: '#EEEEEE'.toColor(),
-                child: ServiceChargeTable(selectDate: widget.selectDate),
-              ),
+          ),
+        ] else if (widget.showDepositsOnly == 4) ...[
+          Flexible(
+            child: Container(
+              color: '#EEEEEE'.toColor(),
+              child: ServiceChargeTable(selectDate: widget.selectDate),
             ),
-          ] else if (widget.showDepositsOnly == 5) ...[
-            Flexible(
-              child: Container(
-                color: '#EEEEEE'.toColor(),
-                child: GiftCardTable(selectDate: widget.selectDate),
-              ),
+          ),
+        ] else if (widget.showDepositsOnly == 5) ...[
+          Flexible(
+            child: Container(
+              color: '#EEEEEE'.toColor(),
+              child: GiftCardTable(selectDate: widget.selectDate),
             ),
-          ] else if (widget.showDepositsOnly == 6) ...[
-            Flexible(
-              child: Container(
-                color: '#EEEEEE'.toColor(),
-                child: CustomersTable(selectDate: widget.selectDate),
-              ),
+          ),
+        ] else if (widget.showDepositsOnly == 6) ...[
+          Flexible(
+            child: Container(
+              color: '#EEEEEE'.toColor(),
+              child: CustomersTable(selectDate: widget.selectDate),
             ),
-          ],
+          ),
         ],
-      ),
+      ],
     );
   }
 
