@@ -60,117 +60,134 @@ class _ReportPageState extends State<ReportPage> {
             stream: smileDiningController.stream,
             builder: (context, snapshot) {
               return Positioned(
-                width: 300, // Adjust width as needed
+                width: MediaQuery.of(context).size.width * 0.222,
+                height: MediaQuery.of(context).size.height * 0.45,
                 child: CompositedTransformFollower(
                   link: _layerLink,
                   showWhenUnlinked: false,
-                  offset: Offset(0, 50), // Adjust offset for positioning
+                  offset: Offset(-260, 60), // Adjust offset for positioning
                   child: Material(
                     elevation: 4.0,
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Email Section
-                          Text(
-                            "Email: Thanapat@smilepos.com",
-                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                          ),
-                          SizedBox(height: 8),
-                          Divider(),
-                          // Restaurant ID Section
-                          Text(
-                            "Restaurant ID: Devwa",
-                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                          ),
-                          SizedBox(height: 8),
-                          Divider(),
-                          // Toggle Switches
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Smile Dining:",
-                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                              ),
-                              StreamBuilder<bool>(
-                                stream: smileDiningController.stream, // ใช้ StreamController สำหรับสถานะ
-                                initialData: false, // ค่าเริ่มต้นของ Switch
-                                builder: (context, snapshot) {
-                                  final isSmileDiningOpen = snapshot.data ?? false;
-                                  return Switch(
-                                    value: isSmileDiningOpen, // กำหนดสถานะเปิด/ปิด
-                                    onChanged: (value) {
-                                      smileDiningController.add(value);
-
-                                      setState(() {
-                                        selectedReport = value ? 1 : 0;
-                                      });
-
-                                      widget.onReportSelected(selectedReport);
-                                    },
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Smile Contactless Dining:",
-                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                              ),
-                              StreamBuilder<bool>(
-                                stream: smileDiningController.stream, // ใช้ StreamController สำหรับสถานะ
-                                initialData: false, // ค่าเริ่มต้นของ Switch
-                                builder: (context, snapshot) {
-                                  final isSmileDiningOpen = snapshot.data ?? false;
-                                  return Switch(
-                                    value: isSmileDiningOpen, // กำหนดสถานะเปิด/ปิด
-                                    onChanged: (value) {
-                                      smileDiningController.add(value);
-
-                                      setState(() {
-                                        selectedReport = value ? 1 : 0;
-                                      });
-
-                                      widget.onReportSelected(selectedReport);
-                                    },
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          Divider(),
-                          Row(
-                            children: const [
-                              Icon(Icons.sync, size: 16),
-                              SizedBox(width: 8),
-                              Text(
-                                "Switch Restaurant",
-                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 16),
-                          Center(
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.white,
-                                onPrimary: Colors.black,
-                                side: BorderSide(color: Colors.grey),
-                              ),
-                              child: Text("Logout"),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 20.0, bottom: 14),
+                            child: textdetails(
+                              "Email: Thanapat@smilepos.com",
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                        SizedBox(height: 8),
+                        Divider(),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 14.0, bottom: 14, left: 24),
+                          child: textstyledropdown(
+                            "Restaurant ID: Devwa",
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Divider(),
+                        // Toggle Switches
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(top: 20.0, bottom: 14, left: 24),
+                              child: textstyledropdown(
+                                "Smile Dining:",
+                                // style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                            StreamBuilder<bool>(
+                              stream: smileDiningController.stream, // ใช้ StreamController สำหรับสถานะ
+                              initialData: false, // ค่าเริ่มต้นของ Switch
+                              builder: (context, snapshot) {
+                                final isSmileDiningOpen = snapshot.data ?? false;
+                                return Switch(
+                                  value: isSmileDiningOpen, // กำหนดสถานะเปิด/ปิด
+                                  onChanged: (value) {
+                                    smileDiningController.add(value);
+
+                                    setState(() {
+                                      selectedReport = value ? 1 : 0;
+                                    });
+
+                                    widget.onReportSelected(selectedReport);
+                                  },
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(top: 20.0, bottom: 20, left: 24),
+                              child: textstyledropdown(
+                                "Smile Contactless Dining:",
+                                // style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                            StreamBuilder<bool>(
+                              stream: smileDiningController.stream, // ใช้ StreamController สำหรับสถานะ
+                              initialData: false, // ค่าเริ่มต้นของ Switch
+                              builder: (context, snapshot) {
+                                final isSmileDiningOpen = snapshot.data ?? false;
+                                return Switch(
+                                  value: isSmileDiningOpen, // กำหนดสถานะเปิด/ปิด
+                                  onChanged: (value) {
+                                    smileDiningController.add(value);
+
+                                    setState(() {
+                                      selectedReport = value ? 1 : 0;
+                                    });
+
+                                    widget.onReportSelected(selectedReport);
+                                  },
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        Divider(),
+                        Padding(
+                          padding: EdgeInsets.all(14.0),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.sync,
+                                size: 16,
+                                color: '#3C3C3C'.toColor(),
+                              ),
+                              SizedBox(width: 8),
+                              textstyledropdown(
+                                "Switch Restaurant",
+                              ),
+                            ],
+                          ),
+                        ),
+                        Divider(),
+
+                        SizedBox(height: 16),
+                        Center(
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.077,
+                            height: MediaQuery.of(context).size.height * 0.05,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(color: '#C3C3C3'.toColor(), width: 1),
+                            ),
+                            child: Center(child: textstyledropdown("Logout")),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -223,7 +240,7 @@ class _ReportPageState extends State<ReportPage> {
                                     hintStyle: TextStyle(
                                       fontFamily: 'Inter',
                                       fontWeight: FontWeight.w500,
-                                      fontSize: 18,
+                                      fontSize: screenWidth * 0.0088,
                                       color: '#959595'.toColor(),
                                     ),
                                     prefixIcon: Icon(
@@ -474,7 +491,8 @@ class _ReportPageState extends State<ReportPage> {
                       leading: FaIcon(FontAwesomeIcons.clipboardList, color: '#000000'.toColor()),
                       title: Text(
                         "Report",
-                        style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold, color: '#000000'.toColor(), fontSize: 18),
+                        style:
+                            TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold, color: '#000000'.toColor(), fontSize: screenWidth * 0.0088),
                       ),
                       initiallyExpanded: true,
                       children: [
@@ -566,6 +584,32 @@ class _ReportPageState extends State<ReportPage> {
           ),
         ),
       ]),
+    );
+  }
+
+  Text textdetails(String text) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: screenWidth * 0.0088,
+        color: '#959595'.toColor(),
+        fontWeight: FontWeight.w300,
+      ),
+    );
+  }
+
+  Text textstyledropdown(String text) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: screenWidth * 0.0088,
+        color: '#3C3C3C'.toColor(),
+        fontWeight: FontWeight.w500,
+      ),
     );
   }
 }

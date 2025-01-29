@@ -2,7 +2,7 @@
 
 import 'package:develop_resturant/bloc/summary_bloc.dart';
 import 'package:develop_resturant/bloc/summary_event.dart';
-import 'package:develop_resturant/screens/summary/scroll_sales.dart';
+import 'package:develop_resturant/screens/summary/daily_sales.dart';
 import 'package:develop_resturant/screens/summary/weekly_filter.dart';
 
 import 'package:flutter/material.dart';
@@ -219,7 +219,7 @@ class _SummarysalesPageState extends State<SummarysalesPage> {
                             height: 500,
                             child: showDetailPage
                                 ? DetailPPTotal({})
-                                : SalesPage(onTapDetail: () {
+                                : DailySalesPage(onTapDetail: () {
                                     setState(() {
                                       showDetailPage = true;
                                     });

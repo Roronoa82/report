@@ -18,52 +18,64 @@ class _ShareMenuState extends State<ShareMenu> {
   OverlayEntry _showOverlay(BuildContext context) {
     return OverlayEntry(
       builder: (context) => Positioned(
-        width: 300,
-        // height: 150,
+        width: MediaQuery.of(context).size.width * 0.19,
+        height: MediaQuery.of(context).size.height * 0.18,
         child: CompositedTransformFollower(
           link: _layerLink,
-          offset: Offset(0, 50),
+          offset: Offset(-135, 60),
           showWhenUnlinked: false,
           child: Material(
             elevation: 4.0,
             borderRadius: BorderRadius.circular(8),
             child: Container(
-              padding: EdgeInsets.all(16),
+              padding: EdgeInsets.only(top: 8, left: 20),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildShareOption(
-                    icon: Icons.email_outlined,
-                    label: "Email",
-                    onTap: () {
-                      _hideOverlay();
-                    },
+                  Text(
+                    'Share with',
+                    style: TextStyle(fontFamily: 'Roboto', fontSize: 16, color: '#000000'.toColor(), fontWeight: FontWeight.w500),
                   ),
-                  Column(
-                    children: [
-                      Image.asset(
-                        'assets/iconline.png',
-                        width: 50,
-                        height: 50,
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        'LINE',
-                        style: TextStyle(fontFamily: 'Inter', fontSize: 16, color: '#3C3C3C'.toColor()),
-                      )
-                    ],
-                  ),
-                  _buildShareOption(
-                    icon: Icons.print_outlined,
-                    label: "Print",
-                    onTap: () async {
-                      _hideOverlay();
-                    },
+                  Padding(
+                    padding: const EdgeInsets.all(28.0),
+                    child: Row(
+                      children: [
+                        _buildShareOption(
+                          icon: Icons.email_outlined,
+                          label: "Email",
+                          onTap: () {
+                            _hideOverlay();
+                          },
+                        ),
+                        SizedBox(width: 30),
+                        Column(
+                          children: [
+                            Image.asset(
+                              'assets/iconline.png',
+                              width: 70,
+                              height: 70,
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'LINE',
+                              style: TextStyle(fontFamily: 'Inter', fontSize: 14, color: '#3C3C3C'.toColor()),
+                            )
+                          ],
+                        ),
+                        SizedBox(width: 30),
+                        _buildShareOption(
+                          icon: Icons.print_outlined,
+                          label: "Print",
+                          onTap: () async {
+                            _hideOverlay();
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -108,11 +120,11 @@ class _ShareMenuState extends State<ShareMenu> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 50, color: '#3C3C3C'.toColor()),
+          Icon(icon, size: 70, color: '#000000A6'.toColor()),
           SizedBox(height: 8),
           Text(
             label,
-            style: TextStyle(fontFamily: 'Inter', fontSize: 16, color: '#3C3C3C'.toColor()),
+            style: TextStyle(fontFamily: 'Inter', fontSize: 14, color: '#3C3C3C'.toColor()),
           ),
         ],
       ),
@@ -151,9 +163,9 @@ class _ShareMenuState extends State<ShareMenu> {
           padding: EdgeInsets.symmetric(
             vertical: MediaQuery.of(context).size.height * 0.02,
             horizontal: MediaQuery.of(context).size.width * 0.009,
-          ), // ขนาดของปุ่ม
+          ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8), // ความโค้งของมุม
+            borderRadius: BorderRadius.circular(8),
           ),
           backgroundColor: '#FFFFFF'.toColor(),
         ),
@@ -163,11 +175,9 @@ class _ShareMenuState extends State<ShareMenu> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text("Share", style: TextStyle(color: Colors.black, fontSize: 14)),
-            Icon(Icons.keyboard_arrow_down_rounded, color: Colors.black),
+            Text("Share", style: TextStyle(color: '#343A40'.toColor(), fontSize: 14, fontFamily: 'Roboto', fontWeight: FontWeight.w400)),
+            Icon(Icons.keyboard_arrow_down_rounded, color: '#343A400'.toColor()),
           ],
-          // ),
-          // ),
         ),
       ),
     );

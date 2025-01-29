@@ -363,7 +363,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
           weeks.add(List.from(currentWeek));
         }
 
-        logger.w(weeks);
+        // logger.w(weeks);
         for (var week in weeks) {
           String weekRange = "${week.first} - ${week.last}";
 
@@ -510,7 +510,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
           weeks.add(List.from(currentWeek));
         }
 
-        logger.w(weeks);
+        // logger.w(weeks);
         for (var week in weeks) {
           String weekRange = "${week.first} - ${week.last}";
 
@@ -636,7 +636,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
           weeks.add(List.from(currentWeek));
         }
 
-        logger.w(weeks);
+        // logger.w(weeks);
         for (var week in weeks) {
           String weekRange = "${week.first} - ${week.last}";
 
@@ -1409,7 +1409,7 @@ class _WeeklyFilterPageState extends State<WeeklyFilterPage> with TickerProvider
           weeks.add(List.from(currentWeek));
         }
 
-        logger.w(weeks);
+        // logger.w(weeks);
         for (var week in weeks) {
           String weekRange = "${week.first} - ${week.last}";
 

@@ -595,6 +595,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
         for (var summary in filteredSummaries) {
           Map<String, dynamic> jsonMap = json.decode(summary['Data'] ?? '{}');
           List<dynamic> customer = jsonMap['Customers'] ?? [];
+          // logger.w(customer);
 
           for (var item in customer) {
             String orderType = item['OrderType'];
@@ -607,6 +608,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
             }
           }
         }
+        // logger.w(combinedCustomer);
 
         return Center(
           child: Container(

@@ -26,10 +26,11 @@ class _ExportMenuState extends State<ExportMenu> {
           stream: export.stream,
           builder: (context, snapshot) {
             return Positioned(
-              width: 300,
+              width: MediaQuery.of(context).size.width * 0.13,
+              height: MediaQuery.of(context).size.width * 0.148,
               child: CompositedTransformFollower(
                 link: _layerLink,
-                offset: Offset(0, 50),
+                offset: Offset(-160, 60),
                 showWhenUnlinked: false,
                 child: Material(
                   elevation: 4.0,
@@ -65,18 +66,39 @@ class _ExportMenuState extends State<ExportMenu> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            TextButton(
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: '#FFFFFF'.toColor(),
+                                onPrimary: Colors.white,
+                                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                                shape: RoundedRectangleBorder(
+                                  side: BorderSide(width: 1.0, color: '#00000033'.toColor()),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                              ),
                               onPressed: () {
                                 _hideOverlay();
                               },
-                              child: Text("Cancel", style: TextStyle(fontSize: 14)),
+                              child: Text("Cancel",
+                                  style: TextStyle(
+                                      fontFamily: 'Roboto/Roboto-Thin.ttf', color: '#6C757D'.toColor(), fontSize: 14, fontWeight: FontWeight.w400)),
                             ),
                             ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: '#496EE2'.toColor(),
+                                onPrimary: Colors.white,
+                                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                              ),
                               onPressed: () {
                                 print("Exporting as ${selectedOption ?? 'None'}");
                                 _hideOverlay();
                               },
-                              child: Text("Export", style: TextStyle(fontFamily: 'Roboto/Roboto-Thin.ttf', color: '#343A40'.toColor(), fontSize: 14)),
+                              child: Text("Export",
+                                  style: TextStyle(
+                                      fontFamily: 'Roboto/Roboto-Thin.ttf', color: '#FFFFFF'.toColor(), fontSize: 14, fontWeight: FontWeight.w400)),
                             ),
                           ],
                         ),
@@ -135,7 +157,7 @@ class _ExportMenuState extends State<ExportMenu> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text("Export", style: TextStyle(fontFamily: 'Roboto/Roboto-Thin.ttf', color: '#343A40'.toColor(), fontSize: 14)),
+            Text("Export", style: TextStyle(color: '#343A40'.toColor(), fontSize: 14, fontFamily: 'Roboto', fontWeight: FontWeight.w400)),
             Icon(
               Icons.keyboard_arrow_down_rounded,
               color: '#343A40'.toColor(),
@@ -145,6 +167,20 @@ class _ExportMenuState extends State<ExportMenu> {
         // ),
       ),
       // ),
+    );
+  }
+
+  Text textstyledropdown(String text) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: screenWidth * 0.0088,
+        color: '#3C3C3C'.toColor(),
+        fontWeight: FontWeight.w500,
+      ),
     );
   }
 }

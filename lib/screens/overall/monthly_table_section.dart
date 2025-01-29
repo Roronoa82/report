@@ -49,7 +49,7 @@ class _MonthlyTableSectionState extends State<MonthlyTableSection> {
           key: _key,
           child: Column(children: [
             SizedBox(height: 16),
-            Container(height: 400, child: LineChartPage()),
+            Container(height: MediaQuery.of(context).size.height * 0.346, child: LineChartPage()),
             SizedBox(height: 16),
             BlocBuilder<SummaryBloc, SummaryState>(
               builder: (context, state) {

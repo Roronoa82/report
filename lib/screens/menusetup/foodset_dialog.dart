@@ -30,6 +30,8 @@ class _FoodSetDialogState extends State<FoodSetDialog> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
     return Dialog(
       backgroundColor: Colors.transparent,
       child: BlocBuilder<DataBloc, DataState>(
@@ -79,7 +81,7 @@ class _FoodSetDialogState extends State<FoodSetDialog> with TickerProviderStateM
                         style: TextStyle(
                           fontFamily: 'Roboto',
                           color: '#3C3C3C'.toColor(),
-                          fontSize: 18,
+                          fontSize: screenWidth * 0.0088,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -103,7 +105,7 @@ class _FoodSetDialogState extends State<FoodSetDialog> with TickerProviderStateM
                               foodSetNames.isNotEmpty ? foodSetNames.first : 'เลือก Food Set', // ถ้า foodSetNames ไม่ว่าง ให้แสดงชื่อชุดอาหารแรก
                               style: TextStyle(
                                 fontFamily: 'Roboto',
-                                fontSize: 18,
+                                fontSize: screenWidth * 0.0088,
                                 fontWeight: FontWeight.w500,
                                 color: '#3C3C3C'.toColor(), // สีของข้อความ
                               ),
@@ -123,7 +125,7 @@ class _FoodSetDialogState extends State<FoodSetDialog> with TickerProviderStateM
                         style: TextStyle(
                           fontFamily: 'Roboto',
                           color: '#3C3C3C'.toColor(),
-                          fontSize: 18,
+                          fontSize: screenWidth * 0.0088,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -182,7 +184,7 @@ class _FoodSetDialogState extends State<FoodSetDialog> with TickerProviderStateM
                         style: TextStyle(
                           fontFamily: 'Roboto',
                           color: '#3C3C3C'.toColor(),
-                          fontSize: 18,
+                          fontSize: screenWidth * 0.0088,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -206,7 +208,7 @@ class _FoodSetDialogState extends State<FoodSetDialog> with TickerProviderStateM
                                 'Dining,Contactless Dining',
                                 style: TextStyle(
                                   fontFamily: 'Roboto',
-                                  fontSize: 18,
+                                  fontSize: screenWidth * 0.0088,
                                   fontWeight: FontWeight.w500,
                                   color: selectedOption == 'Dining'
                                       ? '#3C3C3C'.toColor() // สีปกติเมื่อเลือก
@@ -231,7 +233,7 @@ class _FoodSetDialogState extends State<FoodSetDialog> with TickerProviderStateM
                                 'Third Party',
                                 style: TextStyle(
                                   fontFamily: 'Roboto',
-                                  fontSize: 18,
+                                  fontSize: screenWidth * 0.0088,
                                   fontWeight: FontWeight.w500,
                                   color: selectedOption == 'Third Party'
                                       ? '#3C3C3C'.toColor() // สีปกติเมื่อเลือก

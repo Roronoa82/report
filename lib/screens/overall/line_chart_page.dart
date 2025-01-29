@@ -114,25 +114,21 @@ class _LineChartPageState extends State<LineChartPage> {
             padding: EdgeInsets.all(10),
             child: Column(
               children: [
-                Expanded(
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.11,
+                  width: MediaQuery.of(context).size.width * 0.4,
                   child: LineChart(
                     LineChartData(
                       gridData: FlGridData(
                         show: true,
+                        horizontalInterval: 1500,
                         drawVerticalLine: false,
                         drawHorizontalLine: true,
                         getDrawingHorizontalLine: (value) {
                           return FlLine(
-                            color: Colors.grey,
+                            color: '#EEEEEE'.toColor(),
                             strokeWidth: 1,
                             dashArray: [4, 0],
-                          );
-                        },
-                        getDrawingVerticalLine: (value) {
-                          return FlLine(
-                            color: Colors.grey,
-                            strokeWidth: 1,
-                            dashArray: [4, 4],
                           );
                         },
                       ),
@@ -156,10 +152,33 @@ class _LineChartPageState extends State<LineChartPage> {
                             )),
                       ],
                       minY: 0,
+                      maxY: 6000,
                       titlesData: FlTitlesData(
+                        rightTitles: AxisTitles(sideTitles: SideTitles(reservedSize: 30, showTitles: false)),
+                        topTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                          reservedSize: 30,
+                          showTitles: true,
+                          interval: 3,
+                          getTitlesWidget: (value, _) {
+                            int month = value.toInt();
+                            String displayText;
+                            if (month == 1) {
+                              displayText = 'Aug 2023';
+                            } else if (month >= 1) {
+                              displayText = '';
+                            } else {
+                              displayText = '$month';
+                            }
+                            return Text(
+                              displayText,
+                              style: TextStyle(fontSize: 10, color: Colors.black),
+                            );
+                          },
+                        )),
                         leftTitles: AxisTitles(
                           sideTitles: SideTitles(
-                            reservedSize: 50,
+                            reservedSize: 30,
                             showTitles: true,
                             getTitlesWidget: (value, _) {
                               if (value >= 1000) {
@@ -168,10 +187,7 @@ class _LineChartPageState extends State<LineChartPage> {
                                   style: TextStyle(fontSize: 10, color: Colors.black),
                                 );
                               }
-                              return Text(
-                                value.toStringAsFixed(0),
-                                style: TextStyle(fontSize: 12, color: Colors.black),
-                              );
+                              return Text(value.toStringAsFixed(0), style: TextStyle(fontSize: 12, color: Colors.black), textAlign: TextAlign.right);
                             },
                           ),
                         ),
@@ -181,8 +197,18 @@ class _LineChartPageState extends State<LineChartPage> {
                             showTitles: true,
                             interval: 4,
                             getTitlesWidget: (value, _) {
+                              int month = value.toInt();
+                              String displayText;
+
+                              if (month == 1) {
+                                displayText = 'Aug. 1';
+                              } else if (month == 31) {
+                                displayText = 'Aug. 31';
+                              } else {
+                                displayText = '$month';
+                              }
                               return Text(
-                                value.toInt().toString(),
+                                displayText,
                                 style: TextStyle(fontSize: 10),
                               );
                             },
@@ -208,7 +234,7 @@ class _LineChartPageState extends State<LineChartPage> {
                               );
 
                               String formattedDate = 'Unknown Date';
-                              int uniqueEmployeeCount = 0; // ตัวแปรเพื่อเก็บจำนวน EmployeesID ที่พบในแต่ละวัน
+                              int uniqueEmployeeCount = 0;
                               if (matchedSummary != null) {
                                 final summaryDate = DateTime.parse(matchedSummary['Date']);
                                 final day = summaryDate.day;
@@ -315,6 +341,21 @@ class _LineChartPageState extends State<LineChartPage> {
                           if (event.isInterestedForInteractions && response != null) {}
                         },
                       ),
+                      borderData: FlBorderData(
+                        show: true,
+                        border: Border(
+                          left: BorderSide(
+                            color: '#EEEEEE'.toColor(),
+                            width: 1,
+                          ),
+                          bottom: BorderSide(
+                            color: '#EEEEEE'.toColor(),
+                            width: 1,
+                          ),
+                          top: BorderSide.none,
+                          right: BorderSide.none,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -325,35 +366,69 @@ class _LineChartPageState extends State<LineChartPage> {
                   child: Row(
                     children: [
                       Expanded(
+                        flex: 1,
                         child: Container(
-                          width: 200,
+                          height: MediaQuery.of(context).size.height * 0.11,
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          // padding: EdgeInsets.only(left: 16, right: 40),
                           alignment: Alignment.bottomLeft,
                           child: BarChart(
                             BarChartData(
                               gridData: FlGridData(
+                                horizontalInterval: 1500,
                                 show: true,
                                 drawVerticalLine: false,
                                 drawHorizontalLine: true,
                                 getDrawingHorizontalLine: (value) {
                                   return FlLine(
-                                    color: Colors.grey,
+                                    color: '#EEEEEE'.toColor(),
                                     strokeWidth: 1,
                                     dashArray: [4, 0],
                                   );
                                 },
                               ),
                               barGroups: barGroups,
+                              groupsSpace: 6,
                               titlesData: FlTitlesData(
+                                topTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    reservedSize: 30,
+                                    showTitles: true,
+                                    interval: 1,
+                                    getTitlesWidget: (value, _) {
+                                      int month = value.toInt();
+                                      String? displayText;
+
+                                      if (month == 1) {
+                                        displayText = 'Day of \nWeek';
+                                      } else if (month >= 1) {
+                                        displayText = '';
+                                      } else {
+                                        displayText = '$month';
+                                      }
+
+                                      return Text(
+                                        displayText,
+                                        style: TextStyle(fontSize: 9, color: Colors.black),
+                                      );
+                                    },
+                                  ),
+                                ),
                                 leftTitles: AxisTitles(
                                   sideTitles: SideTitles(
-                                    reservedSize: 40,
+                                    reservedSize: 30,
                                     showTitles: true,
                                     getTitlesWidget: (value, _) {
                                       return Text(
-                                        value.toStringAsFixed(0),
-                                        style: TextStyle(fontSize: 10, color: Colors.black),
+                                        '\$${value.toStringAsFixed(0)}',
+                                        style: TextStyle(fontSize: 9, color: Colors.black),
                                       );
                                     },
+                                  ),
+                                ),
+                                rightTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: false,
                                   ),
                                 ),
                                 bottomTitles: AxisTitles(
@@ -362,7 +437,7 @@ class _LineChartPageState extends State<LineChartPage> {
                                     showTitles: true,
                                     interval: 1,
                                     getTitlesWidget: (value, _) {
-                                      List<String> weekDays = [
+                                      List<String>? weekDays = [
                                         'S',
                                         'S',
                                         'M',
@@ -371,6 +446,7 @@ class _LineChartPageState extends State<LineChartPage> {
                                         'T',
                                         'F',
                                       ];
+                                      // print(weekDays[7]);
                                       int index = value.toInt() % 7;
                                       return Text(
                                         weekDays[index],
@@ -381,11 +457,12 @@ class _LineChartPageState extends State<LineChartPage> {
                                 ),
                               ),
                               minY: 0,
+                              maxY: 6000,
                               barTouchData: BarTouchData(
                                 touchTooltipData: BarTouchTooltipData(
                                   tooltipBgColor: Colors.black,
                                   tooltipPadding: const EdgeInsets.all(8),
-                                  tooltipMargin: 8,
+                                  tooltipMargin: 0,
                                   getTooltipItem: (group, groupIndex, rod, rodIndex) {
                                     final matchedSummary = filteredSummaries.firstWhere(
                                       (summary) {
@@ -394,12 +471,10 @@ class _LineChartPageState extends State<LineChartPage> {
                                       },
                                       orElse: () => {},
                                     );
-                                    String formattedDate = 'Unknown Date';
-                                    if (matchedSummary != null) {
+                                    String formattedDate = 'Sunday';
+                                    if (matchedSummary != null && matchedSummary['Date'] != null) {
                                       final summaryDate = DateTime.parse(matchedSummary['Date']);
                                       final day = summaryDate.weekday;
-                                      final month = summaryDate.month;
-                                      final year = summaryDate.year;
 
                                       const dayNames = [
                                         'Sunday',
@@ -411,7 +486,7 @@ class _LineChartPageState extends State<LineChartPage> {
                                         'Saturday',
                                       ];
                                       final dayName = dayNames[day - 1];
-                                      formattedDate = '$dayName';
+                                      formattedDate = dayName;
                                     }
 
                                     return BarTooltipItem(
@@ -431,13 +506,13 @@ class _LineChartPageState extends State<LineChartPage> {
                                           ),
                                         ),
                                         TextSpan(
-                                          text: '\$${rod.toY.toStringAsFixed(2)}\n', // จำนวนเงิน
+                                          text: '\$${rod.toY.toStringAsFixed(2)}\n',
                                           style: TextStyle(
                                             color: '#FFFFFF'.toColor(),
                                           ),
                                         ),
                                         TextSpan(
-                                          text: '18 PAYMENTS', // ข้อมูลเพิ่มเติม
+                                          text: '18 PAYMENTS',
                                           style: const TextStyle(
                                             color: Colors.white70,
                                           ),
@@ -447,29 +522,46 @@ class _LineChartPageState extends State<LineChartPage> {
                                   },
                                 ),
                                 touchCallback: (event, response) {
-                                  if (event.isInterestedForInteractions && response != null) {
-                                    // เพิ่ม action ถ้าต้องการ
-                                  }
+                                  if (event.isInterestedForInteractions && response != null) {}
                                 },
                               ),
-                              alignment: BarChartAlignment.spaceEvenly,
+                              borderData: FlBorderData(
+                                show: true,
+                                border: Border(
+                                  left: BorderSide(
+                                    color: '#EEEEEE'.toColor(),
+                                    width: 1,
+                                  ),
+                                  bottom: BorderSide(
+                                    color: '#EEEEEE'.toColor(),
+                                    width: 1,
+                                  ),
+                                  top: BorderSide.none,
+                                  right: BorderSide.none,
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
+                      SizedBox(width: 10),
                       Expanded(
-                        flex: 2,
+                        flex: 3,
                         child: Container(
+                          width: MediaQuery.of(context).size.width * 0.11,
+                          height: MediaQuery.of(context).size.height * 0.125,
+                          padding: EdgeInsets.only(right: 16),
                           alignment: Alignment.centerRight,
                           child: LineChart(
                             LineChartData(
                               gridData: FlGridData(
+                                horizontalInterval: 2,
                                 show: true,
-                                drawVerticalLine: false, // เปิดเส้นประแนวตั้ง
-                                drawHorizontalLine: true, // เปิดเส้นประแนวนอน
+                                drawVerticalLine: false,
+                                drawHorizontalLine: true,
                                 getDrawingHorizontalLine: (value) {
                                   return FlLine(
-                                    color: Colors.grey,
+                                    color: '#EEEEEE'.toColor(),
                                     strokeWidth: 1,
                                     dashArray: [4, 0],
                                   );
@@ -497,6 +589,90 @@ class _LineChartPageState extends State<LineChartPage> {
                                 ),
                               ],
                               minY: 0,
+                              maxY: 6,
+                              lineTouchData: LineTouchData(enabled: false),
+                              titlesData: FlTitlesData(
+                                leftTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    reservedSize: 20,
+                                    showTitles: true,
+                                    getTitlesWidget: (value, _) {
+                                      // กำหนดค่าที่คุณต้องการแสดง
+                                      if (value == 0) {
+                                        return Text(
+                                          '\$0',
+                                          style: TextStyle(fontSize: 10, color: Colors.black),
+                                        );
+                                      }
+                                      return SizedBox();
+                                    },
+                                  ),
+                                ),
+                                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                topTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    reservedSize: 30,
+                                    showTitles: true,
+                                    interval: 3,
+                                    getTitlesWidget: (value, _) {
+                                      int month = value.toInt();
+                                      String displayText;
+
+                                      if (month == 0) {
+                                        displayText = 'Time of Day';
+                                      } else if (month >= 1) {
+                                        displayText = '';
+                                      } else {
+                                        displayText = '$month';
+                                      }
+
+                                      return Text(
+                                        displayText,
+                                        style: TextStyle(fontSize: 9, color: Colors.black),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                bottomTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    reservedSize: 40,
+                                    showTitles: true,
+                                    interval: 3,
+                                    getTitlesWidget: (value, _) {
+                                      int hour = value.toInt();
+                                      String displayText;
+
+                                      if (hour == 0) {
+                                        displayText = '12 AM';
+                                      } else if (hour == 12) {
+                                        displayText = '12 PM';
+                                      } else {
+                                        displayText = '$hour';
+                                      }
+
+                                      return Text(
+                                        displayText,
+                                        style: TextStyle(fontSize: 8, color: Colors.black),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                              borderData: FlBorderData(
+                                show: true,
+                                border: Border(
+                                  left: BorderSide(
+                                    color: '#EEEEEE'.toColor(),
+                                    width: 1,
+                                  ),
+                                  bottom: BorderSide(
+                                    color: '#EEEEEE'.toColor(),
+                                    width: 1,
+                                  ),
+                                  top: BorderSide.none,
+                                  right: BorderSide.none,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -515,32 +691,23 @@ class _LineChartPageState extends State<LineChartPage> {
     );
   }
 
-  // ฟังก์ชันสำหรับสร้าง LineChart data
   List<FlSpot> getLineChartData(Map<int, double> dailyTotalSales) {
-    // สร้าง LineChart data จาก dailyTotalSales
     return dailyTotalSales.entries.map((entry) {
       return FlSpot(
-        entry.key.toDouble(), // วันที่เป็นแกน X (1-31)
-        entry.value, // ยอดขายรายวันเป็นแกน Y
+        entry.key.toDouble(),
+        entry.value,
       );
     }).toList();
   }
 
-  // ฟังก์ชันสำหรับสร้าง BarChart data
   List<BarChartGroupData> getBarChartData(Map<int, double> dailyTotalSales) {
-    var last7Days = dailyTotalSales.entries
-        .take(7) // เอาแค่ 7 รายการแรก
-        .toList();
+    var last7Days = dailyTotalSales.entries.take(7).toList();
 
     return last7Days.map((entry) {
       return BarChartGroupData(
-        x: entry.key, // วันที่เป็นแกน X (1-7)
+        x: entry.key,
         barRods: [
-          BarChartRodData(
-            toY: entry.value, // ยอดขายรวมของวันนั้นเป็นแกน Y
-            color: '#207cff'.toColor(),
-            width: 10,
-          ),
+          BarChartRodData(toY: entry.value, color: '#207cff'.toColor(), width: 12, borderRadius: BorderRadius.zero),
         ],
       );
     }).toList();

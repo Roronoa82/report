@@ -35,6 +35,8 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
     return BlocBuilder<DataBloc, DataState>(
       builder: (context, state) {
         if (state is DataLoading) {
@@ -96,7 +98,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                                 style: TextStyle(
                                   fontFamily: 'Roboto',
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 18,
+                                  fontSize: screenWidth * 0.0088,
                                   color: '#00000080'.toColor(),
                                 ),
                               ),
@@ -151,12 +153,12 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                               indicatorPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                               labelPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 36),
                               labelStyle: TextStyle(
-                                fontSize: 18,
+                                fontSize: screenWidth * 0.0088,
                                 fontFamily: 'Roboto',
                                 fontWeight: FontWeight.w500,
                               ),
                               unselectedLabelStyle: TextStyle(
-                                fontSize: 18,
+                                fontSize: screenWidth * 0.0088,
                                 fontFamily: 'Roboto',
                                 fontWeight: FontWeight.w500,
                               ),
@@ -232,7 +234,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                                               Text(
                                                 category.foodCatName ?? '',
                                                 style: TextStyle(
-                                                  fontSize: 18,
+                                                  fontSize: screenWidth * 0.0088,
                                                   fontFamily: 'Roboto',
                                                   fontWeight: FontWeight.w500,
                                                   color: '#000000B2'.toColor(),
@@ -289,7 +291,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                                                         style: TextStyle(
                                                           fontFamily: 'Roboto',
                                                           fontWeight: FontWeight.w500,
-                                                          fontSize: 18,
+                                                          fontSize: screenWidth * 0.0088,
                                                           color: '#00000080'.toColor(),
                                                         ),
                                                       ),
@@ -385,7 +387,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                                                           style: TextStyle(
                                                             fontFamily: 'Roboto',
                                                             color: '#4F4F4F'.toColor(),
-                                                            fontSize: 18,
+                                                            fontSize: screenWidth * 0.0088,
                                                             fontWeight: FontWeight.w600,
                                                           ),
                                                           overflow: TextOverflow.ellipsis,
@@ -396,7 +398,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                                                         style: TextStyle(
                                                           fontFamily: 'Roboto',
                                                           color: '#4F4F4F'.toColor(),
-                                                          fontSize: 18,
+                                                          fontSize: screenWidth * 0.0088,
                                                           fontWeight: FontWeight.w500,
                                                         ),
                                                       ),
@@ -544,7 +546,8 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                                                               : (food.active
                                                                   ? '#000000B2'.toColor()
                                                                   : '#000000B2'.toColor()), // ใช้สีเขียวถ้า active, สีดำถ้า hide
-                                                          fontSize: 18,
+                                                          fontSize: screenWidth * 0.0088,
+
                                                           fontWeight: FontWeight.w400,
                                                           fontFamily: 'Roboto',
                                                         ),
@@ -580,6 +583,8 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
   }
 
   Widget _foodset() {
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return BlocBuilder<DataBloc, DataState>(
       builder: (context, state) {
         if (state is DataLoading) {
@@ -643,7 +648,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                                   foodSetName,
                                   style: TextStyle(
                                     fontFamily: 'Roboto',
-                                    fontSize: 18,
+                                    fontSize: screenWidth * 0.0088,
                                     fontWeight: FontWeight.w500,
                                     color: '#3C3C3C'.toColor(),
                                   ),
@@ -703,7 +708,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                             style: TextStyle(
                               fontFamily: 'Roboto',
                               fontWeight: FontWeight.w500,
-                              fontSize: 18,
+                              fontSize: screenWidth * 0.0088,
                               color: '#00000080'.toColor(),
                             ),
                           ),
@@ -724,6 +729,8 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
   }
 
   Widget _foodcategory() {
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -776,7 +783,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                       style: TextStyle(
                         fontFamily: 'Roboto',
                         fontWeight: FontWeight.w500,
-                        fontSize: 18,
+                        fontSize: screenWidth * 0.0088,
                         color: '#00000080'.toColor(),
                       ),
                     ),
@@ -791,6 +798,8 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
   }
 
   Widget _searchbar() {
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Container(
       width: MediaQuery.of(context).size.width * 0.325,
       child: TextField(
@@ -805,7 +814,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
           hintStyle: TextStyle(
             fontFamily: 'Roboto',
             fontWeight: FontWeight.w500,
-            fontSize: 18,
+            fontSize: screenWidth * 0.0088,
             color: '#00000080'.toColor(),
           ),
           prefixIcon: Container(

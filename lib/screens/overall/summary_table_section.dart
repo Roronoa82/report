@@ -33,7 +33,7 @@ class SummaryTableSection extends StatelessWidget {
           key: _key, // ใช้ GlobalKey เพื่อจับภาพ
           child: Column(children: [
             SizedBox(height: 16),
-            Container(height: MediaQuery.of(context).size.height * 0.4, child: LineChartPage()),
+            Container(height: MediaQuery.of(context).size.height * 0.346, child: LineChartPage()),
             SizedBox(height: 16),
             Container(
               child: SalesTable(

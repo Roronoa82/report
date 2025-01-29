@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
       color: Colors.white,
@@ -15,7 +17,7 @@ class Header extends StatelessWidget {
           // Text: Develop Resturant
           Text(
             "Develop Resturant",
-            style: TextStyle(color: Colors.grey, fontSize: 18),
+            style: TextStyle(color: Colors.grey, fontSize: screenWidth * 0.0088),
           ),
           Container(
             decoration: BoxDecoration(

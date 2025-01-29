@@ -838,9 +838,11 @@ class _SettingMenuState extends State<SettingMenu> {
   }
 
   Widget _textHeader(String text) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Text(
       text,
-      style: TextStyle(fontFamily: 'Roboto', fontSize: 18, fontWeight: FontWeight.w500, color: '#000000B2'.toColor()),
+      style: TextStyle(fontFamily: 'Roboto', fontSize: screenWidth * 0.0088, fontWeight: FontWeight.w500, color: '#000000B2'.toColor()),
     );
   }
 

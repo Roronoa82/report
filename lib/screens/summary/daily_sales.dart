@@ -10,18 +10,18 @@ import '../../bloc/summary_sale_state.dart';
 
 final logger = Logger();
 
-class SalesPage extends StatefulWidget {
-  const SalesPage({Key? key, required this.onTapDetail}) : super(key: key);
-  final VoidCallback onTapDetail; // Callback สำหรับการเปลี่ยนหน้า
+class DailySalesPage extends StatefulWidget {
+  const DailySalesPage({Key? key, required this.onTapDetail}) : super(key: key);
+  final VoidCallback onTapDetail;
 
   @override
-  _SalesPageState createState() => _SalesPageState();
+  _DailySalesPageState createState() => _DailySalesPageState();
 }
 
-class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
+class _DailySalesPageState extends State<DailySalesPage> with TickerProviderStateMixin {
   late TabController _tabController;
   final ScrollController _scrollController = ScrollController();
-  final ScrollController _scrollController1 = ScrollController(); // ประกาศ ScrollController
+  final ScrollController _scrollController1 = ScrollController();
   int _selectedTabIndex = 0;
 
   final List<double> _scrollOffsets = [0.0, 425.0, 680.0, 2550.0, 3485.0, 3825.0, 4080.0];
@@ -59,8 +59,7 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.only(left: 10.0, bottom: 10, right: 10),
-
-        color: '#EEEEEE'.toColor(), // สีพื้นหลังของ Column
+        color: '#EEEEEE'.toColor(),
         child: Column(
           children: [
             Container(
@@ -89,7 +88,7 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
                         VerticalDivider(
                           color: Colors.grey,
                           thickness: 0.5,
-                          width: 10, // Adjust spacing between text and divider
+                          width: 10,
                         ),
                       ],
                     ),
@@ -170,7 +169,7 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
             ),
             SizedBox(height: 16),
             SizedBox(
-              height: 250, // กำหนดความสูง 50 พิกเซล
+              height: 250,
               child: Container(
                 padding: const EdgeInsets.only(
                   left: 16.0,
@@ -183,7 +182,7 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                        padding: const EdgeInsets.only(right: 16.0, top: 70), // เพิ่มระยะห่างด้านขวา
+                        padding: const EdgeInsets.only(right: 16.0, top: 70),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -229,7 +228,6 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
                             _buildSalesByOrderTypeTable(),
                             _buildPaymentsTable(),
                             _buildServiceChargeandFeeTable(),
-                            // _buildOtherTable(),
                             _buildGiftCertificateTable(),
                             _buildOtherTable(),
                           ],
@@ -410,7 +408,6 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
                         padding: const EdgeInsets.only(left: 16.0, right: 16, top: 25, bottom: 25),
                         child: _buildHeaderCell(
                           title,
-                          // style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       );
                     }).toList(),
@@ -473,7 +470,6 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
             totalSCGiftCardTotal = 0;
 
         for (var data in salesData) {
-          // Payments
           totalCash += data.data.payments.cash;
           totalCheck += data.data.payments.check;
           totalCoupon += data.data.payments.coupon;
@@ -505,7 +501,6 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
         Widget buildCell(String text, {TextStyle? style}) => Container(
               height: cellHeight,
               alignment: Alignment.center,
-              color: Colors.grey.withOpacity(0.2), // เพิ่มสีพื้นหลังเพื่อดูขอบเขต
               child: Text(text, style: style),
             );
 
@@ -551,7 +546,6 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
                         7: FixedColumnWidth(425.0), // SmileContact
                       },
                       children: [
-                        // Header Row 1
                         TableRow(
                           decoration: BoxDecoration(color: '#E5F0F5'.toColor()),
                           children: [
@@ -587,7 +581,7 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
                                         color: '#868E96'.toColor(),
                                       ),
                                       Text('PP \nTotal', textAlign: TextAlign.center),
-                                      Divider(color: '#868E96'.toColor(), height: 1), // เส้นแบ่งระหว่างหัวข้อและตัวเลข
+                                      Divider(color: '#868E96'.toColor(), height: 1),
                                     ],
                                   ),
                                 ],
@@ -623,7 +617,7 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
                                         color: '#868E96'.toColor(),
                                       ),
                                       Text('CC \nTotal', textAlign: TextAlign.center),
-                                      Divider(color: '#868E96'.toColor(), height: 1), // เส้นแบ่งระหว่างหัวข้อและตัวเลข
+                                      Divider(color: '#868E96'.toColor(), height: 1),
                                     ],
                                   ),
                                 ],
@@ -659,7 +653,7 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
                                         color: '#868E96'.toColor(),
                                       ),
                                       Text('CC \nTotal', textAlign: TextAlign.center),
-                                      Divider(color: '#868E96'.toColor(), height: 1), // เส้นแบ่งระหว่างหัวข้อและตัวเลข
+                                      Divider(color: '#868E96'.toColor(), height: 1),
                                     ],
                                   ),
                                 ],
@@ -700,10 +694,10 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
                                                 width: 1,
                                                 height: 45,
                                                 color: '#868E96'.toColor(),
-                                                margin: EdgeInsets.symmetric(horizontal: 20), // ระยะห่างจากข้อความ
+                                                margin: EdgeInsets.symmetric(horizontal: 20),
                                               ),
                                               Text('PP Tips', textAlign: TextAlign.center),
-                                              Divider(color: '#868E96'.toColor(), height: 1), // เส้นแบ่งระหว่างหัวข้อและตัวเลข
+                                              Divider(color: '#868E96'.toColor(), height: 1),
                                             ],
                                           ),
                                         ],
@@ -718,7 +712,7 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
                                           Text(
                                             'Gift Card',
                                             textAlign: TextAlign.center,
-                                            style: TextStyle(fontWeight: FontWeight.w500), // ตัวหนา (ถ้าต้องการ)
+                                            style: TextStyle(fontWeight: FontWeight.w500),
                                           ),
                                           Container(
                                             width: 170,
@@ -733,7 +727,7 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
                                                 width: 1,
                                                 height: 45,
                                                 color: '#868E96'.toColor(),
-                                                margin: EdgeInsets.symmetric(horizontal: 16), // ระยะห่างจากข้อความ
+                                                margin: EdgeInsets.symmetric(horizontal: 16),
                                               ),
                                               Text('PPGC Tips', textAlign: TextAlign.center),
                                             ],
@@ -865,7 +859,6 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
                             )
                           ],
                         ),
-                        // Data Row 1
                         TableRow(
                           decoration: BoxDecoration(color: '#E5F0F5'.toColor()),
                           children: [
@@ -1008,7 +1001,6 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
                             ),
                           ],
                         ),
-                        // Data Row 2
                         TableRow(
                           decoration: BoxDecoration(color: '#E5F0F5'.toColor()),
                           children: [
@@ -1403,15 +1395,11 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
                                         width: 1,
                                         height: 60,
                                         color: '#868E96'.toColor(),
-
-                                        // margin: EdgeInsets.zero, // ลบช่องว่างรอบเส้น
-                                        // padding: EdgeInsets.zero,
                                       ),
                                       Expanded(
                                         child: Text('Online', textAlign: TextAlign.center),
                                       ),
-
-                                      Divider(color: '#868E96'.toColor(), height: 1), // เส้นแบ่งระหว่างหัวข้อและตัวเลข
+                                      Divider(color: '#868E96'.toColor(), height: 1),
                                     ],
                                   ),
                                 ],
@@ -1435,7 +1423,7 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
                                     ),
                                   ),
                                   Container(
-                                    width: 1, // ความกว้างของเส้น
+                                    width: 1,
                                     color: '#868E96'.toColor(),
                                   ),
                                   Expanded(
@@ -1585,7 +1573,6 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
     });
   }
 
-  // ฟังก์ชันสำหรับสร้าง header ของตาราง
   Widget _buildHeaderCell(String text) {
     return Container(
       height: 40.0,
@@ -1599,17 +1586,16 @@ class _SalesPageState extends State<SalesPage> with TickerProviderStateMixin {
 
   Widget _buildSubHeaderCell(String text) {
     return Container(
-      height: 22, // ลดความสูงจากเดิม
+      height: 22,
       alignment: Alignment.center,
       child: Text(
         text,
-        style: TextStyle(fontSize: 12), // อาจจะลดขนาดตัวอักษรด้วยถ้าต้องการ
+        style: TextStyle(fontSize: 12),
         textAlign: TextAlign.center,
       ),
     );
   }
 
-  // ฟังก์ชันสร้าง TableCell
   Widget buildDataCell(String text) {
     return Container(
       alignment: Alignment.center,
