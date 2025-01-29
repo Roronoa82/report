@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, avoid_print
+// ignore_for_file: prefer_const_constructors, avoid_print, unnecessary_null_comparison, unused_local_variable
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,7 +36,6 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
     return BlocBuilder<DataBloc, DataState>(
       builder: (context, state) {
         if (state is DataLoading) {
@@ -44,7 +43,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
         } else if (state is DataLoaded) {
           final uniqueCategories = state.categories
               .where((category) =>
-                  category.foodCatId != null && category.foodCatId!.isNotEmpty && state.foods.any((food) => food.foodCatId == category.foodCatId))
+                  category.foodCatId != null && category.foodCatId.isNotEmpty && state.foods.any((food) => food.foodCatId == category.foodCatId))
               .toList();
           _tabController = TabController(length: uniqueCategories.length, vsync: this);
 
@@ -98,7 +97,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                                 style: TextStyle(
                                   fontFamily: 'Roboto',
                                   fontWeight: FontWeight.w500,
-                                  fontSize: screenWidth * 0.0088,
+                                  fontSize: screenWidth * 0.01,
                                   color: '#00000080'.toColor(),
                                 ),
                               ),
@@ -153,12 +152,12 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                               indicatorPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                               labelPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 36),
                               labelStyle: TextStyle(
-                                fontSize: screenWidth * 0.0088,
+                                fontSize: screenWidth * 0.01,
                                 fontFamily: 'Roboto',
                                 fontWeight: FontWeight.w500,
                               ),
                               unselectedLabelStyle: TextStyle(
-                                fontSize: screenWidth * 0.0088,
+                                fontSize: screenWidth * 0.01,
                                 fontFamily: 'Roboto',
                                 fontWeight: FontWeight.w500,
                               ),
@@ -234,7 +233,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                                               Text(
                                                 category.foodCatName ?? '',
                                                 style: TextStyle(
-                                                  fontSize: screenWidth * 0.0088,
+                                                  fontSize: screenWidth * 0.01,
                                                   fontFamily: 'Roboto',
                                                   fontWeight: FontWeight.w500,
                                                   color: '#000000B2'.toColor(),
@@ -291,7 +290,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                                                         style: TextStyle(
                                                           fontFamily: 'Roboto',
                                                           fontWeight: FontWeight.w500,
-                                                          fontSize: screenWidth * 0.0088,
+                                                          fontSize: screenWidth * 0.01,
                                                           color: '#00000080'.toColor(),
                                                         ),
                                                       ),
@@ -387,7 +386,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                                                           style: TextStyle(
                                                             fontFamily: 'Roboto',
                                                             color: '#4F4F4F'.toColor(),
-                                                            fontSize: screenWidth * 0.0088,
+                                                            fontSize: screenWidth * 0.01,
                                                             fontWeight: FontWeight.w600,
                                                           ),
                                                           overflow: TextOverflow.ellipsis,
@@ -398,7 +397,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                                                         style: TextStyle(
                                                           fontFamily: 'Roboto',
                                                           color: '#4F4F4F'.toColor(),
-                                                          fontSize: screenWidth * 0.0088,
+                                                          fontSize: screenWidth * 0.01,
                                                           fontWeight: FontWeight.w500,
                                                         ),
                                                       ),
@@ -477,7 +476,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                                               crossAxisAlignment: CrossAxisAlignment.end,
                                               children: [
                                                 Padding(
-                                                  padding: const EdgeInsets.only(left: 40.0, top: 0),
+                                                  padding: const EdgeInsets.only(left: 55.0, top: 0),
                                                   child: Row(
                                                     crossAxisAlignment: CrossAxisAlignment.end,
                                                     children: [
@@ -486,7 +485,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                                                         width: 25,
                                                         height: 20,
                                                       ),
-                                                      SizedBox(width: 20),
+                                                      SizedBox(width: 30),
                                                       PopupMenuButton<String>(
                                                         onSelected: (value) {
                                                           switch (value) {
@@ -542,12 +541,9 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                                                         food.isOutStock ? 'Out of stock' : (food.active ? 'Active' : 'Hide'),
                                                         style: TextStyle(
                                                           color: food.isOutStock
-                                                              ? '#F44336'.toColor() // ใช้สีแดงถ้า out of stock
-                                                              : (food.active
-                                                                  ? '#000000B2'.toColor()
-                                                                  : '#000000B2'.toColor()), // ใช้สีเขียวถ้า active, สีดำถ้า hide
-                                                          fontSize: screenWidth * 0.0088,
-
+                                                              ? '#F44336'.toColor()
+                                                              : (food.active ? '#000000B2'.toColor() : '#000000B2'.toColor()),
+                                                          fontSize: screenWidth * 0.01,
                                                           fontWeight: FontWeight.w400,
                                                           fontFamily: 'Roboto',
                                                         ),
@@ -648,7 +644,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                                   foodSetName,
                                   style: TextStyle(
                                     fontFamily: 'Roboto',
-                                    fontSize: screenWidth * 0.0088,
+                                    fontSize: screenWidth * 0.01,
                                     fontWeight: FontWeight.w500,
                                     color: '#3C3C3C'.toColor(),
                                   ),
@@ -708,7 +704,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                             style: TextStyle(
                               fontFamily: 'Roboto',
                               fontWeight: FontWeight.w500,
-                              fontSize: screenWidth * 0.0088,
+                              fontSize: screenWidth * 0.01,
                               color: '#00000080'.toColor(),
                             ),
                           ),
@@ -783,7 +779,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
                       style: TextStyle(
                         fontFamily: 'Roboto',
                         fontWeight: FontWeight.w500,
-                        fontSize: screenWidth * 0.0088,
+                        fontSize: screenWidth * 0.01,
                         color: '#00000080'.toColor(),
                       ),
                     ),
@@ -814,7 +810,7 @@ class _FoodItemScreenState extends State<FoodItemScreen> with TickerProviderStat
           hintStyle: TextStyle(
             fontFamily: 'Roboto',
             fontWeight: FontWeight.w500,
-            fontSize: screenWidth * 0.0088,
+            fontSize: screenWidth * 0.01,
             color: '#00000080'.toColor(),
           ),
           prefixIcon: Container(

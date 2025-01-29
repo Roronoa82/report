@@ -1,10 +1,8 @@
-// ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers
+// ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers, use_key_in_widget_constructors
 import 'package:flutter/rendering.dart';
 import 'package:printing/printing.dart';
 import 'dart:ui' as ui;
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw; // นำเข้ามาเพื่อใช้งาน pw
-
+import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:supercharged/supercharged.dart';
@@ -23,7 +21,7 @@ final logger = Logger();
 class SummaryTableSection extends StatelessWidget {
   final dynamic getDate;
 
-  SummaryTableSection({required this.getDate});
+  const SummaryTableSection({required this.getDate});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +31,7 @@ class SummaryTableSection extends StatelessWidget {
           key: _key, // ใช้ GlobalKey เพื่อจับภาพ
           child: Column(children: [
             SizedBox(height: 16),
-            Container(height: MediaQuery.of(context).size.height * 0.346, child: LineChartPage()),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.346, child: LineChartPage()),
             SizedBox(height: 16),
             Container(
               child: SalesTable(
@@ -42,7 +40,7 @@ class SummaryTableSection extends StatelessWidget {
               ),
             ),
             SizedBox(height: 16),
-            Container(
+            SizedBox(
               // color: '#EEEEEE'.toColor(),
               height: MediaQuery.of(context).size.height * 0.4,
               child: PaymentsTable(
@@ -50,7 +48,7 @@ class SummaryTableSection extends StatelessWidget {
                 selectDate: getDate,
               ),
             ),
-            Container(
+            SizedBox(
                 height: MediaQuery.of(context).size.height * 0.65,
                 child: SummaryScreen(
                   showDepositsOnly: 1,
@@ -65,14 +63,14 @@ class SummaryTableSection extends StatelessWidget {
                   key: ValueKey(getDate),
                   selectDate: getDate,
                 )),
-            Container(
+            SizedBox(
                 height: MediaQuery.of(context).size.height * 0.2,
                 child: SummaryScreen(
                   showDepositsOnly: 3,
                   key: ValueKey(getDate),
                   selectDate: getDate,
                 )),
-            Container(
+            SizedBox(
                 height: MediaQuery.of(context).size.height * 0.5,
                 child: SummaryScreen(
                   showDepositsOnly: 4,
@@ -93,7 +91,7 @@ class SummaryTableSection extends StatelessWidget {
                 selectDate: getDate,
               ),
             ),
-            Container(
+            SizedBox(
               height: MediaQuery.of(context).size.height * 0.3,
 
               // child: Center(
@@ -103,14 +101,14 @@ class SummaryTableSection extends StatelessWidget {
               ),
               // ),
             ),
-            Container(
+            SizedBox(
                 height: MediaQuery.of(context).size.height * 0.2,
                 child: SummaryScreen(
                   showDepositsOnly: 5,
                   key: ValueKey(getDate),
                   selectDate: getDate,
                 )),
-            Container(
+            SizedBox(
                 height: MediaQuery.of(context).size.height * 0.2,
                 child: SummaryScreen(
                   showDepositsOnly: 6,

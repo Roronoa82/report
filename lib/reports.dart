@@ -293,7 +293,7 @@ class _ReportPageState extends State<ReportPage> {
                           border: Border.all(color: Colors.grey, width: 2),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.only(left: 16.0),
                           child: GestureDetector(
                             onTap: () {
                               if (_overlayEntry == null) {
@@ -303,13 +303,18 @@ class _ReportPageState extends State<ReportPage> {
                               }
                             },
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   _selectedValue,
-                                  style: TextStyle(fontSize: 16),
+                                  style: TextStyle(fontSize: screenWidth * 0.01, color: '#000000'.toColor(), fontWeight: FontWeight.w500),
                                 ),
-                                Icon(Icons.arrow_drop_down),
+                                SizedBox(width: MediaQuery.of(context).size.width * 0.002),
+                                Icon(
+                                  Icons.arrow_drop_down,
+                                  size: screenWidth * 0.022,
+                                  color: '#000000'.toColor(),
+                                ),
                               ],
                             ),
                           ),
@@ -380,13 +385,14 @@ class _ReportPageState extends State<ReportPage> {
                   padding: const EdgeInsets.only(right: 16),
                   children: [
                     Divider(),
-                    const ListTile(
+                    ListTile(
                       leading: Icon(Icons.settings, color: Colors.grey),
                       title: Text(
                         "Store Setting",
                         style: TextStyle(
                           fontFamily: 'Inter',
-                          color: Color.fromRGBO(149, 149, 149, 1),
+                          color: '#959595'.toColor(),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
@@ -397,7 +403,8 @@ class _ReportPageState extends State<ReportPage> {
                         "Smile Dining",
                         style: TextStyle(
                           fontFamily: 'Inter',
-                          color: Color.fromRGBO(149, 149, 149, 1),
+                          color: '#959595'.toColor(),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
@@ -408,18 +415,22 @@ class _ReportPageState extends State<ReportPage> {
                         "Contactless",
                         style: TextStyle(
                           fontFamily: 'Inter',
-                          color: Color.fromRGBO(149, 149, 149, 1),
+                          color: '#959595'.toColor(),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
                     Divider(),
                     ExpansionTile(
+                      iconColor: '#959595'.toColor(),
+                      collapsedIconColor: '#959595'.toColor(),
                       leading: Icon(Icons.restaurant, color: Colors.grey),
                       title: Text(
                         "Menu Setup",
                         style: TextStyle(
                           fontFamily: 'Inter',
-                          color: Color.fromRGBO(149, 149, 149, 1),
+                          color: '#959595'.toColor(),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       initiallyExpanded: true,
@@ -429,6 +440,10 @@ class _ReportPageState extends State<ReportPage> {
                           child: ListTile(
                             title: Text(
                               "Menu Setup",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: selectedMenu == 'Menu Setup' ? Colors.black : '#959595'.toColor(), // ✅ เปลี่ยนสีข้อความ
+                              ),
                             ),
                             onTap: () {
                               setState(() {
@@ -451,7 +466,14 @@ class _ReportPageState extends State<ReportPage> {
                                 "Customize Menu",
                               ].map((item) {
                                 return ListTile(
-                                  title: Text(item),
+                                  title: Text(
+                                    item,
+                                    style: TextStyle(
+                                      fontFamily: 'Inter',
+                                      color: '#959595'.toColor(),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
                                   tileColor: selectedMenu == item ? '#000000'.toColor() : Colors.white,
                                   selected: selectedMenu == item,
                                 );
@@ -462,13 +484,14 @@ class _ReportPageState extends State<ReportPage> {
                       ],
                     ),
                     Divider(),
-                    const ListTile(
+                    ListTile(
                       leading: Icon(Icons.card_giftcard, color: Colors.grey),
                       title: Text(
                         "E-Card",
                         style: TextStyle(
                           fontFamily: 'Inter',
-                          color: Color.fromRGBO(149, 149, 149, 1),
+                          color: '#959595'.toColor(),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
@@ -483,11 +506,14 @@ class _ReportPageState extends State<ReportPage> {
                         "Marketing",
                         style: TextStyle(
                           fontFamily: 'Inter',
-                          color: Color.fromRGBO(149, 149, 149, 1),
+                          color: '#959595'.toColor(),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
                     ExpansionTile(
+                      iconColor: '#959595'.toColor(),
+                      collapsedIconColor: '#959595'.toColor(),
                       leading: FaIcon(FontAwesomeIcons.clipboardList, color: '#000000'.toColor()),
                       title: Text(
                         "Report",
@@ -501,6 +527,8 @@ class _ReportPageState extends State<ReportPage> {
                           child: ListTile(
                             title: Text(
                               "Overall Summary",
+                              style: TextStyle(
+                                  color: selectedMenu == 'Overall Summary' ? Colors.black : '#959595'.toColor(), fontWeight: FontWeight.w500),
                             ),
                             onTap: () {
                               setState(() {
@@ -516,7 +544,11 @@ class _ReportPageState extends State<ReportPage> {
                         Padding(
                           padding: EdgeInsets.only(left: 60),
                           child: ListTile(
-                            title: Text("Summary Sales"),
+                            title: Text(
+                              "Summary Sales",
+                              style:
+                                  TextStyle(color: selectedMenu == 'Summary Sales' ? Colors.black : '#959595'.toColor(), fontWeight: FontWeight.w500),
+                            ),
                             onTap: () {
                               setState(() {
                                 selectedMenu = 'Summary Sales';
@@ -544,7 +576,14 @@ class _ReportPageState extends State<ReportPage> {
                                 "Access Log History"
                               ].map((item) {
                                 return ListTile(
-                                  title: Text(item),
+                                  title: Text(
+                                    item,
+                                    style: TextStyle(
+                                      fontFamily: 'Inter',
+                                      color: '#959595'.toColor(),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
                                   onTap: () {
                                     setState(() {
                                       selectedMenu = item;

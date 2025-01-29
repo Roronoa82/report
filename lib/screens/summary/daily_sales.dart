@@ -405,7 +405,7 @@ class _DailySalesPageState extends State<DailySalesPage> with TickerProviderStat
                     decoration: BoxDecoration(color: '#F8F7EA'.toColor()),
                     children: ['Dine in', 'Togo', 'Delivery'].map((title) {
                       return Padding(
-                        padding: const EdgeInsets.only(left: 16.0, right: 16, top: 25, bottom: 25),
+                        padding: const EdgeInsets.only(left: 16.0, right: 16, top: 25, bottom: 27),
                         child: _buildHeaderCell(
                           title,
                         ),
@@ -496,7 +496,7 @@ class _DailySalesPageState extends State<DailySalesPage> with TickerProviderStat
               data.data.payments.smileContactlessPPGC +
               data.data.payments.smileContactlessPPGCTips;
         }
-        double cellHeight = MediaQuery.of(context).size.height * 0.09;
+        double cellHeight = MediaQuery.of(context).size.height * 0.091;
         TextStyle headerStyle = TextStyle(fontWeight: FontWeight.w400, color: '#3C3C3C'.toColor());
         Widget buildCell(String text, {TextStyle? style}) => Container(
               height: cellHeight,
@@ -1325,7 +1325,7 @@ class _DailySalesPageState extends State<DailySalesPage> with TickerProviderStat
           totaleGiftSalesShop += data.data.giftCertificate.eGiftSalesShop;
           totaleGiftSalesOnline += data.data.giftCertificate.eGiftSalesOnline;
         }
-        double cellHeight = MediaQuery.of(context).size.height * 0.09;
+        double cellHeight = MediaQuery.of(context).size.height * 0.091;
 
         return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -1522,7 +1522,7 @@ class _DailySalesPageState extends State<DailySalesPage> with TickerProviderStat
                             TableCell(
                               verticalAlignment: TableCellVerticalAlignment.middle,
                               child: SizedBox(
-                                height: MediaQuery.of(context).size.height * 0.123,
+                                height: MediaQuery.of(context).size.height * 0.124,
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [

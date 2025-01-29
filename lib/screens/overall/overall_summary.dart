@@ -1,4 +1,4 @@
-// ignore_for_file: sized_box_for_whitespace, prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: sized_box_for_whitespace, prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_final_fields
 
 import 'package:develop_resturant/bloc/summary_bloc.dart';
 import 'package:develop_resturant/bloc/summary_event.dart';
@@ -35,7 +35,6 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
 
   String dropdownValue = "Filters Report / Date";
   String filterDropdownValue = "More Filters";
-  bool _isBottomSheetOpen = false;
   final logger = Logger();
   dynamic getDate;
   int selectedReport = 1;
@@ -50,7 +49,6 @@ class _OverallSummaryPageState extends State<OverallSummaryPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> filterOptions = ['All Employees', 'All Order Types', 'All Sources', 'All Sections'];
     String reportTitle;
 
     if (widget.isFromSalesPage) {

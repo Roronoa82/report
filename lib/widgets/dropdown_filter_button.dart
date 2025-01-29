@@ -44,6 +44,10 @@ class _DropdownFilterButtonState extends State<DropdownFilterButton> {
   StreamController<bool> export = StreamController.broadcast();
   late int selectedReport;
   String selectedMenu = 'Overall Summary';
+  TextEditingController startTimeController = TextEditingController(text: "8:00");
+  TextEditingController endTimeController = TextEditingController(text: "3:00");
+  String startPeriod = "AM";
+  String endPeriod = "PM";
 
   @override
   void initState() {
@@ -252,31 +256,45 @@ class _DropdownFilterButtonState extends State<DropdownFilterButton> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text("Period :", style: TextStyle(fontWeight: FontWeight.bold)),
-                        Row(
+                        Column(
                           children: [
-                            Radio(value: true, groupValue: true, onChanged: (val) {}),
-                            Text("All Day"),
-                            Radio(value: false, groupValue: true, onChanged: (val) {}),
-                            Text("Custom"),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                decoration: InputDecoration(hintText: "Start Time"),
-                              ),
+                            Row(
+                              children: [
+                                Radio(value: true, groupValue: true, onChanged: (val) {}),
+                                Text(
+                                  "All Day",
+                                  style: TextStyle(color: '#3C3C3C'.toColor(), fontFamily: 'Inter', fontSize: 12, fontWeight: FontWeight.w400),
+                                ),
+                                Text(
+                                  ' (Default)',
+                                  style: TextStyle(color: '#FD9843'.toColor(), fontFamily: 'Inter', fontSize: 12, fontWeight: FontWeight.w400),
+                                ),
+                              ],
                             ),
-                            SizedBox(width: 8),
-                            Expanded(
-                              child: TextField(
-                                decoration: InputDecoration(hintText: "End Time"),
-                              ),
-                            ),
+                            Row(
+                              children: [
+                                Radio(value: false, groupValue: true, onChanged: (val) {}),
+                                Text(
+                                  "Custom",
+                                  style: TextStyle(color: '#3C3C3C'.toColor(), fontFamily: 'Inter', fontSize: 12, fontWeight: FontWeight.w400),
+                                ),
+                                SizedBox(width: 120),
+                                timeInputField("Start", startTimeController, startPeriod, (value) {
+                                  setState(() {
+                                    startPeriod = value!;
+                                  });
+                                }),
+                                SizedBox(width: 20),
+                                timeInputField("End", endTimeController, endPeriod, (value) {
+                                  setState(() {
+                                    endPeriod = value!;
+                                  });
+                                }),
+                              ],
+                            )
                           ],
                         ),
                         SizedBox(height: 12),
-                        // Buttons (Clear, Cancel, Apply)
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -318,8 +336,8 @@ class _DropdownFilterButtonState extends State<DropdownFilterButton> {
                                   }
 
                                   final filterData = {
-                                    'filteredFromDate': DateFormat('yyyy-MM-dd').format(state.fromDate!),
-                                    'filteredToDate': DateFormat('yyyy-MM-dd').format(state.toDate!),
+                                    'filteredFromDate': DateFormat('yyyy-MM-dd').format(state.fromDate),
+                                    'filteredToDate': DateFormat('yyyy-MM-dd').format(state.toDate),
                                   };
                                   widget.onDateSelected(filterData);
                                   logger.e(filterData);
@@ -401,6 +419,38 @@ class _DropdownFilterButtonState extends State<DropdownFilterButton> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget timeInputField(String label, TextEditingController controller, String period, ValueChanged<String?> onChanged) {
+    return Row(
+      children: [
+        Text(label),
+        SizedBox(width: 8),
+        Container(
+          width: 72,
+          height: 38,
+          child: TextField(
+            controller: controller,
+            textAlign: TextAlign.center,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.datetime,
+          ),
+        ),
+        SizedBox(width: 8),
+        DropdownButton<String>(
+          value: period,
+          onChanged: onChanged,
+          items: ["AM", "PM"].map((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 
